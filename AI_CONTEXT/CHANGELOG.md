@@ -1,5 +1,10 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-17 — Private collaboration CI
+
+- Run isolated CI on Windows because the existing encrypted ZIP backup engine explicitly requires Windows. Use Bash fail-fast command steps so an earlier regression failure cannot be hidden by a later successful command.
+- CI validates Local fixtures, Canonical and upload safety only; it never deploys or uses Production credentials.
+
 ## 2026-09-17 — Portable private collaboration candidate
 
 - Replace workstation-specific browser-tool paths with installed-tool discovery and explicit environment settings; resolve repository fixtures from script location and temporary files through platform APIs.
