@@ -597,7 +597,12 @@
         '<section class="page"><div class="empty"><h2>尚無可用的產品或線別</h2><p>請先在資料後台新增並核准資料，再使用此介面。</p></div></section>';
       return;
     }
-    priorRender();
+    const showLoadError=()=>{
+      root.innerHTML='<section class="page"><div class="empty" role="alert"><h2>頁面資料載入失敗</h2><p>請保留未儲存內容並確認連線，再重新載入。</p><button type="button" class="button signal" id="retry-page-load">重新載入</button></div></section>';
+      root.querySelector('#retry-page-load').onclick=()=>location.reload();
+    };
+    if(sync?.loadError){showLoadError();return;}
+    try{priorRender();}catch(error){console.warn('Process page rendering failed',error);showLoadError();return;}
     document
       .querySelectorAll('[data-go]')
       .forEach((button) => (button.hidden = !canView(button.dataset.go)));

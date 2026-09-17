@@ -11,6 +11,7 @@ db.exec('CREATE TABLE shared_state(id INTEGER PRIMARY KEY,revision INTEGER,"valu
 const env = { DB: { prepare(sql) { let args = []; return { bind(...value) { args = value; return this; }, async run() { const result = db.prepare(sql).run(...args); return { meta: { changes: Number(result.changes) } }; }, async first() { return db.prepare(sql).get(...args) || null; }, async all() { return { results: db.prepare(sql).all(...args) }; } }; } } };
 const adminPassword = crypto.randomUUID(), staffPassword = crypto.randomUUID(), resetPassword = crypto.randomUUID();
 const seed = { revision: 1, values: { platformUsers: JSON.stringify([{ id: 'admin', name: 'Existing Admin', role: 'admin', password: adminPassword, enabled: true, lines: ['A','B','C'], views: ['dashboard','data'], permissions: [] }]), processCustomRoles: '[]', processRoleTemplateOverrides: '{}', approvalVersions: '[]' } };
+db.prepare('INSERT INTO shared_state(id,revision,"values",updated_at) VALUES(1,?,?,?)').run(seed.revision,JSON.stringify(seed.values),'fixture');
 const cache = {};
 function load(file) {
   if (cache[file]) return cache[file];

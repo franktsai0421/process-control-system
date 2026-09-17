@@ -822,6 +822,7 @@ async function prepareMediaUpload(file) {
       compressed: true,
     };
   } catch (error) {
+    if (!image || !(image.naturalWidth || image.width) || !(image.naturalHeight || image.height)) throw error;
     console.warn('照片自動壓縮失敗，改用原始檔案', error);
     return original();
   } finally {
@@ -864,12 +865,16 @@ function applyDemoMedia(editorData) {
   Object.entries(demoMediaByStage).forEach(([stageCode, demo]) => {
     const operation = editorData[stageCode]?.[demo.index];
     if (operation && !operationMediaItems(operation).length) {
-      operation.media = demo.src;
-      operation.mediaName = demo.name;
-      operation.mediaType = 'image/png';
-      operation.mediaItems = [
-        { src: demo.src, name: demo.name, type: 'image/png' },
-      ];
+      const approvedMedia = approvalVersions
+        .filter(version => version.category === state.category && version.line === state.editorLine && ['approved', 'superseded'].includes(version.status))
+        .sort((a, b) => Number(b.status === 'approved') - Number(a.status === 'approved') || (b.number || 0) - (a.number || 0))
+        .flatMap(version => (version.stages?.[stageCode] || []).flatMap(operationMediaItems))
+        .find(item => item.name === demo.name);
+      const item = approvedMedia ? { ...approvedMedia } : { src: demo.src, name: demo.name, type: 'image/png' };
+      operation.media = item.src;
+      operation.mediaName = item.name;
+      operation.mediaType = item.type;
+      operation.mediaItems = [item];
     }
   });
   return editorData;

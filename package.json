@@ -34,7 +34,12 @@
     "postinstall": "node scripts/collaboration-setup.mjs --install",
     "collaboration:setup": "node scripts/collaboration-setup.mjs",
     "test:collaboration": "node scripts/test-collaboration-guard.mjs",
-    "test:images": "node scripts/test-canonical-images.mjs"
+    "test:images": "node scripts/test-canonical-images.mjs",
+    "test:editor-drafts": "node scripts/test-build7100-storage.cjs && node scripts/test-editor-draft-persistence.cjs",
+    "test:editor-browser": "node scripts/test-editor-draft-browser.cjs",
+    "test:editor-race": "node scripts/test-editor-draft-browser.cjs --race-only",
+    "test:editor-images": "node scripts/test-editor-real-images.cjs",
+    "test:editor-lines": "node scripts/test-editor-line-selection.cjs"
   },
   "dependencies": {
     "react": "19.2.8",
@@ -76,7 +81,8 @@
     "typescript": "5.9.3",
     "vite": "8.0.16",
     "wrangler": "4.92.0",
-    "drizzle-kit": "0.31.10"
+    "drizzle-kit": "0.31.10",
+    "playwright": "1.62.1"
   },
   "type": "module"
 }

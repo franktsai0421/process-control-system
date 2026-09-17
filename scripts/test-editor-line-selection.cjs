@@ -1,5 +1,5 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict'),path=require('node:path');
-const root=path.resolve(process.argv[2]||path.join(__dirname,'..'));
+const root=process.argv[2]?path.resolve(process.argv[2]):path.resolve(__dirname,'..','public','process');
 const state={view:'editor',editorLine:'A',category:'SHARED',editorVersionId:'A-draft',selectedOperation:'A-op',editorByCategory:{'SHARED:A':{draft:'unchanged'}}};
 const products=[{code:'A1',category:'SHARED'},{code:'A2',category:'A-ONLY'},{code:'B1',category:'SHARED'},{code:'B2',category:'B-ONLY'},{code:'C1',category:'C-ONLY'}];
 let renders=0,ensures=0;
@@ -9,7 +9,7 @@ const arr=x=>Array.from(x);
 assert.deepEqual(arr(s.editorCategories()),['A-ONLY','SHARED']);
 assert.deepEqual(arr(s.editorCategories('B')),['B-ONLY','SHARED']);
 assert.deepEqual(arr(s.editorCategories('C')),['C-ONLY']);
-let html=s.editorSelectionPath(5,16);assert.ok(html.indexOf('id="editor-line-select"')<html.indexOf('id="category-select"'));assert.ok(!html.includes('B-ONLY'));
+const html=s.editorSelectionPath(5,16);assert.ok(html.indexOf('id="editor-line-select"')<html.indexOf('id="category-select"'));assert.ok(!html.includes('B-ONLY'));
 s.changeEditorSelection('B','SHARED');assert.equal(state.category,'SHARED');assert.equal(state.editorVersionId,null);assert.equal(state.productCode,'B1');
 state.editorVersionId='B-draft';s.changeEditorSelection('A','SHARED');assert.equal(state.editorVersionId,'A-draft');assert.equal(state.selectedOperation,'A-op');assert.equal(state.editorByCategory['SHARED:A'].draft,'unchanged');
 s.changeEditorSelection('C','SHARED');assert.equal(state.category,'C-ONLY');assert.equal(state.productCode,'C1');assert.equal(state.editorVersionId,null);

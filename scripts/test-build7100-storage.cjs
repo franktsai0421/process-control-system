@@ -32,8 +32,10 @@ const sessionStorage = new QuotaStorage();
 const nativeGetItem = QuotaStorage.prototype.getItem;
 localStorage.setItem(
   'processEditor:legacy:A',
-  JSON.stringify({ media: 'L'.repeat(1024 * 1024) }),
+  JSON.stringify({ category:'legacy', line:'A', stages:{'A-CUT':[{id:'legacy',media:'L'.repeat(1024 * 1024)}]} }),
 );
+const legacyEditor = nativeGetItem.call(localStorage, 'processEditor:legacy:A');
+localStorage.setItem('processEditor:conflict:A', JSON.stringify({category:'conflict',line:'A',stages:{'A-CUT':[{id:'browser'}]}}));
 
 const initialEditor = JSON.stringify({
   category: 'quota-test',
@@ -45,9 +47,11 @@ let values = {
   platformUsers: '[]',
   approvalVersions: '[]',
   'processEditor:quota-test:A': initialEditor,
+  'processEditor:conflict:A': JSON.stringify({category:'conflict',line:'A',stages:{'A-CUT':[{id:'server'}]}}),
 };
 let lastPost = null;
 let failWrites = false;
+let holdWrite = null;
 const listeners = new Map();
 
 class FixtureRequest {
@@ -102,6 +106,7 @@ const context = vm.createContext({
   fetch: async (url, options) => {
     assert.equal(url, '/api/shared-state');
     lastPost = JSON.parse(options.body);
+    if (holdWrite) await holdWrite;
     if (failWrites)
       return {
         ok: false,
@@ -136,11 +141,14 @@ vm.runInContext(
     null,
     'server state is not copied into native localStorage',
   );
-  assert.equal(
-    nativeGetItem.call(localStorage, 'processEditor:legacy:A'),
-    null,
-    'legacy shared browser data is removed on load',
-  );
+  assert.equal(nativeGetItem.call(localStorage, 'processEditor:legacy:A'), legacyEditor, 'loading never deletes an old browser draft');
+  assert.equal(localStorage.getItem('processEditor:legacy:A'), legacyEditor, 'missing backend draft remains recoverable');
+  assert.match(localStorage.getItem('processEditor:conflict:A'), /server/, 'conflicting browser draft does not replace server data');
+  assert.match(JSON.stringify(window.ProcessSync.readLegacyDraft('processEditor:conflict:A')), /browser/);
+  assert.equal(await window.ProcessSync.flush(), true);
+  assert.equal(values['processEditor:legacy:A'], legacyEditor, 'complete legacy draft migrates through the revision checked API');
+  assert.equal(nativeGetItem.call(localStorage, 'processEditor:legacy:A'), null, 'only verified complete migration clears the legacy cache');
+  assert.ok(nativeGetItem.call(localStorage, 'processEditor:conflict:A'), 'conflicting legacy draft is retained for explicit recovery');
 
   localStorage.setItem('device-quota-fixture', 'F'.repeat(4 * 1024 * 1024));
   const nextEditor = JSON.stringify({
@@ -169,6 +177,32 @@ vm.runInContext(
   assert.equal(await window.ProcessSync.flush(), false);
   assert.equal(window.ProcessSync.status, 'offline');
 
+  failWrites = false;
+  assert.equal(await window.ProcessSync.flush(), true, 'explicit Save retries a temporary failure');
+  assert.equal(window.ProcessSync.paused, false);
+
+  const key = 'processEditor:quota-test:A';
+  const baseline = localStorage.getItem(key);
+  localStorage.setItem(key, '"temporary"');
+  localStorage.setItem(key, baseline);
+  await window.ProcessSync.flush();
+  assert.equal(values[key], baseline, 'reverting a queued change does not send the obsolete value');
+
+  let releaseWrite;
+  holdWrite = new Promise(resolve => { releaseWrite = resolve; });
+  localStorage.setItem(key, '"in flight"');
+  const firstSave = window.ProcessSync.flush();
+  localStorage.setItem(key, baseline);
+  const concurrentSave = window.ProcessSync.flush();
+  releaseWrite();
+  holdWrite = null;
+  assert.equal(await firstSave, true);
+  assert.equal(await concurrentSave, true);
+  assert.equal(values[key], baseline, 'changes during a write are drained before Save finishes');
+  let warned = false;
+  window.dispatchEvent({type:'beforeunload',preventDefault(){ warned = true; }});
+  assert.equal(warned, false, 'successful Save leaves no pending update');
+
   const safetySource = fs.readFileSync(
     path.resolve('public/process/data-safety-ui.js'),
     'utf8',
@@ -192,7 +226,7 @@ vm.runInContext(
     'the save action must wait for the cloud write before showing success',
   );
   console.log(
-    'PASS: shared photo drafts bypass localStorage quota, cloud save is awaited, recovery quota is contained, and stale hosted identity returns to login',
+    'PASS: shared photo drafts bypass quota, explicit retry, concurrent saves, queued/in-flight reverts, pending-update drain, and hosted session guard',
   );
 })().catch((error) => {
   console.error(error);
