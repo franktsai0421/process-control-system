@@ -13,13 +13,15 @@ const environment={...process.env,GIT_CONFIG_GLOBAL:path.join(fixture,'global-gi
 let phase='start';
 const run=(cwd,args,input)=>spawnSync('git',args,{cwd,input,encoding:'utf8',env:environment,windowsHide:true});
 const ok=(cwd,args)=>{phase='git-'+args[0];const p=run(cwd,args);assert.equal(p.status,0);return p.stdout.trim();};
-const node=(cwd,file,args=[])=>{phase='setup';return spawnSync(process.execPath,[file,...args],{cwd,encoding:'utf8',env:environment,windowsHide:true});};
+const node=(cwd,file,args=[])=>{phase='setup';const p=spawnSync(process.execPath,[file,...args],{cwd,encoding:'utf8',env:environment,windowsHide:true});if(p.status!==0)phase+='-'+(p.stderr.match(/stage=([a-z-]+)/)?.[1]||'unknown');return p;};
 try{
  fs.mkdirSync(work);ok(fixture,['init','--bare',remote]);ok(work,['init','-b','main']);
  for(const file of ['.githooks/pre-push','scripts/main-push-guard.mjs','scripts/collaboration-setup.mjs']){fs.mkdirSync(path.dirname(path.join(work,file)),{recursive:true});fs.copyFileSync(path.join(source,file),path.join(work,file));}
  fs.chmodSync(path.join(work,'.githooks/pre-push'),0o755);
  ok(work,['config','user.name','Local Simulation']);ok(work,['config','user.email','simulation@example.invalid']);
  ok(work,['add','.']);ok(work,['update-index','--chmod=+x','.githooks/pre-push']);ok(work,['commit','-m','Isolated guard fixture']);ok(work,['remote','add','origin',remote]);
+ // Minimal Git distributions may omit the stock hooks template directory.
+ if(fs.existsSync(path.join(work,'.git/hooks')))fs.rmSync(path.join(work,'.git/hooks'),{recursive:true,force:true});
  const setup='scripts/collaboration-setup.mjs';assert.equal(node(work,setup).status,0);assert.equal(node(work,setup).status,0);
  assert.equal(ok(work,['config','--local','--get','core.hooksPath']),'.git/hooks');
  const configBefore=fs.readFileSync(path.join(work,'.git/config'),'utf8');
