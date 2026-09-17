@@ -1,5 +1,11 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-17 — Canonical Web image synchronization
+
+- Package 205 locally recovered, metadata-stripped WebP images with relative paths, source IDs, content versions and manifests; preserve all 7,971 Canonical records and their associations. High-resolution originals/videos/R2 blobs remain outside Git.
+- Import images into Local R2 on fresh bootstrap and sync; serve verified immutable versions through a Local-only streaming route. Export image additions/updates and explicit unreferenced-image tombstones alongside data. Refuse same-ID hash conflicts, missing/corrupt/oversized packages and unexported Local edits.
+- Keep existing CAS/backup/rollback, account/role, restart/idempotence and Production-isolation safeguards. No SQL schema, deployment or Production change.
+
 ## 2026-09-17 — Local main push guard
 
 - Add a versioned pre-push hook that blocks pushes while on main and any update/deletion targeting main. Enable through safe repository-local npm postinstall setup with an explicit idempotent setup command; existing custom hooks are never replaced.

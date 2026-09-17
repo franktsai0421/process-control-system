@@ -58,6 +58,14 @@ ADMIN、RD、STAFF 保留名稱、位置與既有權限，不使用預設密碼�
 
 DEMO_LOGIN_ENABLED 未設定／true 允許，false 拒絕新登入及舊 demo Session；不因 hostname 自動關閉。測試階段快捷入口預設開放；正式營運前必須由Frank明確確認關閉。
 
+## Canonical 圖片同步
+
+Fresh clone 執行 npm install、npm run dev 後，會驗證並自動將版本化 Web 圖片匯入自己的 Local R2，直接顯示實際圖片。首次基準有 205 張圖片，Web 包約 7.92 MiB；7,971 筆 Canonical 保留。
+
+修改並核准圖片後先停止 dev，再執行 npm run data:export；資料、Web 圖片、assets/manifest.json、assets/web-manifest.json 與內容版本一併匯出。圖片更新產生新的內容 asset ID；最後一個 Canonical 關聯刪除時產生 deletedAt tombstone，歷史版本仍引用的圖片會保留。經 PR 審查 Merge 後，同仁停止 dev、git pull --ff-only、npm run data:sync，再啟動 dev。同步先備份且拒絕未匯出 Local 修改；重啟及重複同步不重複寫入、不覆蓋 Local 圖片。
+
+Git 只包含去除 EXIF／GPS 等 metadata、最長邊 1600px 的 WebP，以及相對路徑與 SHA-256 manifest。高解析原圖、影片、Local R2 blob 不進 Git；每張 Web 圖片上限 2 MiB，整包上限 25 MiB，超限或缺少來源會停止，不自動採用 LFS／外部服務。同一 asset ID 的來源或 Web hash 衝突會停止。圖片路由只接受啟用 Local 模式的 loopback 請求，未連接 Staging／Production／Sites。
+
 ## 匯出資料
 
 匯出前停止 dev。只匯出核准協作資料，使用固定 ID 與穩定排序，排除帳號、歷史及敏感資料；沒有變更時檔案與版本不變。工具不 commit 或 push。
@@ -99,6 +107,7 @@ npx --no-install tsc --noEmit
 npm run test:demo
 npm run test:local-schema
 npm run test:local-init
+npm run test:images
 npm run test:canonical
 npm run test:data-merge
 npm run test:task-safety
@@ -122,7 +131,7 @@ Local 只使用 loopback，remote bindings 關閉；工具拒絕 Production 參�
 
 ## 已知限制
 
-Git 保留 205 筆資產索引，原圖留於私有資產包，clone 使用替代圖片。FQC／IQC／IPQC 是 CLI 協作資料，尚無新品質介面。舊 Local 轉換、正式帳號／hash 與完整依賴稽核仍是後續工作。Main 保護取決於 GitHub 方案，操作規範不等於技術強制。
+Git 包含 205 張受控 Web 圖片及資產索引；原圖留於私有資產包。FQC／IQC／IPQC 是 CLI 協作資料，尚無新品質介面。舊 Local 轉換、正式帳號／hash 與完整依賴稽核仍是後續工作。Main 保護取決於 GitHub 方案，操作規範不等於技術強制。
 
 
 此 Private repository 使用 GitHub Free，未啟用伺服器端 Branch Protection。GitHub 目前不會強制阻止 Write 協作者直接 Push main 或 Merge PR。「只有 Frank Merge」是公司正式規則；本機 hook 只防止誤操作，不是伺服器端保護。CODEOWNERS 識別 Frank 為程式與 Canonical 最終審核人，目前不強制其核准。不得重試付費保護、變更公開狀態或加入開源 LICENSE。

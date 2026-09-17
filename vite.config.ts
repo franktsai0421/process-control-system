@@ -68,6 +68,7 @@ export default defineConfig(async ({ command }) => {
             main: 'vinext/server/fetch-handler',
             vars: {
               PROCESS_SESSION_SECRET: readLocalSession(process.cwd()),
+              PROCESS_LOCAL_IMAGES: 'true',
               DEMO_LOGIN_ENABLED: process.env.DEMO_LOGIN_ENABLED ?? 'true',
             },
           },

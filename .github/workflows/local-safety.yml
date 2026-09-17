@@ -55,6 +55,8 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           npm run test:local-init
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm run test:images
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           npm run test:canonical
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           npm run test:data-merge

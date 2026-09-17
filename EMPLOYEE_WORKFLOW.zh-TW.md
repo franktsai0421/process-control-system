@@ -20,6 +20,14 @@ npm run collaboration:setup
 npm run dev
 ```
 
+## Canonical 圖片同步
+
+Fresh clone 執行 npm install、npm run dev 後，會驗證並自動將版本化 Web 圖片匯入自己的 Local R2，直接顯示實際圖片。首次基準有 205 張圖片，Web 包約 7.92 MiB；7,971 筆 Canonical 保留。
+
+修改並核准圖片後先停止 dev，再執行 npm run data:export；資料、Web 圖片、assets/manifest.json、assets/web-manifest.json 與內容版本一併匯出。圖片更新產生新的內容 asset ID；最後一個 Canonical 關聯刪除時產生 deletedAt tombstone，歷史版本仍引用的圖片會保留。經 PR 審查 Merge 後，同仁停止 dev、git pull --ff-only、npm run data:sync，再啟動 dev。同步先備份且拒絕未匯出 Local 修改；重啟及重複同步不重複寫入、不覆蓋 Local 圖片。
+
+Git 只包含去除 EXIF／GPS 等 metadata、最長邊 1600px 的 WebP，以及相對路徑與 SHA-256 manifest。高解析原圖、影片、Local R2 blob 不進 Git；每張 Web 圖片上限 2 MiB，整包上限 25 MiB，超限或缺少來源會停止，不自動採用 LFS／外部服務。同一 asset ID 的來源或 Web hash 衝突會停止。圖片路由只接受啟用 Local 模式的 loopback 請求，未連接 Staging／Production／Sites。
+
 ## 更新與建立工作分支
 
 先停止 dev。保留既有修改；衝突須審查處理，不重設 Local 資料。
