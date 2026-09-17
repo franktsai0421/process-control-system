@@ -20,6 +20,14 @@ npm run collaboration:setup
 npm run dev
 ```
 
+## Canonical image synchronization
+
+After npm install and npm run dev, a fresh clone verifies the versioned Web image package and automatically imports real images into its own Local R2. The baseline has 205 images, about 7.92 MiB, and preserves all 7,971 Canonical records.
+
+After editing and approving images, stop dev and run npm run data:export. Data, Web images, assets/manifest.json, assets/web-manifest.json and content versions export together. Image updates receive a new content asset ID. Removing the final Canonical reference creates a deletedAt tombstone; images still referenced by history remain available. After a reviewed PR merge, colleagues stop dev, run git pull --ff-only and npm run data:sync, then restart dev. Sync makes a verified backup and refuses unexported Local changes. Restart and repeated sync do not rewrite existing images or overwrite Local uploads.
+
+Git contains only metadata-stripped WebP images (maximum 1600px edge), relative paths and SHA-256 manifests. High-resolution originals, videos and Local R2 blobs stay outside Git. Limits are 2 MiB per Web image and 25 MiB per package; missing sources, oversized packages and conflicting source/Web hashes for one asset ID stop the operation without LFS or external services. Image serving requires loopback and the explicit Local runtime flag; no Staging, Production or Sites connection is used.
+
 ## Update and create a work branch
 
 Stop dev first. Keep existing edits; resolve conflicts without resetting Local data.

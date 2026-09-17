@@ -58,6 +58,14 @@ ADMIN, RD, STAFF giữ tên, vị trí và quyền hiện hữu. Không dùng m�
 
 DEMO_LOGIN_ENABLED chưa đặt/true cho phép; false từ chối cả đăng nhập mới và Session demo cũ. Không tự tắt vì hostname. Giai đoạn thử nghiệm mặc định mở; trước vận hành chính thức Frank phải xác nhận rõ việc tắt.
 
+## Đồng bộ ảnh Canonical
+
+Sau npm install và npm run dev, bản clone mới kiểm tra gói ảnh Web có phiên bản và tự nhập ảnh thật vào R2 Local riêng. Cơ sở gồm 205 ảnh, khoảng 7,92 MiB; giữ đủ 7.971 bản ghi Canonical.
+
+Sau khi sửa và duyệt ảnh, dừng dev rồi chạy npm run data:export. Dữ liệu, ảnh Web, assets/manifest.json, assets/web-manifest.json và phiên bản nội dung được xuất cùng nhau. Ảnh cập nhật có asset ID nội dung mới. Xóa liên kết Canonical cuối cùng tạo tombstone deletedAt; ảnh còn được lịch sử tham chiếu vẫn giữ lại. Sau PR được duyệt và merge, đồng nghiệp dừng dev, chạy git pull --ff-only và npm run data:sync, rồi khởi động dev. Sync tạo bản sao lưu đã kiểm tra và từ chối thay đổi Local chưa export. Khởi động lại hoặc sync lặp không ghi lại ảnh hiện có hay đè ảnh tải lên Local.
+
+Git chỉ chứa WebP đã bỏ EXIF/GPS và metadata nhạy cảm (cạnh tối đa 1600px), đường tương đối và manifest SHA-256. Ảnh gốc độ phân giải cao, video và blob R2 Local không vào Git. Giới hạn 2 MiB mỗi ảnh Web, 25 MiB mỗi gói; thiếu nguồn, quá lớn hoặc cùng asset ID khác hash nguồn/Web sẽ dừng, không tự dùng LFS/dịch vụ ngoài. Route ảnh chỉ chạy loopback với cờ Local rõ ràng; không kết nối Staging, Production hay Sites.
+
 ## Xuất dữ liệu
 
 Dừng dev trước khi xuất. Chỉ xuất dữ liệu cộng tác được duyệt, ID cố định và thứ tự ổn định; loại tài khoản, lịch sử và dữ liệu nhạy cảm. Không thay đổi thì tệp/phiên bản không đổi. Công cụ không commit hoặc push.
@@ -99,6 +107,7 @@ npx --no-install tsc --noEmit
 npm run test:demo
 npm run test:local-schema
 npm run test:local-init
+npm run test:images
 npm run test:canonical
 npm run test:data-merge
 npm run test:task-safety
@@ -122,7 +131,7 @@ Local chỉ loopback, remote bindings bị tắt; công cụ từ chối tham s�
 
 ## Giới hạn
 
-205 chỉ mục tài sản nằm trong Git, ảnh gốc nằm trong gói riêng; clone dùng ảnh thay thế. FQC/IQC/IPQC là dữ liệu cộng tác CLI, chưa có giao diện chất lượng mới. Chuyển Local cũ, tài khoản chính thức/hash và kiểm toán phụ thuộc đầy đủ còn ở giai đoạn sau. Quy tắc bảo vệ main phụ thuộc gói GitHub, không coi hướng dẫn là biện pháp kỹ thuật.
+Git gồm 205 ảnh Web và chỉ mục tài sản; ảnh gốc ở gói riêng. FQC/IQC/IPQC là dữ liệu cộng tác CLI, chưa có giao diện chất lượng mới. Chuyển Local cũ, tài khoản chính thức/hash và kiểm toán phụ thuộc đầy đủ còn ở giai đoạn sau. Quy tắc bảo vệ main phụ thuộc gói GitHub, không coi hướng dẫn là biện pháp kỹ thuật.
 
 
 Repository Private này dùng GitHub Free, chưa có Branch Protection phía máy chủ. GitHub hiện không bắt buộc chặn cộng tác viên Write push trực tiếp main hoặc merge PR. Chỉ Frank merge là quy tắc chính thức của công ty; hook Local chỉ ngăn thao tác nhầm, không phải bảo vệ phía máy chủ. CODEOWNERS xác định Frank là người duyệt cuối cho mã và Canonical, chưa bắt buộc phê duyệt theo gói này. Không thử lại bảo vệ trả phí, đổi chế độ hiển thị hoặc thêm LICENSE nguồn mở.

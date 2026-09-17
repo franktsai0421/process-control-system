@@ -10,6 +10,7 @@ import { verifyLocalSchema } from '../lib/local-schema.mjs';
 import { installLocalNetworkGuard } from '../lib/local-network-guard.mjs';
 import {readPackage,materialize,serialize,sha256,stable} from '../lib/canonical-data.mjs';
 import {encodeLocalValues}from'../lib/local-snapshot.mjs';
+import {importWebImages,hydrateWebImages,validateImageTransition} from '../lib/canonical-images.mjs';
 
 // Load existing Drizzle definitions rather than duplicating table definitions.
 export function loadTypeScript(root, relative) {
@@ -64,6 +65,10 @@ export async function initializeLocal(root, args = [], environment = process.env
     proxy = await getPlatformProxy({ configPath: paths.config,
       persist: { path: path.join(paths.state, 'v3') }, remoteBindings: false, envFiles: [] });
     const db = proxy.env.DB;
+    const canonical = readPackage(root);
+    const previousBase=path.join(paths.directory,'canonical-base.json');
+    if(fs.existsSync(previousBase))validateImageTransition(JSON.parse(fs.readFileSync(previousBase)).baseDomains.assets||[],canonical.domains.assets);
+    let images;
     const names = (await db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE '_cf_%'").all()).results.map(row => row.name);
     const wasEmpty = names.length === 0;
     if (wasEmpty) {
@@ -79,9 +84,9 @@ export async function initializeLocal(root, args = [], environment = process.env
       if (!wasEmpty) throw new LocalSetupError('Existing Local state is missing; automatic bootstrap was refused');
       const backups = await db.prepare('SELECT COUNT(*) AS count FROM state_backups').first();
       if (Number(backups.count) !== 0) throw new LocalSetupError('Existing Local backup data has no current state; automatic seed was refused');
-      const canonical = readPackage(root);
+      images = await importWebImages(root,canonical.domains.assets,proxy.env.STATE_ARCHIVE);
       const roles = loadTypeScript(root, 'lib/user-access.ts').roleDefaults;
-      const values = { ...materialize({},canonical.domains), platformUsers: JSON.stringify(createDemoUsers(roles)) };
+      const values = { ...materialize({},canonical.domains,{root}), platformUsers: JSON.stringify(createDemoUsers(roles)) };
       await db.prepare('INSERT INTO shared_state (id, revision, "values", updated_at) VALUES (1, ?, ?, ?)')
         .bind(1, await encodeLocalValues(proxy.env.STATE_ARCHIVE,values), new Date().toISOString()).run();
       fs.writeFileSync(path.join(paths.directory,'canonical-base.json'),serialize({bootstrapVersion:canonical.manifest.bootstrapVersion,dataVersion:canonical.manifest.dataVersion,baseDomains:canonical.domains,lastExportHash:sha256(stable(canonical.domains))}));
@@ -109,11 +114,19 @@ export async function initializeLocal(root, args = [], environment = process.env
       // Do not append accounts to an existing state silently. A prepared clone is idempotent.
       if (demoIdentities.some(identity => !users.some(user => user.id === identity.id)))
         throw new LocalSetupError('Existing Local state has no complete demo setup; automatic changes were refused');
+      images = await importWebImages(root,canonical.domains.assets,proxy.env.STATE_ARCHIVE);
+      const hydrated=hydrateWebImages(values,canonical.domains.assets);
+      if(JSON.stringify(hydrated)!==JSON.stringify(values)){
+        const change=await db.prepare('UPDATE shared_state SET revision=?, "values"=?, updated_at=? WHERE id=1 AND revision=? AND "values"=?')
+          .bind(row.revision+1,await encodeLocalValues(proxy.env.STATE_ARCHIVE,hydrated,{forceR2:!!stored.__processR2}),new Date().toISOString(),row.revision,row.values).run();
+        if(change.meta.changes!==1)throw new LocalSetupError('Local revision conflict while resolving canonical images');
+      }
     }
     if (!fs.existsSync(paths.session)) fs.writeFileSync(paths.session,
       JSON.stringify({ secret: crypto.randomBytes(48).toString('hex') }), { mode: 0o600, flag: 'wx' });
     readLocalSession(root);
     console.log('Local initialization verified: existing migrations, passwordless demo accounts, remote bindings disabled.');
+    console.log(`Local canonical images: ${images.imported} imported, ${images.present} already present, ${images.tombstones} tombstones.`);
   } finally {
     if (proxy) await proxy.dispose();
     fs.rmdirSync(lock);

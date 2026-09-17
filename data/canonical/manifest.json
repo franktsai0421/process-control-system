@@ -1,8 +1,9 @@
 {
   "bootstrapVersion": 1,
-  "dataVersion": "a92c7f7d9be97543777ad37ca3412134c9682b29f1052b0f62c5789d76155f5e",
+  "dataVersion": "fbde9e2c1c8e146f404cfe919340b0a16ba34991c4b74876eec845bd15352064",
   "files": {
-    "assets/manifest.json": "a38e6e81c7e5aa0280d2e0a364040d4b986b0e2d4f948e9cc97830e5c1e14299",
+    "assets/manifest.json": "79be05bbd75e97b98c41eb631b2cefa00179ce4d097bc34d4f2e9ef7dd4b3664",
+    "assets/web-manifest.json": "9f829d295e1001d7af4284e59c9e1b909f4682115d889b2f3583d561ff89e194",
     "bom.json": "5b207abe51120aa34f18b2ec744ca1de79d45d1cd39c0271603cf4581ae9db5b",
     "categories.json": "b759dcc762cd7db29747c2d4f425db07c5eb96163ff0b3b0e5f90e37fd5cc712",
     "dispatch.json": "4942bee1530860ad6e9e20676dd962df9e58f4edd05bcbaef4ba5cd3250698df",
@@ -19,7 +20,7 @@
     "settings.json": "197ba34afdf16c8e1d10ca5f3b90b6f12b09e568993bac665543f35ebfd0eb3e",
     "stages.json": "464ec96f20b99c1d4d261eb5ea152cc0666095de7d7711eb69cd6d7e8bc42610"
   },
-  "generatedAt": "2026-09-17T02:26:26.819Z",
+  "generatedAt": "2026-09-17T07:22:03.190Z",
   "schemaVersion": 1,
   "sourceClassification": "approved-local-and-bundled-business"
 }
