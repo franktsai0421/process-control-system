@@ -1,0 +1,59 @@
+name: Local safety
+on:
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+concurrency:
+  group: local-safety-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  local-safety:
+    name: Local safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_CF_FETCH_ENABLED: 'false'
+      WRANGLER_SEND_METRICS: 'false'
+      WRANGLER_WRITE_LOGS: 'false'
+      npm_config_update_notifier: 'false'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Canonical, history and upload safety
+        run: npm run github:preflight
+      - name: TypeScript
+        run: npx --no-install tsc --noEmit
+      - name: Build
+        run: npm run build
+      - name: Isolated Local tests
+        run: |
+          npm run test:demo
+          npm run test:local-schema
+          npm run test:local-init
+          npm run test:canonical
+          npm run test:data-merge
+          npm run test:task-safety
+          npm run test:portable
+      - name: Existing fixture regressions
+        run: |
+          node scripts/test-data-safety.cjs
+          node scripts/test-local-backup.cjs
+          node scripts/test-local-r2-backup.cjs
+          node scripts/test-process-master-api.cjs
+          node scripts/test-release-safety.cjs
+          node scripts/test-version-return-policy.cjs
+          node scripts/test-process-consistency.cjs
+          node scripts/test-system-upgrade.cjs
+          node scripts/test-language-loop.cjs
+          node scripts/test-bom-search.cjs public/process
+          node scripts/test-bom-excel.cjs public/process
+          node scripts/test-master-admin.cjs public/process
