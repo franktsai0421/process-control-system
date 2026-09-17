@@ -1,0 +1,116 @@
+{
+  "domain": "roles",
+  "records": [
+    {
+      "data": {
+        "lines": [
+          "A",
+          "B",
+          "C"
+        ],
+        "name": "ADMIN",
+        "permissions": [
+          "approval.viewAll",
+          "approval.viewLine",
+          "approval.compare",
+          "approval.submit",
+          "approval.withdraw",
+          "approval.approve",
+          "approval.reject",
+          "approval.requestChange",
+          "approval.revoke",
+          "approval.revise",
+          "status.viewAllLines",
+          "status.viewDetails",
+          "status.viewMedia",
+          "master.delete",
+          "master.import",
+          "master.export"
+        ],
+        "views": [
+          "dashboard",
+          "player",
+          "dispatch",
+          "productStatus",
+          "approval",
+          "editor",
+          "data"
+        ]
+      },
+      "id": "role:admin",
+      "role": "admin"
+    },
+    {
+      "data": {
+        "id": "rd",
+        "lines": [
+          "A",
+          "B",
+          "C"
+        ],
+        "name": "RD",
+        "permissions": [
+          "approval.viewAll",
+          "approval.viewLine",
+          "approval.compare",
+          "approval.withdraw",
+          "approval.approve",
+          "approval.reject",
+          "approval.requestChange",
+          "approval.revoke",
+          "approval.revise",
+          "approval.submit",
+          "status.viewAllLines",
+          "status.viewDetails",
+          "status.viewMedia",
+          "master.import",
+          "master.export"
+        ],
+        "views": [
+          "dashboard",
+          "player",
+          "dispatch",
+          "productStatus",
+          "approval",
+          "editor",
+          "data"
+        ]
+      },
+      "id": "role:rd",
+      "role": "rd"
+    },
+    {
+      "data": {
+        "id": "staff",
+        "lines": [
+          "A",
+          "B",
+          "C"
+        ],
+        "name": "製程人員（STAFF）",
+        "permissions": [
+          "approval.viewAll",
+          "approval.viewLine",
+          "approval.compare",
+          "approval.withdraw",
+          "approval.revise",
+          "approval.submit",
+          "status.viewDetails",
+          "status.viewMedia"
+        ],
+        "views": [
+          "dashboard",
+          "player",
+          "dispatch",
+          "productStatus",
+          "approval",
+          "editor",
+          "data"
+        ]
+      },
+      "id": "role:staff",
+      "role": "staff"
+    }
+  ],
+  "schemaVersion": 1
+}

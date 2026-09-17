@@ -1,0 +1,40 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -970,3 +970,6 @@
+ function imageSize(input) {
+   const type = detector(input);
++  if (["icns", "jxl", "heif"].includes(type)) {
++    throw new TypeError(`unsupported unsafe file type: ${type}`);
++  }
+   if (typeof type !== "undefined") {
+diff --git a/dist/fromFile.cjs b/dist/fromFile.cjs
+--- a/dist/fromFile.cjs
++++ b/dist/fromFile.cjs
+@@ -994,3 +994,6 @@
+ function imageSize(input) {
+   const type = detector(input);
++  if (["icns", "jxl", "heif"].includes(type)) {
++    throw new TypeError(`unsupported unsafe file type: ${type}`);
++  }
+   if (typeof type !== "undefined") {
+diff --git a/dist/fromFile.mjs b/dist/fromFile.mjs
+--- a/dist/fromFile.mjs
++++ b/dist/fromFile.mjs
+@@ -971,3 +971,6 @@
+ function imageSize(input) {
+   const type = detector(input);
++  if (["icns", "jxl", "heif"].includes(type)) {
++    throw new TypeError(`unsupported unsafe file type: ${type}`);
++  }
+   if (typeof type !== "undefined") {
+diff --git a/dist/index.mjs b/dist/index.mjs
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -966,3 +966,6 @@
+ function imageSize(input) {
+   const type = detector(input);
++  if (["icns", "jxl", "heif"].includes(type)) {
++    throw new TypeError(`unsupported unsafe file type: ${type}`);
++  }
+   if (typeof type !== "undefined") {

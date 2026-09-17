@@ -1,0 +1,292 @@
+{
+  "domain": "stages",
+  "records": [
+    {
+      "code": "A-6541",
+      "data": {
+        "assetNumber": "待補",
+        "code": "A-6541",
+        "id": "stage:A-6541",
+        "machine": "待補",
+        "name": "564",
+        "operators": null
+      },
+      "id": "stage:A-6541",
+      "lineId": "line:A"
+    },
+    {
+      "code": "A-ASSY",
+      "data": {
+        "assetNumber": "待設定",
+        "code": "A-ASSY",
+        "id": "stage:A-ASSY",
+        "machine": "待設定",
+        "name": "成品組裝",
+        "operators": null
+      },
+      "id": "stage:A-ASSY",
+      "lineId": "line:A"
+    },
+    {
+      "code": "A-CRIMP",
+      "data": {
+        "assetNumber": "待設定",
+        "code": "A-CRIMP",
+        "id": "stage:A-CRIMP",
+        "machine": "待設定",
+        "name": "接頭壓合",
+        "operators": null
+      },
+      "id": "stage:A-CRIMP",
+      "lineId": "line:A"
+    },
+    {
+      "code": "A-CUT",
+      "data": {
+        "assetNumber": "待設定",
+        "code": "A-CUT",
+        "id": "stage:A-CUT",
+        "machine": "待設定",
+        "name": "裁切備料",
+        "operators": null
+      },
+      "id": "stage:A-CUT",
+      "lineId": "line:A"
+    },
+    {
+      "code": "A-FINAL",
+      "data": {
+        "assetNumber": "待設定",
+        "code": "A-FINAL",
+        "id": "stage:A-FINAL",
+        "machine": "待設定",
+        "name": "最終檢驗",
+        "operators": null
+      },
+      "id": "stage:A-FINAL",
+      "lineId": "line:A"
+    },
+    {
+      "code": "A-PACKING",
+      "data": {
+        "assetNumber": "待設定",
+        "code": "A-PACKING",
+        "id": "stage:A-PACKING",
+        "machine": "待設定",
+        "name": "包裝作業",
+        "operators": null
+      },
+      "id": "stage:A-PACKING",
+      "lineId": "line:A"
+    },
+    {
+      "code": "B-ASSY",
+      "data": {
+        "assetNumber": "待設定",
+        "code": "B-ASSY",
+        "id": "stage:B-ASSY",
+        "machine": "待設定",
+        "name": "配件組裝",
+        "operators": null
+      },
+      "id": "stage:B-ASSY",
+      "lineId": "line:B"
+    },
+    {
+      "code": "B-FINAL",
+      "data": {
+        "assetNumber": "待設定",
+        "code": "B-FINAL",
+        "id": "stage:B-FINAL",
+        "machine": "待設定",
+        "name": "最終檢驗",
+        "operators": null
+      },
+      "id": "stage:B-FINAL",
+      "lineId": "line:B"
+    },
+    {
+      "code": "B-HCT",
+      "data": {
+        "assetNumber": "待設定",
+        "code": "B-HCT",
+        "id": "stage:B-HCT",
+        "machine": "待設定",
+        "name": "HCT 作業",
+        "operators": null
+      },
+      "id": "stage:B-HCT",
+      "lineId": "line:B"
+    },
+    {
+      "code": "B-PACKING",
+      "data": {
+        "assetNumber": "待設定",
+        "code": "B-PACKING",
+        "id": "stage:B-PACKING",
+        "machine": "待設定",
+        "name": "包裝作業",
+        "operators": null
+      },
+      "id": "stage:B-PACKING",
+      "lineId": "line:B"
+    },
+    {
+      "code": "B-PHAO",
+      "data": {
+        "assetNumber": "待設定",
+        "code": "B-PHAO",
+        "id": "stage:B-PHAO",
+        "machine": "待設定",
+        "name": "浮球組裝",
+        "operators": null
+      },
+      "id": "stage:B-PHAO",
+      "lineId": "line:B"
+    },
+    {
+      "code": "C-CHI",
+      "data": {
+        "assetNumber": "待補",
+        "code": "C-CHI",
+        "id": "stage:C-CHI",
+        "machine": "待補",
+        "name": "編線作業",
+        "operators": null
+      },
+      "id": "stage:C-CHI",
+      "lineId": "line:C"
+    },
+    {
+      "code": "C-DANHBONG",
+      "data": {
+        "assetNumber": "待補",
+        "code": "C-DANHBONG",
+        "id": "stage:C-DANHBONG",
+        "machine": "待補",
+        "name": "拋光作業",
+        "operators": null
+      },
+      "id": "stage:C-DANHBONG",
+      "lineId": "line:C"
+    },
+    {
+      "code": "C-FINAL",
+      "data": {
+        "assetNumber": "待補",
+        "code": "C-FINAL",
+        "id": "stage:C-FINAL",
+        "machine": "待補",
+        "name": "最終檢驗",
+        "operators": null
+      },
+      "id": "stage:C-FINAL",
+      "lineId": "line:C"
+    },
+    {
+      "code": "C-GIACONG",
+      "data": {
+        "assetNumber": "待補",
+        "code": "C-GIACONG",
+        "id": "stage:C-GIACONG",
+        "machine": "待補",
+        "name": "二次加工",
+        "operators": null
+      },
+      "id": "stage:C-GIACONG",
+      "lineId": "line:C"
+    },
+    {
+      "code": "C-INOX",
+      "data": {
+        "assetNumber": "待補",
+        "code": "C-INOX",
+        "id": "stage:C-INOX",
+        "machine": "待補",
+        "name": "不鏽鋼加工",
+        "operators": null
+      },
+      "id": "stage:C-INOX",
+      "lineId": "line:C"
+    },
+    {
+      "code": "C-KHOAN",
+      "data": {
+        "assetNumber": "待補",
+        "code": "C-KHOAN",
+        "id": "stage:C-KHOAN",
+        "machine": "待補",
+        "name": "鑽孔作業",
+        "operators": null
+      },
+      "id": "stage:C-KHOAN",
+      "lineId": "line:C"
+    },
+    {
+      "code": "C-MAI",
+      "data": {
+        "assetNumber": "待補",
+        "code": "C-MAI",
+        "id": "stage:C-MAI",
+        "machine": "待補",
+        "name": "研磨作業",
+        "operators": null
+      },
+      "id": "stage:C-MAI",
+      "lineId": "line:C"
+    },
+    {
+      "code": "C-PREP",
+      "data": {
+        "assetNumber": "待補",
+        "code": "C-PREP",
+        "id": "stage:C-PREP",
+        "machine": "待補",
+        "name": "原料準備",
+        "operators": null
+      },
+      "id": "stage:C-PREP",
+      "lineId": "line:C"
+    },
+    {
+      "code": "C-PVC",
+      "data": {
+        "assetNumber": "待補",
+        "code": "C-PVC",
+        "id": "stage:C-PVC",
+        "machine": "待補",
+        "name": "PVC 成型",
+        "operators": null
+      },
+      "id": "stage:C-PVC",
+      "lineId": "line:C"
+    },
+    {
+      "code": "C-RUA",
+      "data": {
+        "assetNumber": "待補",
+        "code": "C-RUA",
+        "id": "stage:C-RUA",
+        "machine": "待補",
+        "name": "清洗作業",
+        "operators": null
+      },
+      "id": "stage:C-RUA",
+      "lineId": "line:C"
+    },
+    {
+      "code": "C-TIEN",
+      "data": {
+        "assetNumber": "待補",
+        "code": "C-TIEN",
+        "id": "stage:C-TIEN",
+        "machine": "待補",
+        "name": "車削加工",
+        "operators": null
+      },
+      "id": "stage:C-TIEN",
+      "lineId": "line:C"
+    }
+  ],
+  "schemaVersion": 1
+}

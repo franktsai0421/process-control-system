@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict'),{createRequire}=require('node:module'),fs=require('node:fs'),path=require('node:path');
+const fromVinext=createRequire(path.join(fs.realpathSync('node_modules/vinext'),'package.json'));
+const file=fromVinext.resolve('image-size'),moduleApi=fromVinext('image-size');
+for(const name of ['index.cjs','index.mjs','fromFile.cjs','fromFile.mjs'])assert.ok(fs.readFileSync(path.join(path.dirname(file),name),'utf8').includes('unsupported unsafe file type'));
+const icns=Buffer.from('69636e73000000106963303700000000','hex');
+assert.throws(()=>moduleApi.imageSize(icns),/unsupported unsafe/);
+const heif=Buffer.alloc(24);heif.writeUInt32BE(24,0);heif.write('ftyp',4);heif.write('heic',8);
+assert.throws(()=>moduleApi.imageSize(heif),/unsupported unsafe/);
+const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Y9Zl1sAAAAASUVORK5CYII=','base64');
+assert.equal(moduleApi.imageSize(png).width,1);
+console.log('PASS: patched CJS/ESM and file entrypoints reject unsafe image parsers; PNG stays supported');

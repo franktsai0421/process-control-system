@@ -1,0 +1,23 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {DatabaseSync} from 'node:sqlite';
+const directory=path.resolve('work/release-7000');
+fs.mkdirSync(directory,{recursive:true});
+const sources=fs.readdirSync('.wrangler/state/v3/d1/miniflare-D1DatabaseObject').filter(n=>n.endsWith('.sqlite')&&n!=='metadata.sqlite');
+if(sources.length!==1)throw Error('Expected one local application database');
+const db=new DatabaseSync(path.join('.wrangler/state/v3/d1/miniflare-D1DatabaseObject',sources[0]),{readOnly:true});
+const target=path.join(directory,'local-before.sqlite');
+if(!fs.existsSync(target))db.exec(`VACUUM INTO '${target.replaceAll("'","''")}'`);
+const row=db.prepare('SELECT revision,"values" FROM shared_state WHERE id=1').get();
+const state={revision:row.revision,values:JSON.parse(row.values)};
+const digest=crypto.createHash('sha256').update(JSON.stringify(state.values)).digest('hex');
+if(!fs.existsSync(path.join(directory,'local-state.json')))fs.writeFileSync(path.join(directory,'local-state.json'),JSON.stringify(state));
+const assets=[];
+function walk(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const f=path.join(dir,e.name);if(e.isDirectory())walk(f);else{const b=fs.readFileSync(f);assets.push({path:f.replaceAll('\\','/'),bytes:b.length,sha256:crypto.createHash('sha256').update(b).digest('hex')});}}}
+walk('public/process');
+fs.writeFileSync(path.join(directory,'assets-manifest.json'),JSON.stringify(assets,null,2));
+const summary={revision:state.revision,sha256:digest,keys:Object.fromEntries(Object.entries(state.values).map(([k,v])=>[k,Buffer.byteLength(v)])),assets:assets.length,assetBytes:assets.reduce((n,a)=>n+a.bytes,0),backups:db.prepare('SELECT COUNT(*) n FROM state_backups').get().n};
+fs.writeFileSync(path.join(directory,'local-manifest.json'),JSON.stringify(summary,null,2));
+console.log(JSON.stringify(summary,null,2));
+db.close();

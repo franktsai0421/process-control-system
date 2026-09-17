@@ -1,0 +1,13 @@
+{
+  "domain": "settings",
+  "records": [
+    {
+      "data": {
+        "AB": "AB 產線與類別",
+        "C": "C 產線與類別"
+      },
+      "id": "catalog-labels"
+    }
+  ],
+  "schemaVersion": 1
+}

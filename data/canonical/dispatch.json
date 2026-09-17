@@ -1,0 +1,25 @@
+{
+  "domain": "dispatch",
+  "records": [
+    {
+      "id": "dispatch:A",
+      "lineId": "line:A",
+      "productIds": [
+        "product:105B100051",
+        "product:654564",
+        "product:105B100101"
+      ]
+    },
+    {
+      "id": "dispatch:B",
+      "lineId": "line:B",
+      "productIds": []
+    },
+    {
+      "id": "dispatch:C",
+      "lineId": "line:C",
+      "productIds": []
+    }
+  ],
+  "schemaVersion": 1
+}

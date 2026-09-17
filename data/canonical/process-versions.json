@@ -1,0 +1,5713 @@
+{
+  "domain": "processVersions",
+  "records": [
+    {
+      "data": {
+        "category": "56464654",
+        "createdAt": "2026-09-07T08:20:19.260Z",
+        "id": "PV-1788769219260",
+        "line": "A",
+        "number": 1,
+        "parentVersionId": null,
+        "reviewNote": "版本內容確認完成",
+        "reviewedAt": "2026-09-07T08:21:57.972Z",
+        "stages": {
+          "A-6541": [
+            {
+              "bomItems": [],
+              "bomProductCode": "654564",
+              "bomSelections": {},
+              "id": "56464654-A-6541-1788769229498-1",
+              "instructionSteps": [
+                {
+                  "standard": "564",
+                  "text": "6541"
+                },
+                {
+                  "standard": "",
+                  "text": ""
+                }
+              ],
+              "instructions": "1. 6541｜標準：564",
+              "ipqc": "564",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "流程 1",
+              "nextIds": [
+                "56464654-A-6541-1788769290070-2"
+              ],
+              "noteProductCode": "654564",
+              "number": "A-6541-01",
+              "people": 1,
+              "productCodes": [
+                "654564"
+              ],
+              "productInstructionSteps": {
+                "654564": []
+              },
+              "productInstructions": {
+                "654564": ""
+              },
+              "stageCode": "A-6541",
+              "templateId": "",
+              "x": 30,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "654564",
+              "bomSelections": {},
+              "id": "56464654-A-6541-1788769290070-2",
+              "instructionSteps": [
+                {
+                  "standard": "564",
+                  "text": "564"
+                },
+                {
+                  "standard": "",
+                  "text": ""
+                }
+              ],
+              "instructions": "1. 564｜標準：564",
+              "ipqc": "564",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "流程 2",
+              "nextIds": [],
+              "noteProductCode": "654564",
+              "number": "A-6541-02",
+              "people": 1,
+              "productCodes": [
+                "654564"
+              ],
+              "productInstructionSteps": {
+                "654564": []
+              },
+              "productInstructions": {
+                "654564": ""
+              },
+              "stageCode": "A-6541",
+              "templateId": "",
+              "x": 250,
+              "y": 30
+            }
+          ],
+          "A-CUT": [
+            {
+              "bomItems": [],
+              "bomProductCode": "654564",
+              "bomSelections": {},
+              "id": "56464654-A-CUT-1788769165424-1",
+              "instructionSteps": [
+                {
+                  "standard": "564",
+                  "text": "5465"
+                },
+                {
+                  "standard": "",
+                  "text": ""
+                }
+              ],
+              "instructions": "1. 5465｜標準：564",
+              "ipqc": "564",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "人工組裝",
+              "nextIds": [],
+              "noteProductCode": "654564",
+              "number": "A-CUT-01",
+              "people": 2,
+              "productCodes": [
+                "654564"
+              ],
+              "productInstructionSteps": {
+                "654564": []
+              },
+              "productInstructions": {
+                "654564": ""
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-1",
+              "x": 24,
+              "y": 26
+            }
+          ],
+          "A-FINAL": [
+            {
+              "bomItems": [],
+              "bomProductCode": "654564",
+              "bomSelections": {},
+              "id": "56464654-A-FINAL-1788769165424-1",
+              "instructionSteps": [
+                {
+                  "standard": "56465",
+                  "text": "54654"
+                },
+                {
+                  "standard": "",
+                  "text": ""
+                }
+              ],
+              "instructions": "1. 54654｜標準：56465",
+              "ipqc": "56465",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "最終檢驗",
+              "nextIds": [],
+              "noteProductCode": "654564",
+              "number": "A-FINAL-01",
+              "people": 2,
+              "productCodes": [
+                "654564"
+              ],
+              "productInstructionSteps": {
+                "654564": []
+              },
+              "productInstructions": {
+                "654564": ""
+              },
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 24,
+              "y": 26
+            }
+          ]
+        },
+        "status": "approved",
+        "updatedAt": "2026-09-07T08:21:51.296Z"
+      },
+      "id": "PV-1788769219260",
+      "productIds": [
+        "product:654564"
+      ],
+      "stageIds": [
+        "stage:A-6541",
+        "stage:A-CUT",
+        "stage:A-FINAL"
+      ]
+    },
+    {
+      "data": {
+        "category": "BORUAXE1021",
+        "createdAt": "2026-09-11T04:51:42.786Z",
+        "id": "PV-1789102302786",
+        "line": "A",
+        "number": 5,
+        "parentVersionId": "SAMPLE-1787980310182-4",
+        "reviewNote": "版本內容確認完成",
+        "reviewedAt": "2026-09-11T04:51:50.962Z",
+        "stages": {
+          "A-ASSY": [
+            {
+              "bomItems": [
+                "3080129",
+                "3080129",
+                "3080129"
+              ],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [
+                  "3080129"
+                ],
+                "105B100081": [
+                  "3080129"
+                ],
+                "105B100101": [
+                  "3080129"
+                ]
+              },
+              "id": "BORUAXE1021-A-ASSY-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-ASSY-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-ASSY-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 30,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-ASSY-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-ASSY-3"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-ASSY-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 370,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-ASSY-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝確認",
+              "nextIds": [],
+              "noteProductCode": "105B100051",
+              "number": "A-ASSY-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 710,
+              "y": 30
+            }
+          ],
+          "A-CRIMP": [
+            {
+              "bomItems": [
+                "405MC013",
+                "405MC013",
+                "405MC013"
+              ],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [
+                  "405MC013"
+                ],
+                "105B100081": [
+                  "405MC013"
+                ],
+                "105B100101": [
+                  "405MC013"
+                ]
+              },
+              "id": "BORUAXE1021-A-CRIMP-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-CRIMP-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CRIMP-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 30,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-CRIMP-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-CRIMP-3"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CRIMP-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 370,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-CRIMP-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合確認",
+              "nextIds": [],
+              "noteProductCode": "105B100051",
+              "number": "A-CRIMP-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 710,
+              "y": 30
+            }
+          ],
+          "A-CUT": [
+            {
+              "bomItems": [
+                "3060504",
+                "3060301",
+                "3080601",
+                "403XX007",
+                "401CT003",
+                "404XX005",
+                "3080602",
+                "3080603",
+                "3080203",
+                "3060701",
+                "3060805",
+                "3080123",
+                "3060504",
+                "3060301",
+                "3080601",
+                "403XX007",
+                "401CT003",
+                "404XX005",
+                "3080602",
+                "3080603",
+                "3080203",
+                "3060701",
+                "3060805",
+                "3080123",
+                "3060504",
+                "3060301",
+                "3080601",
+                "403XX007",
+                "401CT003",
+                "404XX005",
+                "3080602",
+                "3080603",
+                "3080203",
+                "3060701",
+                "3060805",
+                "3080123"
+              ],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [
+                  "3060504",
+                  "3060301",
+                  "3080601",
+                  "403XX007",
+                  "401CT003",
+                  "404XX005",
+                  "3080602",
+                  "3080603",
+                  "3080203",
+                  "3060701",
+                  "3060805",
+                  "3080123"
+                ],
+                "105B100081": [
+                  "3060504",
+                  "3060301",
+                  "3080601",
+                  "403XX007",
+                  "401CT003",
+                  "404XX005",
+                  "3080602",
+                  "3080603",
+                  "3080203",
+                  "3060701",
+                  "3060805",
+                  "3080123"
+                ],
+                "105B100101": [
+                  "3060504",
+                  "3060301",
+                  "3080601",
+                  "403XX007",
+                  "401CT003",
+                  "404XX005",
+                  "3080602",
+                  "3080603",
+                  "3080203",
+                  "3060701",
+                  "3060805",
+                  "3080123"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 人工組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 人工組裝"
+                }
+              ],
+              "instructions": "1. 確認 人工組裝 作業前物料與設備\n2. 依標準姿勢完成 人工組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "人工組裝（核准版）",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-1",
+              "x": 30,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 裁切 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 裁切"
+                }
+              ],
+              "instructions": "1. 確認 裁切 作業前物料與設備\n2. 依標準姿勢完成 裁切",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:7802c0e790330186af4a1975725415a498b4d2234aca516c9ee59a5586e6e966",
+              "mediaItems": [
+                {
+                  "name": "hose-cutting.png",
+                  "src": "asset:7802c0e790330186af4a1975725415a498b4d2234aca516c9ee59a5586e6e966",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-cutting.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "裁切",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-3"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-2",
+              "x": 370,
+              "y": 280
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 機器組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 機器組裝"
+                }
+              ],
+              "instructions": "1. 確認 機器組裝 作業前物料與設備\n2. 依標準姿勢完成 機器組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "M-A-001",
+              "machineIds": [
+                "M-A-001",
+                "M-A-003",
+                "M-A-006"
+              ],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "machine",
+              "name": "機器組裝",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-4"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-03",
+              "people": 1,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-3",
+              "x": 710,
+              "y": 280
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-4",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 封口 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 封口"
+                }
+              ],
+              "instructions": "1. 確認 封口 作業前物料與設備\n2. 依標準姿勢完成 封口",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "封口",
+              "nextIds": [],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-04",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-4",
+              "x": 1050,
+              "y": 280
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {},
+              "id": "BORUAXE1021-A-CUT-1789101766760-5",
+              "instructionSteps": [
+                {
+                  "standard": "15231",
+                  "text": "51523"
+                }
+              ],
+              "instructions": "",
+              "ipqc": "",
+              "machineDetails": [
+                {
+                  "asset": "",
+                  "id": "EQ-dfddd5bdc70e77c2",
+                  "kind": "machine-assembly",
+                  "line": "A",
+                  "machineType": "",
+                  "mediaItems": [
+                    {
+                      "name": "12a96010a48ff5964454.webp",
+                      "src": "asset:12a96010a48ff5964454c7345d892db523c12c18e4199c7c80c3fa45c9102c73",
+                      "type": "image/webp"
+                    }
+                  ],
+                  "name": "切管機-02",
+                  "nameVi": "Máy cắt dây-02",
+                  "no": "EQ-dfddd5bdc70e77c2",
+                  "note": "同類型「切管機」共 4 台 / Cùng loại “切管機”: 4 máy\n編號 / Mã máy: ADX041, ADX010, AHS001, ADX008",
+                  "number": "ADX010",
+                  "people": 1,
+                  "purpose": "裁切條紋管及不鏽鋼管",
+                  "purposeVi": "Cắt dây sọc, dây inox",
+                  "source": {
+                    "cells": {
+                      "B": "LINE A",
+                      "C": "A-CUT",
+                      "E": "切管機-02",
+                      "F": "Máy cắt dây-02",
+                      "G": "ADX010",
+                      "H": "裁切條紋管及不鏽鋼管",
+                      "I": "Cắt dây sọc, dây inox",
+                      "J": "同類型「切管機」共 4 台 / Cùng loại “切管機”: 4 máy\n編號 / Mã máy: ADX041, ADX010, AHS001, ADX008"
+                    },
+                    "number": "ADX010",
+                    "photoCode": "",
+                    "row": 11,
+                    "sheet": "機器設定表",
+                    "stage": "A-CUT"
+                  },
+                  "stageCode": "A-CUT"
+                },
+                {
+                  "asset": "",
+                  "id": "EQ-f3ebc06abba520d8",
+                  "kind": "machine-assembly",
+                  "line": "A",
+                  "machineType": "",
+                  "mediaItems": [
+                    {
+                      "name": "520c86f20ebcf676485c.webp",
+                      "src": "asset:520c86f20ebcf676485cebef56486ae0fe2d07aa4abb4442079555ee12184cfc",
+                      "type": "image/webp"
+                    }
+                  ],
+                  "name": "切管機-01",
+                  "nameVi": "Máy cắt-01",
+                  "no": "EQ-f3ebc06abba520d8",
+                  "note": "同類型「切管機」共 4 台 / Cùng loại “切管機”: 4 máy\n編號 / Mã máy: ADX041, ADX010, AHS001, ADX008",
+                  "number": "ADX008",
+                  "people": 1,
+                  "purpose": "裁切條紋管及 PVC 管",
+                  "purposeVi": "Cắt dây sọc, dây PVC",
+                  "source": {
+                    "cells": {
+                      "B": "LINE A",
+                      "C": "A-CUT",
+                      "E": "切管機-01",
+                      "F": "Máy cắt-01",
+                      "G": "ADX008",
+                      "H": "裁切條紋管及 PVC 管",
+                      "I": "Cắt dây sọc, dây PVC",
+                      "J": "同類型「切管機」共 4 台 / Cùng loại “切管機”: 4 máy\n編號 / Mã máy: ADX041, ADX010, AHS001, ADX008"
+                    },
+                    "number": "ADX008",
+                    "photoCode": "",
+                    "row": 13,
+                    "sheet": "機器設定表",
+                    "stage": "A-CUT"
+                  },
+                  "stageCode": "A-CUT"
+                }
+              ],
+              "machineId": "EQ-dfddd5bdc70e77c2",
+              "machineIds": [
+                "EQ-dfddd5bdc70e77c2",
+                "EQ-f3ebc06abba520d8"
+              ],
+              "media": "asset:7c325abd91de080cd84780a4b323109df17f8a4c8c42ac5ca323e6604814aac9",
+              "mediaItems": [
+                {
+                  "name": "machine-assembly.png",
+                  "src": "asset:7c325abd91de080cd84780a4b323109df17f8a4c8c42ac5ca323e6604814aac9",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "machine-assembly.png",
+              "mediaType": "image/png",
+              "mode": "machine",
+              "name": "機器設定",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-05",
+              "people": 1,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-FLOW-04",
+              "x": 30,
+              "y": 280
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {},
+              "id": "BORUAXE1021-A-CUT-1789101903417-6",
+              "instructionSteps": [
+                {
+                  "standard": "5646",
+                  "text": "564"
+                },
+                {
+                  "standard": "",
+                  "text": ""
+                }
+              ],
+              "instructions": "1. 564｜標準：5646",
+              "ipqc": "5646",
+              "machineDetails": [
+                {
+                  "asset": "",
+                  "id": "EQ-107c01a63bc19217",
+                  "kind": "machine-assembly",
+                  "line": "A",
+                  "machineType": "",
+                  "mediaItems": [
+                    {
+                      "name": "3d5d6870f9d04e4740ea.webp",
+                      "src": "asset:3d5d6870f9d04e4740eab0177244a1ac09951435b121dc03eba268a85f9db958",
+                      "type": "image/webp"
+                    }
+                  ],
+                  "name": "繞管機-03",
+                  "nameVi": "Máy quấn dây-03",
+                  "no": "EQ-107c01a63bc19217",
+                  "note": "同類型「繞管機」共 3 台 / Cùng loại “繞管機”: 3 máy\n編號 / Mã máy: APU009, APU004, APU008",
+                  "number": "APU009",
+                  "people": 1,
+                  "purpose": "捲繞綠色灌溉管",
+                  "purposeVi": "Quấn dây tưới cây xanh",
+                  "source": {
+                    "cells": {
+                      "B": "LINE A",
+                      "C": "A-CUT",
+                      "E": "繞管機-03",
+                      "F": "Máy quấn dây-03",
+                      "G": "APU009",
+                      "H": "捲繞綠色灌溉管",
+                      "I": "Quấn dây tưới cây xanh",
+                      "J": "同類型「繞管機」共 3 台 / Cùng loại “繞管機”: 3 máy\n編號 / Mã máy: APU009, APU004, APU008"
+                    },
+                    "number": "APU009",
+                    "photoCode": "",
+                    "row": 5,
+                    "sheet": "機器設定表",
+                    "stage": "A-CUT"
+                  },
+                  "stageCode": "A-CUT"
+                },
+                {
+                  "asset": "",
+                  "id": "EQ-f3ebc06abba520d8",
+                  "kind": "machine-assembly",
+                  "line": "A",
+                  "machineType": "",
+                  "mediaItems": [
+                    {
+                      "name": "520c86f20ebcf676485c.webp",
+                      "src": "asset:520c86f20ebcf676485cebef56486ae0fe2d07aa4abb4442079555ee12184cfc",
+                      "type": "image/webp"
+                    }
+                  ],
+                  "name": "切管機-01",
+                  "nameVi": "Máy cắt-01",
+                  "no": "EQ-f3ebc06abba520d8",
+                  "note": "同類型「切管機」共 4 台 / Cùng loại “切管機”: 4 máy\n編號 / Mã máy: ADX041, ADX010, AHS001, ADX008",
+                  "number": "ADX008",
+                  "people": 1,
+                  "purpose": "裁切條紋管及 PVC 管",
+                  "purposeVi": "Cắt dây sọc, dây PVC",
+                  "source": {
+                    "cells": {
+                      "B": "LINE A",
+                      "C": "A-CUT",
+                      "E": "切管機-01",
+                      "F": "Máy cắt-01",
+                      "G": "ADX008",
+                      "H": "裁切條紋管及 PVC 管",
+                      "I": "Cắt dây sọc, dây PVC",
+                      "J": "同類型「切管機」共 4 台 / Cùng loại “切管機”: 4 máy\n編號 / Mã máy: ADX041, ADX010, AHS001, ADX008"
+                    },
+                    "number": "ADX008",
+                    "photoCode": "",
+                    "row": 13,
+                    "sheet": "機器設定表",
+                    "stage": "A-CUT"
+                  },
+                  "stageCode": "A-CUT"
+                }
+              ],
+              "machineId": "EQ-107c01a63bc19217",
+              "machineIds": [
+                "EQ-107c01a63bc19217",
+                "EQ-f3ebc06abba520d8"
+              ],
+              "media": "asset:7c325abd91de080cd84780a4b323109df17f8a4c8c42ac5ca323e6604814aac9",
+              "mediaItems": [
+                {
+                  "name": "machine-assembly.png",
+                  "src": "asset:7c325abd91de080cd84780a4b323109df17f8a4c8c42ac5ca323e6604814aac9",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "machine-assembly.png",
+              "mediaType": "image/png",
+              "mode": "machine",
+              "name": "機器設定",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-06",
+              "people": 1,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-FLOW-04",
+              "x": 30,
+              "y": 530
+            }
+          ],
+          "A-FINAL": [
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "BORUAXE1021-A-FINAL-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-FINAL-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-FINAL-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 30,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-FINAL-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-FINAL-3"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-FINAL-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 370,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-FINAL-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗確認",
+              "nextIds": [],
+              "noteProductCode": "105B100051",
+              "number": "A-FINAL-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 710,
+              "y": 30
+            }
+          ],
+          "A-PACKING": [
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "BORUAXE1021-A-PACKING-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-PACKING-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-PACKING-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 30,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-PACKING-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-PACKING-3"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-PACKING-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 370,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-PACKING-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業確認",
+              "nextIds": [],
+              "noteProductCode": "105B100051",
+              "number": "A-PACKING-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 710,
+              "y": 30
+            }
+          ]
+        },
+        "status": "approved",
+        "updatedAt": "2026-09-11T04:51:43.641Z"
+      },
+      "id": "PV-1789102302786",
+      "productIds": [
+        "product:105B100051",
+        "product:105B100081",
+        "product:105B100101"
+      ],
+      "stageIds": [
+        "stage:A-ASSY",
+        "stage:A-CRIMP",
+        "stage:A-CUT",
+        "stage:A-FINAL",
+        "stage:A-PACKING"
+      ]
+    },
+    {
+      "data": {
+        "category": "BORUAXE1021",
+        "createdAt": "2026-08-24T05:11:50.182Z",
+        "id": "SAMPLE-1787980310182-1",
+        "line": "A",
+        "number": 1,
+        "stages": {
+          "A-ASSY": [
+            {
+              "bomItems": [
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100081": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100101": [
+                  "401CT003",
+                  "3080129"
+                ]
+              },
+              "id": "BORUAXE1021-A-ASSY-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝",
+              "nextIds": [
+                "SAMPLE-1787980310182-1-A-ASSY-2"
+              ],
+              "number": "A-ASSY-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100081": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100101": [
+                  "401CT003",
+                  "3080129"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-1-A-ASSY-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-1-A-ASSY-3"
+              ],
+              "number": "A-ASSY-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100081": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100101": [
+                  "401CT003",
+                  "3080129"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-1-A-ASSY-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝確認",
+              "nextIds": [],
+              "number": "A-ASSY-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ],
+          "A-CRIMP": [
+            {
+              "bomItems": [
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100081": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100101": [
+                  "404XX005",
+                  "405MC013"
+                ]
+              },
+              "id": "BORUAXE1021-A-CRIMP-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合",
+              "nextIds": [
+                "SAMPLE-1787980310182-1-A-CRIMP-2"
+              ],
+              "number": "A-CRIMP-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100081": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100101": [
+                  "404XX005",
+                  "405MC013"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-1-A-CRIMP-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-1-A-CRIMP-3"
+              ],
+              "number": "A-CRIMP-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100081": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100101": [
+                  "404XX005",
+                  "405MC013"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-1-A-CRIMP-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合確認",
+              "nextIds": [],
+              "number": "A-CRIMP-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ],
+          "A-CUT": [
+            {
+              "bomItems": [
+                "3060504",
+                "3080203",
+                "3060504",
+                "3080203",
+                "3060504",
+                "3080203"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3060504",
+                  "3080203"
+                ],
+                "105B100081": [
+                  "3060504",
+                  "3080203"
+                ],
+                "105B100101": [
+                  "3060504",
+                  "3080203"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 人工組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 人工組裝"
+                }
+              ],
+              "instructions": "1. 確認 人工組裝 作業前物料與設備\n2. 依標準姿勢完成 人工組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "人工組裝",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-2"
+              ],
+              "number": "A-CUT-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3060301",
+                "3060701",
+                "3060301",
+                "3060701",
+                "3060301",
+                "3060701"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3060301",
+                  "3060701"
+                ],
+                "105B100081": [
+                  "3060301",
+                  "3060701"
+                ],
+                "105B100101": [
+                  "3060301",
+                  "3060701"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 裁切 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 裁切"
+                }
+              ],
+              "instructions": "1. 確認 裁切 作業前物料與設備\n2. 依標準姿勢完成 裁切",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:7802c0e790330186af4a1975725415a498b4d2234aca516c9ee59a5586e6e966",
+              "mediaItems": [
+                {
+                  "name": "hose-cutting.png",
+                  "src": "asset:7802c0e790330186af4a1975725415a498b4d2234aca516c9ee59a5586e6e966",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-cutting.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "裁切",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-3"
+              ],
+              "number": "A-CUT-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-2",
+              "x": 202,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3080601",
+                "3060805",
+                "3080601",
+                "3060805",
+                "3080601",
+                "3060805"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080601",
+                  "3060805"
+                ],
+                "105B100081": [
+                  "3080601",
+                  "3060805"
+                ],
+                "105B100101": [
+                  "3080601",
+                  "3060805"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 機器組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 機器組裝"
+                }
+              ],
+              "instructions": "1. 確認 機器組裝 作業前物料與設備\n2. 依標準姿勢完成 機器組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "M-A-001",
+              "machineIds": [
+                "M-A-001",
+                "M-A-003",
+                "M-A-006"
+              ],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "machine",
+              "name": "機器組裝",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-4"
+              ],
+              "number": "A-CUT-03",
+              "people": 1,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-3",
+              "x": 380,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "403XX007",
+                "3080123",
+                "403XX007",
+                "3080123",
+                "403XX007",
+                "3080123"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "403XX007",
+                  "3080123"
+                ],
+                "105B100081": [
+                  "403XX007",
+                  "3080123"
+                ],
+                "105B100101": [
+                  "403XX007",
+                  "3080123"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-4",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 封口 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 封口"
+                }
+              ],
+              "instructions": "1. 確認 封口 作業前物料與設備\n2. 依標準姿勢完成 封口",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "封口",
+              "nextIds": [],
+              "number": "A-CUT-04",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-4",
+              "x": 558,
+              "y": 26
+            }
+          ],
+          "A-FINAL": [
+            {
+              "bomItems": [
+                "3080603",
+                "3080603",
+                "3080603"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080603"
+                ],
+                "105B100081": [
+                  "3080603"
+                ],
+                "105B100101": [
+                  "3080603"
+                ]
+              },
+              "id": "BORUAXE1021-A-FINAL-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗",
+              "nextIds": [
+                "SAMPLE-1787980310182-1-A-FINAL-2"
+              ],
+              "number": "A-FINAL-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3080603",
+                "3080603",
+                "3080603"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080603"
+                ],
+                "105B100081": [
+                  "3080603"
+                ],
+                "105B100101": [
+                  "3080603"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-1-A-FINAL-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-1-A-FINAL-3"
+              ],
+              "number": "A-FINAL-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "3080603",
+                "3080603",
+                "3080603"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080603"
+                ],
+                "105B100081": [
+                  "3080603"
+                ],
+                "105B100101": [
+                  "3080603"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-1-A-FINAL-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗確認",
+              "nextIds": [],
+              "number": "A-FINAL-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ],
+          "A-PACKING": [
+            {
+              "bomItems": [
+                "3080602",
+                "3080602",
+                "3080602"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080602"
+                ],
+                "105B100081": [
+                  "3080602"
+                ],
+                "105B100101": [
+                  "3080602"
+                ]
+              },
+              "id": "BORUAXE1021-A-PACKING-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業",
+              "nextIds": [
+                "SAMPLE-1787980310182-1-A-PACKING-2"
+              ],
+              "number": "A-PACKING-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3080602",
+                "3080602",
+                "3080602"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080602"
+                ],
+                "105B100081": [
+                  "3080602"
+                ],
+                "105B100101": [
+                  "3080602"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-1-A-PACKING-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-1-A-PACKING-3"
+              ],
+              "number": "A-PACKING-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "3080602",
+                "3080602",
+                "3080602"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080602"
+                ],
+                "105B100081": [
+                  "3080602"
+                ],
+                "105B100101": [
+                  "3080602"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-1-A-PACKING-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業確認",
+              "nextIds": [],
+              "number": "A-PACKING-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ]
+        },
+        "status": "superseded"
+      },
+      "id": "SAMPLE-1787980310182-1",
+      "productIds": [
+        "product:105B100051",
+        "product:105B100081",
+        "product:105B100101"
+      ],
+      "stageIds": [
+        "stage:A-ASSY",
+        "stage:A-CRIMP",
+        "stage:A-CUT",
+        "stage:A-FINAL",
+        "stage:A-PACKING"
+      ]
+    },
+    {
+      "data": {
+        "category": "BORUAXE1021",
+        "createdAt": "2026-08-27T05:11:50.182Z",
+        "id": "SAMPLE-1787980310182-2",
+        "line": "A",
+        "number": 2,
+        "stages": {
+          "A-ASSY": [
+            {
+              "bomItems": [
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100081": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100101": [
+                  "401CT003",
+                  "3080129"
+                ]
+              },
+              "id": "BORUAXE1021-A-ASSY-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-ASSY-2"
+              ],
+              "number": "A-ASSY-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100081": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100101": [
+                  "401CT003",
+                  "3080129"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-2-A-ASSY-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-ASSY-3"
+              ],
+              "number": "A-ASSY-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100081": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100101": [
+                  "401CT003",
+                  "3080129"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-2-A-ASSY-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝確認",
+              "nextIds": [],
+              "number": "A-ASSY-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ],
+          "A-CRIMP": [
+            {
+              "bomItems": [
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100081": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100101": [
+                  "404XX005",
+                  "405MC013"
+                ]
+              },
+              "id": "BORUAXE1021-A-CRIMP-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-CRIMP-2"
+              ],
+              "number": "A-CRIMP-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100081": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100101": [
+                  "404XX005",
+                  "405MC013"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-2-A-CRIMP-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-CRIMP-3"
+              ],
+              "number": "A-CRIMP-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100081": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100101": [
+                  "404XX005",
+                  "405MC013"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-2-A-CRIMP-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合確認",
+              "nextIds": [],
+              "number": "A-CRIMP-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ],
+          "A-CUT": [
+            {
+              "bomItems": [
+                "3060504",
+                "3080203",
+                "3060504",
+                "3080203",
+                "3060504",
+                "3080203"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3060504",
+                  "3080203"
+                ],
+                "105B100081": [
+                  "3060504",
+                  "3080203"
+                ],
+                "105B100101": [
+                  "3060504",
+                  "3080203"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 人工組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 人工組裝"
+                }
+              ],
+              "instructions": "1. 確認 人工組裝 作業前物料與設備\n2. 依標準姿勢完成 人工組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "人工組裝（核准版）",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-2"
+              ],
+              "number": "A-CUT-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3060301",
+                "3060701",
+                "3060301",
+                "3060701",
+                "3060301",
+                "3060701"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3060301",
+                  "3060701"
+                ],
+                "105B100081": [
+                  "3060301",
+                  "3060701"
+                ],
+                "105B100101": [
+                  "3060301",
+                  "3060701"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 裁切 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 裁切"
+                }
+              ],
+              "instructions": "1. 確認 裁切 作業前物料與設備\n2. 依標準姿勢完成 裁切",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:7802c0e790330186af4a1975725415a498b4d2234aca516c9ee59a5586e6e966",
+              "mediaItems": [
+                {
+                  "name": "hose-cutting.png",
+                  "src": "asset:7802c0e790330186af4a1975725415a498b4d2234aca516c9ee59a5586e6e966",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-cutting.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "裁切",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-3"
+              ],
+              "number": "A-CUT-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-2",
+              "x": 202,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3080601",
+                "3060805",
+                "3080601",
+                "3060805",
+                "3080601",
+                "3060805"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080601",
+                  "3060805"
+                ],
+                "105B100081": [
+                  "3080601",
+                  "3060805"
+                ],
+                "105B100101": [
+                  "3080601",
+                  "3060805"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 機器組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 機器組裝"
+                }
+              ],
+              "instructions": "1. 確認 機器組裝 作業前物料與設備\n2. 依標準姿勢完成 機器組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "M-A-001",
+              "machineIds": [
+                "M-A-001",
+                "M-A-003",
+                "M-A-006"
+              ],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "machine",
+              "name": "機器組裝",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-4"
+              ],
+              "number": "A-CUT-03",
+              "people": 1,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-3",
+              "x": 380,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "403XX007",
+                "3080123",
+                "403XX007",
+                "3080123",
+                "403XX007",
+                "3080123"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "403XX007",
+                  "3080123"
+                ],
+                "105B100081": [
+                  "403XX007",
+                  "3080123"
+                ],
+                "105B100101": [
+                  "403XX007",
+                  "3080123"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-4",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 封口 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 封口"
+                }
+              ],
+              "instructions": "1. 確認 封口 作業前物料與設備\n2. 依標準姿勢完成 封口",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "封口",
+              "nextIds": [],
+              "number": "A-CUT-04",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-4",
+              "x": 558,
+              "y": 26
+            }
+          ],
+          "A-FINAL": [
+            {
+              "bomItems": [
+                "3080603",
+                "3080603",
+                "3080603"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080603"
+                ],
+                "105B100081": [
+                  "3080603"
+                ],
+                "105B100101": [
+                  "3080603"
+                ]
+              },
+              "id": "BORUAXE1021-A-FINAL-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-FINAL-2"
+              ],
+              "number": "A-FINAL-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3080603",
+                "3080603",
+                "3080603"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080603"
+                ],
+                "105B100081": [
+                  "3080603"
+                ],
+                "105B100101": [
+                  "3080603"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-2-A-FINAL-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-FINAL-3"
+              ],
+              "number": "A-FINAL-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "3080603",
+                "3080603",
+                "3080603"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080603"
+                ],
+                "105B100081": [
+                  "3080603"
+                ],
+                "105B100101": [
+                  "3080603"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-2-A-FINAL-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗確認",
+              "nextIds": [],
+              "number": "A-FINAL-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ],
+          "A-PACKING": [
+            {
+              "bomItems": [
+                "3080602",
+                "3080602",
+                "3080602"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080602"
+                ],
+                "105B100081": [
+                  "3080602"
+                ],
+                "105B100101": [
+                  "3080602"
+                ]
+              },
+              "id": "BORUAXE1021-A-PACKING-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-PACKING-2"
+              ],
+              "number": "A-PACKING-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3080602",
+                "3080602",
+                "3080602"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080602"
+                ],
+                "105B100081": [
+                  "3080602"
+                ],
+                "105B100101": [
+                  "3080602"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-2-A-PACKING-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-PACKING-3"
+              ],
+              "number": "A-PACKING-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "3080602",
+                "3080602",
+                "3080602"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080602"
+                ],
+                "105B100081": [
+                  "3080602"
+                ],
+                "105B100101": [
+                  "3080602"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-2-A-PACKING-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業確認",
+              "nextIds": [],
+              "number": "A-PACKING-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ]
+        },
+        "status": "superseded"
+      },
+      "id": "SAMPLE-1787980310182-2",
+      "productIds": [
+        "product:105B100051",
+        "product:105B100081",
+        "product:105B100101"
+      ],
+      "stageIds": [
+        "stage:A-ASSY",
+        "stage:A-CRIMP",
+        "stage:A-CUT",
+        "stage:A-FINAL",
+        "stage:A-PACKING"
+      ]
+    },
+    {
+      "data": {
+        "category": "BORUAXE1021",
+        "createdAt": "2026-08-28T05:11:50.182Z",
+        "id": "SAMPLE-1787980310182-3",
+        "line": "A",
+        "number": 3,
+        "stages": {
+          "A-ASSY": [
+            {
+              "bomItems": [
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100081": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100101": [
+                  "401CT003",
+                  "3080129"
+                ]
+              },
+              "id": "BORUAXE1021-A-ASSY-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝",
+              "nextIds": [
+                "SAMPLE-1787980310182-3-A-ASSY-2"
+              ],
+              "number": "A-ASSY-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100081": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100101": [
+                  "401CT003",
+                  "3080129"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-3-A-ASSY-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-3-A-ASSY-3"
+              ],
+              "number": "A-ASSY-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129",
+                "401CT003",
+                "3080129"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100081": [
+                  "401CT003",
+                  "3080129"
+                ],
+                "105B100101": [
+                  "401CT003",
+                  "3080129"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-3-A-ASSY-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝確認",
+              "nextIds": [],
+              "number": "A-ASSY-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ],
+          "A-CRIMP": [
+            {
+              "bomItems": [
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100081": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100101": [
+                  "404XX005",
+                  "405MC013"
+                ]
+              },
+              "id": "BORUAXE1021-A-CRIMP-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合",
+              "nextIds": [
+                "SAMPLE-1787980310182-3-A-CRIMP-2"
+              ],
+              "number": "A-CRIMP-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100081": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100101": [
+                  "404XX005",
+                  "405MC013"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-3-A-CRIMP-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-3-A-CRIMP-3"
+              ],
+              "number": "A-CRIMP-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013",
+                "404XX005",
+                "405MC013"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100081": [
+                  "404XX005",
+                  "405MC013"
+                ],
+                "105B100101": [
+                  "404XX005",
+                  "405MC013"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-3-A-CRIMP-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合確認",
+              "nextIds": [],
+              "number": "A-CRIMP-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ],
+          "A-CUT": [
+            {
+              "bomItems": [
+                "3060504",
+                "3080203",
+                "3060504",
+                "3080203",
+                "3060504",
+                "3080203"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3060504",
+                  "3080203"
+                ],
+                "105B100081": [
+                  "3060504",
+                  "3080203"
+                ],
+                "105B100101": [
+                  "3060504",
+                  "3080203"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 人工組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 人工組裝"
+                }
+              ],
+              "instructions": "1. 確認 人工組裝 作業前物料與設備\n2. 依標準姿勢完成 人工組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "人工組裝（核准版）",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-2"
+              ],
+              "number": "A-CUT-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3060301",
+                "3060701",
+                "3060301",
+                "3060701",
+                "3060301",
+                "3060701"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3060301",
+                  "3060701"
+                ],
+                "105B100081": [
+                  "3060301",
+                  "3060701"
+                ],
+                "105B100101": [
+                  "3060301",
+                  "3060701"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 裁切 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 裁切"
+                }
+              ],
+              "instructions": "1. 確認 裁切 作業前物料與設備\n2. 依標準姿勢完成 裁切",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:7802c0e790330186af4a1975725415a498b4d2234aca516c9ee59a5586e6e966",
+              "mediaItems": [
+                {
+                  "name": "hose-cutting.png",
+                  "src": "asset:7802c0e790330186af4a1975725415a498b4d2234aca516c9ee59a5586e6e966",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-cutting.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "裁切",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-3"
+              ],
+              "number": "A-CUT-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-2",
+              "x": 202,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3080601",
+                "3060805",
+                "3080601",
+                "3060805",
+                "3080601",
+                "3060805"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080601",
+                  "3060805"
+                ],
+                "105B100081": [
+                  "3080601",
+                  "3060805"
+                ],
+                "105B100101": [
+                  "3080601",
+                  "3060805"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 機器組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 機器組裝"
+                }
+              ],
+              "instructions": "1. 確認 機器組裝 作業前物料與設備\n2. 依標準姿勢完成 機器組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "M-A-001",
+              "machineIds": [
+                "M-A-001",
+                "M-A-003",
+                "M-A-006"
+              ],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "machine",
+              "name": "機器組裝",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-4"
+              ],
+              "number": "A-CUT-03",
+              "people": 1,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-3",
+              "x": 380,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "403XX007",
+                "3080123",
+                "403XX007",
+                "3080123",
+                "403XX007",
+                "3080123"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "403XX007",
+                  "3080123"
+                ],
+                "105B100081": [
+                  "403XX007",
+                  "3080123"
+                ],
+                "105B100101": [
+                  "403XX007",
+                  "3080123"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-4",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 封口 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 封口"
+                }
+              ],
+              "instructions": "1. 確認 封口 作業前物料與設備\n2. 依標準姿勢完成 封口",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "封口",
+              "nextIds": [],
+              "number": "A-CUT-04",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-4",
+              "x": 558,
+              "y": 26
+            }
+          ],
+          "A-FINAL": [
+            {
+              "bomItems": [
+                "3080603",
+                "3080603",
+                "3080603"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080603"
+                ],
+                "105B100081": [
+                  "3080603"
+                ],
+                "105B100101": [
+                  "3080603"
+                ]
+              },
+              "id": "BORUAXE1021-A-FINAL-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗",
+              "nextIds": [
+                "SAMPLE-1787980310182-3-A-FINAL-2"
+              ],
+              "number": "A-FINAL-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3080603",
+                "3080603",
+                "3080603"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080603"
+                ],
+                "105B100081": [
+                  "3080603"
+                ],
+                "105B100101": [
+                  "3080603"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-3-A-FINAL-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-3-A-FINAL-3"
+              ],
+              "number": "A-FINAL-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "3080603",
+                "3080603",
+                "3080603"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080603"
+                ],
+                "105B100081": [
+                  "3080603"
+                ],
+                "105B100101": [
+                  "3080603"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-3-A-FINAL-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗確認",
+              "nextIds": [],
+              "number": "A-FINAL-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ],
+          "A-PACKING": [
+            {
+              "bomItems": [
+                "3080602",
+                "3080602",
+                "3080602"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080602"
+                ],
+                "105B100081": [
+                  "3080602"
+                ],
+                "105B100101": [
+                  "3080602"
+                ]
+              },
+              "id": "BORUAXE1021-A-PACKING-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業",
+              "nextIds": [
+                "SAMPLE-1787980310182-3-A-PACKING-2"
+              ],
+              "number": "A-PACKING-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 24,
+              "y": 26
+            },
+            {
+              "bomItems": [
+                "3080602",
+                "3080602",
+                "3080602"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080602"
+                ],
+                "105B100081": [
+                  "3080602"
+                ],
+                "105B100101": [
+                  "3080602"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-3-A-PACKING-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-3-A-PACKING-3"
+              ],
+              "number": "A-PACKING-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 250,
+              "y": 45
+            },
+            {
+              "bomItems": [
+                "3080602",
+                "3080602",
+                "3080602"
+              ],
+              "bomProductCode": "",
+              "bomSelections": {
+                "105B100051": [
+                  "3080602"
+                ],
+                "105B100081": [
+                  "3080602"
+                ],
+                "105B100101": [
+                  "3080602"
+                ]
+              },
+              "id": "SAMPLE-1787980310182-3-A-PACKING-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業確認",
+              "nextIds": [],
+              "number": "A-PACKING-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 460,
+              "y": 45
+            }
+          ]
+        },
+        "status": "superseded"
+      },
+      "id": "SAMPLE-1787980310182-3",
+      "productIds": [
+        "product:105B100051",
+        "product:105B100081",
+        "product:105B100101"
+      ],
+      "stageIds": [
+        "stage:A-ASSY",
+        "stage:A-CRIMP",
+        "stage:A-CUT",
+        "stage:A-FINAL",
+        "stage:A-PACKING"
+      ]
+    },
+    {
+      "data": {
+        "category": "BORUAXE1021",
+        "createdAt": "2026-08-29T05:11:50.182Z",
+        "id": "SAMPLE-1787980310182-4",
+        "line": "A",
+        "number": 4,
+        "parentVersionId": "SAMPLE-1787980310182-2",
+        "reviewNote": "版本內容確認完成",
+        "reviewedAt": "2026-09-11T04:47:45.326Z",
+        "stages": {
+          "A-ASSY": [
+            {
+              "bomItems": [
+                "3080129",
+                "3080129",
+                "3080129"
+              ],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [
+                  "3080129"
+                ],
+                "105B100081": [
+                  "3080129"
+                ],
+                "105B100101": [
+                  "3080129"
+                ]
+              },
+              "id": "BORUAXE1021-A-ASSY-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-ASSY-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-ASSY-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 30,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-ASSY-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-ASSY-3"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-ASSY-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 370,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-ASSY-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 成品組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 成品組裝"
+                }
+              ],
+              "instructions": "1. 確認 成品組裝 作業前物料與設備\n2. 依標準姿勢完成 成品組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+              "mediaItems": [
+                {
+                  "name": "hose-assembly.png",
+                  "src": "asset:d9869f0c44e0fdf9e6a35bf57dca4ad2de4a64d016602b675dcee5aa150b0278",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-assembly.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "成品組裝確認",
+              "nextIds": [],
+              "noteProductCode": "105B100051",
+              "number": "A-ASSY-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-ASSY",
+              "templateId": "A-ASSY-TPL-1",
+              "x": 710,
+              "y": 30
+            }
+          ],
+          "A-CRIMP": [
+            {
+              "bomItems": [
+                "405MC013",
+                "405MC013",
+                "405MC013"
+              ],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [
+                  "405MC013"
+                ],
+                "105B100081": [
+                  "405MC013"
+                ],
+                "105B100101": [
+                  "405MC013"
+                ]
+              },
+              "id": "BORUAXE1021-A-CRIMP-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-CRIMP-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CRIMP-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 30,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-CRIMP-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-CRIMP-3"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CRIMP-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 370,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-CRIMP-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 接頭壓合 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 接頭壓合"
+                }
+              ],
+              "instructions": "1. 確認 接頭壓合 作業前物料與設備\n2. 依標準姿勢完成 接頭壓合",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "接頭壓合確認",
+              "nextIds": [],
+              "noteProductCode": "105B100051",
+              "number": "A-CRIMP-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CRIMP",
+              "templateId": "A-CRIMP-TPL-1",
+              "x": 710,
+              "y": 30
+            }
+          ],
+          "A-CUT": [
+            {
+              "bomItems": [
+                "3060504",
+                "3060301",
+                "3080601",
+                "403XX007",
+                "401CT003",
+                "404XX005",
+                "3080602",
+                "3080603",
+                "3080203",
+                "3060701",
+                "3060805",
+                "3080123",
+                "3060504",
+                "3060301",
+                "3080601",
+                "403XX007",
+                "401CT003",
+                "404XX005",
+                "3080602",
+                "3080603",
+                "3080203",
+                "3060701",
+                "3060805",
+                "3080123",
+                "3060504",
+                "3060301",
+                "3080601",
+                "403XX007",
+                "401CT003",
+                "404XX005",
+                "3080602",
+                "3080603",
+                "3080203",
+                "3060701",
+                "3060805",
+                "3080123"
+              ],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [
+                  "3060504",
+                  "3060301",
+                  "3080601",
+                  "403XX007",
+                  "401CT003",
+                  "404XX005",
+                  "3080602",
+                  "3080603",
+                  "3080203",
+                  "3060701",
+                  "3060805",
+                  "3080123"
+                ],
+                "105B100081": [
+                  "3060504",
+                  "3060301",
+                  "3080601",
+                  "403XX007",
+                  "401CT003",
+                  "404XX005",
+                  "3080602",
+                  "3080603",
+                  "3080203",
+                  "3060701",
+                  "3060805",
+                  "3080123"
+                ],
+                "105B100101": [
+                  "3060504",
+                  "3060301",
+                  "3080601",
+                  "403XX007",
+                  "401CT003",
+                  "404XX005",
+                  "3080602",
+                  "3080603",
+                  "3080203",
+                  "3060701",
+                  "3060805",
+                  "3080123"
+                ]
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 人工組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 人工組裝"
+                }
+              ],
+              "instructions": "1. 確認 人工組裝 作業前物料與設備\n2. 依標準姿勢完成 人工組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "人工組裝（核准版）",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-1",
+              "x": 30,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 裁切 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 裁切"
+                }
+              ],
+              "instructions": "1. 確認 裁切 作業前物料與設備\n2. 依標準姿勢完成 裁切",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:7802c0e790330186af4a1975725415a498b4d2234aca516c9ee59a5586e6e966",
+              "mediaItems": [
+                {
+                  "name": "hose-cutting.png",
+                  "src": "asset:7802c0e790330186af4a1975725415a498b4d2234aca516c9ee59a5586e6e966",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-cutting.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "裁切",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-3"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-2",
+              "x": 370,
+              "y": 280
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 機器組裝 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 機器組裝"
+                }
+              ],
+              "instructions": "1. 確認 機器組裝 作業前物料與設備\n2. 依標準姿勢完成 機器組裝",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "M-A-001",
+              "machineIds": [
+                "M-A-001",
+                "M-A-003",
+                "M-A-006"
+              ],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "machine",
+              "name": "機器組裝",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-4"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-03",
+              "people": 1,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-3",
+              "x": 710,
+              "y": 280
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "BORUAXE1021-A-CUT-1787980310181-4",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 封口 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 封口"
+                }
+              ],
+              "instructions": "1. 確認 封口 作業前物料與設備\n2. 依標準姿勢完成 封口",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "封口",
+              "nextIds": [],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-04",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-TPL-4",
+              "x": 1050,
+              "y": 280
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {},
+              "id": "BORUAXE1021-A-CUT-1789101766760-5",
+              "instructionSteps": [
+                {
+                  "standard": "15231",
+                  "text": "51523"
+                }
+              ],
+              "instructions": "",
+              "ipqc": "",
+              "machineDetails": [
+                {
+                  "asset": "",
+                  "id": "EQ-f3ebc06abba520d8",
+                  "kind": "machine-assembly",
+                  "line": "A",
+                  "machineType": "",
+                  "mediaItems": [
+                    {
+                      "name": "520c86f20ebcf676485c.webp",
+                      "src": "asset:520c86f20ebcf676485cebef56486ae0fe2d07aa4abb4442079555ee12184cfc",
+                      "type": "image/webp"
+                    }
+                  ],
+                  "name": "切管機-01",
+                  "nameVi": "Máy cắt-01",
+                  "no": "EQ-f3ebc06abba520d8",
+                  "note": "同類型「切管機」共 4 台 / Cùng loại “切管機”: 4 máy\n編號 / Mã máy: ADX041, ADX010, AHS001, ADX008",
+                  "number": "ADX008",
+                  "people": 1,
+                  "purpose": "裁切條紋管及 PVC 管",
+                  "purposeVi": "Cắt dây sọc, dây PVC",
+                  "source": {
+                    "cells": {
+                      "B": "LINE A",
+                      "C": "A-CUT",
+                      "E": "切管機-01",
+                      "F": "Máy cắt-01",
+                      "G": "ADX008",
+                      "H": "裁切條紋管及 PVC 管",
+                      "I": "Cắt dây sọc, dây PVC",
+                      "J": "同類型「切管機」共 4 台 / Cùng loại “切管機”: 4 máy\n編號 / Mã máy: ADX041, ADX010, AHS001, ADX008"
+                    },
+                    "number": "ADX008",
+                    "photoCode": "",
+                    "row": 13,
+                    "sheet": "機器設定表",
+                    "stage": "A-CUT"
+                  },
+                  "stageCode": "A-CUT"
+                }
+              ],
+              "machineId": "EQ-f3ebc06abba520d8",
+              "machineIds": [
+                "EQ-f3ebc06abba520d8"
+              ],
+              "media": "asset:7c325abd91de080cd84780a4b323109df17f8a4c8c42ac5ca323e6604814aac9",
+              "mediaItems": [
+                {
+                  "name": "machine-assembly.png",
+                  "src": "asset:7c325abd91de080cd84780a4b323109df17f8a4c8c42ac5ca323e6604814aac9",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "machine-assembly.png",
+              "mediaType": "image/png",
+              "mode": "machine",
+              "name": "機器設定",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-05",
+              "people": 1,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-FLOW-04",
+              "x": 30,
+              "y": 280
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {},
+              "id": "BORUAXE1021-A-CUT-1789101903417-6",
+              "instructionSteps": [
+                {
+                  "standard": "5646",
+                  "text": "564"
+                },
+                {
+                  "standard": "",
+                  "text": ""
+                }
+              ],
+              "instructions": "1. 564｜標準：5646",
+              "ipqc": "5646",
+              "machineDetails": [
+                {
+                  "asset": "",
+                  "id": "EQ-f3ebc06abba520d8",
+                  "kind": "machine-assembly",
+                  "line": "A",
+                  "machineType": "",
+                  "mediaItems": [
+                    {
+                      "name": "520c86f20ebcf676485c.webp",
+                      "src": "asset:520c86f20ebcf676485cebef56486ae0fe2d07aa4abb4442079555ee12184cfc",
+                      "type": "image/webp"
+                    }
+                  ],
+                  "name": "切管機-01",
+                  "nameVi": "Máy cắt-01",
+                  "no": "EQ-f3ebc06abba520d8",
+                  "note": "同類型「切管機」共 4 台 / Cùng loại “切管機”: 4 máy\n編號 / Mã máy: ADX041, ADX010, AHS001, ADX008",
+                  "number": "ADX008",
+                  "people": 1,
+                  "purpose": "裁切條紋管及 PVC 管",
+                  "purposeVi": "Cắt dây sọc, dây PVC",
+                  "source": {
+                    "cells": {
+                      "B": "LINE A",
+                      "C": "A-CUT",
+                      "E": "切管機-01",
+                      "F": "Máy cắt-01",
+                      "G": "ADX008",
+                      "H": "裁切條紋管及 PVC 管",
+                      "I": "Cắt dây sọc, dây PVC",
+                      "J": "同類型「切管機」共 4 台 / Cùng loại “切管機”: 4 máy\n編號 / Mã máy: ADX041, ADX010, AHS001, ADX008"
+                    },
+                    "number": "ADX008",
+                    "photoCode": "",
+                    "row": 13,
+                    "sheet": "機器設定表",
+                    "stage": "A-CUT"
+                  },
+                  "stageCode": "A-CUT"
+                }
+              ],
+              "machineId": "EQ-f3ebc06abba520d8",
+              "machineIds": [
+                "EQ-f3ebc06abba520d8"
+              ],
+              "media": "asset:7c325abd91de080cd84780a4b323109df17f8a4c8c42ac5ca323e6604814aac9",
+              "mediaItems": [
+                {
+                  "name": "machine-assembly.png",
+                  "src": "asset:7c325abd91de080cd84780a4b323109df17f8a4c8c42ac5ca323e6604814aac9",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "machine-assembly.png",
+              "mediaType": "image/png",
+              "mode": "machine",
+              "name": "機器設定",
+              "nextIds": [
+                "BORUAXE1021-A-CUT-1787980310181-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-CUT-06",
+              "people": 1,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-CUT",
+              "templateId": "A-CUT-FLOW-04",
+              "x": 30,
+              "y": 530
+            }
+          ],
+          "A-FINAL": [
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "BORUAXE1021-A-FINAL-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-FINAL-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-FINAL-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 30,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-FINAL-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-FINAL-3"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-FINAL-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 370,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-FINAL-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 最終檢驗 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 最終檢驗"
+                }
+              ],
+              "instructions": "1. 確認 最終檢驗 作業前物料與設備\n2. 依標準姿勢完成 最終檢驗",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+              "mediaItems": [
+                {
+                  "name": "hose-inspection.png",
+                  "src": "asset:871d97662b4ca6d9843cd90838a01bf6c5eebfdaa86d6974ceba5ccde715c4df",
+                  "type": "image/png"
+                }
+              ],
+              "mediaName": "hose-inspection.png",
+              "mediaType": "image/png",
+              "mode": "human",
+              "name": "最終檢驗確認",
+              "nextIds": [],
+              "noteProductCode": "105B100051",
+              "number": "A-FINAL-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-FINAL",
+              "templateId": "A-FINAL-TPL-1",
+              "x": 710,
+              "y": 30
+            }
+          ],
+          "A-PACKING": [
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "BORUAXE1021-A-PACKING-1787980310181-1",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-PACKING-2"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-PACKING-01",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 30,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-PACKING-2",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業準備",
+              "nextIds": [
+                "SAMPLE-1787980310182-2-A-PACKING-3"
+              ],
+              "noteProductCode": "105B100051",
+              "number": "A-PACKING-02",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 370,
+              "y": 30
+            },
+            {
+              "bomItems": [],
+              "bomProductCode": "105B100051",
+              "bomSelections": {
+                "105B100051": [],
+                "105B100081": [],
+                "105B100101": []
+              },
+              "id": "SAMPLE-1787980310182-2-A-PACKING-3",
+              "instructionSteps": [
+                {
+                  "standard": "料號、設備及安全防護確認完成",
+                  "text": "確認 包裝作業 作業前物料與設備"
+                },
+                {
+                  "standard": "外觀完整、尺寸符合標準",
+                  "text": "依標準姿勢完成 包裝作業"
+                }
+              ],
+              "instructions": "1. 確認 包裝作業 作業前物料與設備\n2. 依標準姿勢完成 包裝作業",
+              "ipqc": "依製程標準與首件檢查表確認",
+              "machineId": "",
+              "machineIds": [],
+              "media": null,
+              "mediaItems": [],
+              "mediaName": "",
+              "mediaType": "",
+              "mode": "human",
+              "name": "包裝作業確認",
+              "nextIds": [],
+              "noteProductCode": "105B100051",
+              "number": "A-PACKING-03",
+              "people": 2,
+              "productCodes": [
+                "105B100051",
+                "105B100081",
+                "105B100101"
+              ],
+              "productInstructionSteps": {
+                "105B100051": []
+              },
+              "productInstructions": {
+                "105B100051": ""
+              },
+              "productMediaItems": {
+                "105B100051": []
+              },
+              "stageCode": "A-PACKING",
+              "templateId": "A-PACKING-TPL-1",
+              "x": 710,
+              "y": 30
+            }
+          ]
+        },
+        "status": "superseded",
+        "updatedAt": "2026-09-11T04:47:38.073Z"
+      },
+      "id": "SAMPLE-1787980310182-4",
+      "productIds": [
+        "product:105B100051",
+        "product:105B100081",
+        "product:105B100101"
+      ],
+      "stageIds": [
+        "stage:A-ASSY",
+        "stage:A-CRIMP",
+        "stage:A-CUT",
+        "stage:A-FINAL",
+        "stage:A-PACKING"
+      ]
+    }
+  ],
+  "schemaVersion": 1
+}

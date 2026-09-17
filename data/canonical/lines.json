@@ -1,0 +1,64 @@
+{
+  "domain": "lines",
+  "records": [
+    {
+      "code": "A",
+      "data": {
+        "code": "A",
+        "id": "line:A",
+        "name": "成品組裝線"
+      },
+      "id": "line:A",
+      "scope": "AB",
+      "stageIds": [
+        "stage:A-CUT",
+        "stage:A-ASSY",
+        "stage:A-CRIMP",
+        "stage:A-PACKING",
+        "stage:A-FINAL",
+        "stage:A-6541"
+      ]
+    },
+    {
+      "code": "B",
+      "data": {
+        "code": "B",
+        "id": "line:B",
+        "name": "配件組裝線"
+      },
+      "id": "line:B",
+      "scope": "AB",
+      "stageIds": [
+        "stage:B-ASSY",
+        "stage:B-PACKING",
+        "stage:B-FINAL",
+        "stage:B-PHAO",
+        "stage:B-HCT"
+      ]
+    },
+    {
+      "code": "C",
+      "data": {
+        "code": "C",
+        "id": "line:C",
+        "name": "零件加工線"
+      },
+      "id": "line:C",
+      "scope": "C",
+      "stageIds": [
+        "stage:C-PREP",
+        "stage:C-TIEN",
+        "stage:C-RUA",
+        "stage:C-GIACONG",
+        "stage:C-FINAL",
+        "stage:C-CHI",
+        "stage:C-INOX",
+        "stage:C-PVC",
+        "stage:C-KHOAN",
+        "stage:C-MAI",
+        "stage:C-DANHBONG"
+      ]
+    }
+  ],
+  "schemaVersion": 1
+}

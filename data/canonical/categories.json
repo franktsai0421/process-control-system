@@ -1,0 +1,490 @@
+{
+  "domain": "categories",
+  "records": [
+    {
+      "data": {
+        "id": "category:0170e037cb09469732f73834",
+        "line": "B",
+        "name": "PHAODIEN"
+      },
+      "id": "category:0170e037cb09469732f73834",
+      "lineId": "line:B",
+      "name": "PHAODIEN",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:0c4bf55bee4752737fd53652",
+        "line": "A",
+        "name": "BORUAXE1021"
+      },
+      "id": "category:0c4bf55bee4752737fd53652",
+      "lineId": "line:A",
+      "name": "BORUAXE1021",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:11f79534a48fc22a9cc9928f",
+        "line": "A",
+        "name": "XETUOICAY"
+      },
+      "id": "category:11f79534a48fc22a9cc9928f",
+      "lineId": "line:A",
+      "name": "XETUOICAY",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:144efe6d76072a5b853559c1",
+        "line": "B",
+        "name": "VANPHAONHUA"
+      },
+      "id": "category:144efe6d76072a5b853559c1",
+      "lineId": "line:B",
+      "name": "VANPHAONHUA",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:1636477a019c8fb5c87476df",
+        "line": "B",
+        "name": "LOCRAC"
+      },
+      "id": "category:1636477a019c8fb5c87476df",
+      "lineId": "line:B",
+      "name": "LOCRAC",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:1a120e912afce3970d2654ae",
+        "line": "A",
+        "name": "DTLN"
+      },
+      "id": "category:1a120e912afce3970d2654ae",
+      "lineId": "line:A",
+      "name": "DTLN",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:24014de78c40dbdffbaf2908",
+        "line": "B",
+        "name": "YUTA"
+      },
+      "id": "category:24014de78c40dbdffbaf2908",
+      "lineId": "line:B",
+      "name": "YUTA",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:29575eff3c8f18416d29bbcb",
+        "line": "B",
+        "name": "VOINHUA"
+      },
+      "id": "category:29575eff3c8f18416d29bbcb",
+      "lineId": "line:B",
+      "name": "VOINHUA",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:2f3fc161fcf5942c1936f7b7",
+        "line": "A",
+        "name": "ONGXOAN"
+      },
+      "id": "category:2f3fc161fcf5942c1936f7b7",
+      "lineId": "line:A",
+      "name": "ONGXOAN",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:32c83e1770510eb189a55bb7",
+        "line": "A",
+        "name": "BTC6030"
+      },
+      "id": "category:32c83e1770510eb189a55bb7",
+      "lineId": "line:A",
+      "name": "BTC6030",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:3608a6d0223ea85b83553056",
+        "line": "A",
+        "name": "LVB"
+      },
+      "id": "category:3608a6d0223ea85b83553056",
+      "lineId": "line:A",
+      "name": "LVB",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:3648491900d8f5f73f118918",
+        "line": "C",
+        "name": "GIA CONG"
+      },
+      "id": "category:3648491900d8f5f73f118918",
+      "lineId": "line:C",
+      "name": "GIA CONG",
+      "scope": "C"
+    },
+    {
+      "data": {
+        "id": "category:45ed0167cb10ff9cedac7920",
+        "line": "A",
+        "name": "BTC3200"
+      },
+      "id": "category:45ed0167cb10ff9cedac7920",
+      "lineId": "line:A",
+      "name": "BTC3200",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:46b238317d94e13311673dda",
+        "line": "A",
+        "name": "PVC(2)"
+      },
+      "id": "category:46b238317d94e13311673dda",
+      "lineId": "line:A",
+      "name": "PVC(2)",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:4859b35c1757bbff6f5fa88c",
+        "line": "C",
+        "name": "INOX"
+      },
+      "id": "category:4859b35c1757bbff6f5fa88c",
+      "lineId": "line:C",
+      "name": "INOX",
+      "scope": "C"
+    },
+    {
+      "data": {
+        "id": "category:4e77236b07932ab7dca44353",
+        "line": "A",
+        "name": "PVCLD"
+      },
+      "id": "category:4e77236b07932ab7dca44353",
+      "lineId": "line:A",
+      "name": "PVCLD",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:5c23a3e3e69cbd53a21b8f88",
+        "line": "A",
+        "name": "ONGINOX"
+      },
+      "id": "category:5c23a3e3e69cbd53a21b8f88",
+      "lineId": "line:A",
+      "name": "ONGINOX",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:6a255778892cb5e0da79aaac",
+        "line": "A",
+        "name": "BOVESINH"
+      },
+      "id": "category:6a255778892cb5e0da79aaac",
+      "lineId": "line:A",
+      "name": "BOVESINH",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:6c7eedb5a1396a7e5397804e",
+        "line": "A",
+        "name": "BOSEN"
+      },
+      "id": "category:6c7eedb5a1396a7e5397804e",
+      "lineId": "line:A",
+      "name": "BOSEN",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:72e085fa40f4386ae884f91f",
+        "line": "C",
+        "name": "PVC"
+      },
+      "id": "category:72e085fa40f4386ae884f91f",
+      "lineId": "line:C",
+      "name": "PVC",
+      "scope": "C"
+    },
+    {
+      "data": {
+        "id": "category:8c384025d003e5da44fe5b50",
+        "line": "B",
+        "name": "CONNECTOR"
+      },
+      "id": "category:8c384025d003e5da44fe5b50",
+      "lineId": "line:B",
+      "name": "CONNECTOR",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:8e0d2b696977251f8ebcd9b9",
+        "line": "A",
+        "name": "BTCINOX"
+      },
+      "id": "category:8e0d2b696977251f8ebcd9b9",
+      "lineId": "line:A",
+      "name": "BTCINOX",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:97f49f608630a04673d2f6a3",
+        "line": "B",
+        "name": "VANPHAODONG"
+      },
+      "id": "category:97f49f608630a04673d2f6a3",
+      "lineId": "line:B",
+      "name": "VANPHAODONG",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:9e16141520308fd7a2d4859f",
+        "line": "C",
+        "name": "CHƯA CÓ TRONG LINE C"
+      },
+      "id": "category:9e16141520308fd7a2d4859f",
+      "lineId": "line:C",
+      "name": "CHƯA CÓ TRONG LINE C",
+      "scope": "C"
+    },
+    {
+      "data": {
+        "id": "category:a36b50e1486a596b5ca03827",
+        "line": "B",
+        "name": "BXBC"
+      },
+      "id": "category:a36b50e1486a596b5ca03827",
+      "lineId": "line:B",
+      "name": "BXBC",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:a77bd69bafca89324c6f9a1e",
+        "line": "B",
+        "name": "DAUTUOICAY-RUAXE"
+      },
+      "id": "category:a77bd69bafca89324c6f9a1e",
+      "lineId": "line:B",
+      "name": "DAUTUOICAY-RUAXE",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:b1ef6302fc555d7952907dca",
+        "line": "A",
+        "name": "PVCLN"
+      },
+      "id": "category:b1ef6302fc555d7952907dca",
+      "lineId": "line:A",
+      "name": "PVCLN",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:c714bc9ee7cdc18883901809",
+        "line": "A",
+        "name": "DAYDANANG"
+      },
+      "id": "category:c714bc9ee7cdc18883901809",
+      "lineId": "line:A",
+      "name": "DAYDANANG",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:c959ee9dfbbb87ea800736ed",
+        "line": "B",
+        "name": "BRCINOX"
+      },
+      "id": "category:c959ee9dfbbb87ea800736ed",
+      "lineId": "line:B",
+      "name": "BRCINOX",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:cfff109b165f549290f1edec",
+        "line": "A",
+        "name": "KETUOICAY"
+      },
+      "id": "category:cfff109b165f549290f1edec",
+      "lineId": "line:A",
+      "name": "KETUOICAY",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:d0782d01dbe369f9f1397e98",
+        "line": "A",
+        "name": "56464654"
+      },
+      "id": "category:d0782d01dbe369f9f1397e98",
+      "lineId": "line:A",
+      "name": "56464654",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:d41545f0eb1b2a800706d697",
+        "line": "A",
+        "name": "INOX"
+      },
+      "id": "category:d41545f0eb1b2a800706d697",
+      "lineId": "line:A",
+      "name": "INOX",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:d433716e0d4427a5110ce97a",
+        "line": "A",
+        "name": "SOC"
+      },
+      "id": "category:d433716e0d4427a5110ce97a",
+      "lineId": "line:A",
+      "name": "SOC",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:d5294653b3eadf4d4490f834",
+        "line": "A",
+        "name": "BRX1021-CO3360"
+      },
+      "id": "category:d5294653b3eadf4d4490f834",
+      "lineId": "line:A",
+      "name": "BRX1021-CO3360",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:db27b3802685ef82a29e4591",
+        "line": "A",
+        "name": "DTINOX"
+      },
+      "id": "category:db27b3802685ef82a29e4591",
+      "lineId": "line:A",
+      "name": "DTINOX",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:e9add4101ecefcbcf6e38926",
+        "line": "A",
+        "name": "XADONG"
+      },
+      "id": "category:e9add4101ecefcbcf6e38926",
+      "lineId": "line:A",
+      "name": "XADONG",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:e9d8f279d2b0bb199927b418",
+        "line": "A",
+        "name": "DCMG"
+      },
+      "id": "category:e9d8f279d2b0bb199927b418",
+      "lineId": "line:A",
+      "name": "DCMG",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:e9e1dba94ed305d9650ad782",
+        "line": "B",
+        "name": "DAUSEN"
+      },
+      "id": "category:e9e1dba94ed305d9650ad782",
+      "lineId": "line:B",
+      "name": "DAUSEN",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:ed0b8491632cd33a5fc271d9",
+        "line": "A",
+        "name": "ONGHOI-CAOAP/BRX-CAOAP"
+      },
+      "id": "category:ed0b8491632cd33a5fc271d9",
+      "lineId": "line:A",
+      "name": "ONGHOI-CAOAP/BRX-CAOAP",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:ed664595b0c186c870efa30b",
+        "line": "B",
+        "name": "VOIDONG"
+      },
+      "id": "category:ed664595b0c186c870efa30b",
+      "lineId": "line:B",
+      "name": "VOIDONG",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:f20cc085985491e0204a037d",
+        "line": "A",
+        "name": "DTLD"
+      },
+      "id": "category:f20cc085985491e0204a037d",
+      "lineId": "line:A",
+      "name": "DTLD",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:f8a4d9082c6308585f412900",
+        "line": "B",
+        "name": "DAUVESINH"
+      },
+      "id": "category:f8a4d9082c6308585f412900",
+      "lineId": "line:B",
+      "name": "DAUVESINH",
+      "scope": "AB"
+    },
+    {
+      "data": {
+        "id": "category:fcbcf10a0b371155cfe72e80",
+        "line": "C",
+        "name": "TIEN"
+      },
+      "id": "category:fcbcf10a0b371155cfe72e80",
+      "lineId": "line:C",
+      "name": "TIEN",
+      "scope": "C"
+    },
+    {
+      "data": {
+        "id": "category:fe79f038d4d9b86ea3a7bdd7",
+        "line": "B",
+        "name": "TECACLOAI"
+      },
+      "id": "category:fe79f038d4d9b86ea3a7bdd7",
+      "lineId": "line:B",
+      "name": "TECACLOAI",
+      "scope": "AB"
+    }
+  ],
+  "schemaVersion": 1
+}
