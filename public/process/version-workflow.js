@@ -158,6 +158,14 @@
     const heading=selected?.status==="draft"?`正在編輯 V${selected.number} 草稿`:selected?.status==="pending"?`V${selected.number} 已送主管審核`:selected?.status==="approved"?`正在查看已核准 V${selected.number}`:selected?`正在查看 V${selected.number}`:"目前工作內容";
     const panel=document.createElement("section");panel.className=`editor-version-panel ${locked?"locked":""}`;panel.innerHTML=`<div><p class="eyebrow">VERSION WORKSPACE</p><h3>${heading} ${selected?`<span class="version-status ${selected.status}">${statusLabels[selected.status]}</span>`:""}</h3><small>${selected?.status==="draft"?"尚未送審，可反覆儲存":locked?"此版本已鎖定":"先儲存草稿，再送主管審核"}</small></div><div class="field"><label>切換版本</label><select id="editor-version-select"><option value="">目前工作內容</option>${versions.map(version=>`<option value="${version.id}" ${version.id===state.editorVersionId?"selected":""}>V${version.number} · ${statusLabels[version.status]}${versions[0]?.id===version.id?" · 最新版":""}</option>`).join("")}</select></div>${selected?`<div class="editor-mini-diff"><b>與${base?` V${base.number}`:"上一版"}差異</b>${diffHtml(selected,base)}</div>`:""}${selected?.status==="draft"?`<button class="button signal" id="submit-version">送出主管審核</button>`:""}${canCreateRevision?`<button class="button signal" id="create-revision">建立新版本草稿</button>`:""}${validationRulesMarkup()}`;
     document.querySelector(".editor-toolbar")?.after(panel);
+    const legacyKey=`processEditor:${editorKey()}`;
+    if(window.ProcessSync?.legacyDraftKeys?.().includes(legacyKey)&&currentUser?.role!=="rd"&&currentUser?.role!=="viewer"&&(!selected||selected.status==="draft"||canCreateRevision)){
+      const recover=document.createElement('button');recover.type='button';recover.className='button ghost';recover.textContent='復原此瀏覽器的舊草稿';
+      recover.onclick=()=>{if(!confirm('將舊草稿復原到目前工作區？伺服器內容及舊暫存會保留，直到您儲存並核對完整。'))return;
+        const saved=window.ProcessSync.readLegacyDraft(legacyKey);if(!saved)return;
+        state.editorByCategory[editorKey()]=deepCopy(saved.stages);if(canCreateRevision)state.editorVersionId=`revision:${selected.id}`;
+        toast('舊草稿已復原到目前工作區；請儲存並核對完整後再關閉。');render();};panel.append(recover);
+    }
     const showSubmissionErrors=selected?.status==="draft"&&state.editorSubmissionVersionId===selected.id,currentErrors=showSubmissionErrors?validate({category:state.category,line:state.editorLine,stages:ensureCategoryEditor()}):[];
     if(showSubmissionErrors) renderSubmissionIssues(panel,currentErrors);
     currentErrors.flatMap(error=>error.operationIds||[]).forEach(id=>{const block=document.querySelector(`[data-operation="${id}"]`);if(block&&!block.querySelector(".operation-error-badge")){block.classList.add("validation-error");block.insertAdjacentHTML("beforeend",`<span class="operation-error-badge">!</span>`)}});
@@ -168,9 +176,19 @@
     if(locked){document.querySelector(".editor-page")?.classList.add("editor-readonly");document.querySelectorAll(".add-operation,.auto-layout-stage,.arrange-all-stages,.operation-delete,#save-process").forEach(element=>{element.disabled=true;element.style.pointerEvents="none"});document.querySelectorAll(".operation-block").forEach(block=>block.setAttribute("draggable","false"));document.querySelectorAll("#inspector-form input,#inspector-form select,#inspector-form textarea,#inspector-form button").forEach(element=>element.disabled=true)}
   }
 
-  function saveEditorVersion(){
-    const stages=deepCopy(ensureCategoryEditor()),now=new Date().toISOString(),selected=approvalVersions.find(item=>item.id===state.editorVersionId),isRevision=String(state.editorVersionId||"").startsWith("revision:"),parentId=isRevision?String(state.editorVersionId).split(":")[1]:null;
-    try{localStorage.setItem(`processEditor:${editorKey()}`,JSON.stringify({category:state.category,line:state.editorLine,stages,savedAt:now}));if(selected?.status==="draft"){selected.stages=stages;selected.updatedAt=now;history(selected,"draft_saved","草稿已儲存");state.approvalVersionId=selected.id}else{const versions=group(),version={id:`PV-${Date.now()}`,number:Math.max(0,...versions.map(item=>item.number||0))+1,category:state.category,line:state.editorLine,stages,createdAt:now,updatedAt:now,creatorId:currentUser?.id||"local",creatorName:currentUser?.name||"本機使用者",status:"draft",parentVersionId:parentId,history:[]};history(version,"draft_created",parentId?"新修訂草稿建立":"版本草稿建立");approvalVersions.unshift(version);state.editorVersionId=version.id;state.approvalVersionId=version.id}persistPlatform();toast("草稿已儲存，可檢查後再送審");render()}catch(error){toast("資料量過大，請縮小照片後再儲存")}
+  let savingEditorVersion=false;
+  async function saveEditorVersion(){
+    if(savingEditorVersion)return;
+    savingEditorVersion=true;
+    const save=document.querySelector('#save-process');if(save)save.disabled=true;
+    try{
+      const stages=deepCopy(ensureCategoryEditor()),now=new Date().toISOString(),selected=group().find(item=>item.id===state.editorVersionId),isRevision=String(state.editorVersionId||"").startsWith("revision:"),parentId=isRevision?String(state.editorVersionId).split(":")[1]:null;
+      localStorage.setItem(`processEditor:${editorKey()}`,JSON.stringify({category:state.category,line:state.editorLine,stages,savedAt:now}));if(selected?.status==="draft"){selected.stages=stages;selected.updatedAt=now;history(selected,"draft_saved","草稿已儲存");state.approvalVersionId=selected.id}else{const versions=group(),version={id:`PV-${crypto.randomUUID()}`,number:Math.max(0,...versions.map(item=>item.number||0))+1,category:state.category,line:state.editorLine,stages,createdAt:now,updatedAt:now,creatorId:currentUser?.id||"local",creatorName:currentUser?.name||"本機使用者",status:"draft",parentVersionId:parentId,history:[]};history(version,"draft_created",parentId?"新修訂草稿建立":"版本草稿建立");approvalVersions.unshift(version);state.editorVersionId=version.id;state.approvalVersionId=version.id}persistPlatform();
+      const saved=await window.ProcessSync?.flush?.();
+      if(saved===false)toast("草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。修訂衝突或登入失效需先處理。");
+      else toast("草稿已儲存，可檢查後再送審");
+    }catch(error){console.warn('Process draft save failed',error);toast("草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。修訂衝突或登入失效需先處理。");}
+    finally{savingEditorVersion=false;if(save)save.disabled=false;render();}
   }
 
   function submitEditorVersion(){

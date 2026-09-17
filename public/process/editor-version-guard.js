@@ -10,7 +10,14 @@
   }
 
   function autoOpenCurrentVersion(){
-    if(state.view!=="editor"||state.editorVersionId)return false;const latest=versionsForRoute()[0];if(!latest)return false;loadVersion(latest);return true
+    if(state.view!=="editor"||state.editorVersionId)return false;const latest=versionsForRoute()[0];if(!latest)return false;
+    const saved=readStore(`processEditor:${editorKey()}`,null);
+    // Operation Apply/drag saves the workspace independently of the version snapshot.
+    // Reopening a draft must not replace that newer workspace with its older version.
+    if(latest.status==="draft"&&saved?.category===state.category&&saved?.line===state.editorLine&&saved?.stages&&saved.savedAt>=(latest.updatedAt||latest.createdAt)){
+      state.editorVersionId=latest.id;return false;
+    }
+    loadVersion(latest);return true
   }
 
   function lockEditor(message){

@@ -6,6 +6,16 @@
 - Import images into Local R2 on fresh bootstrap and sync; serve verified immutable versions through a Local-only streaming route. Export image additions/updates and explicit unreferenced-image tombstones alongside data. Refuse same-ID hash conflicts, missing/corrupt/oversized packages and unexported Local edits.
 - Keep existing CAS/backup/rollback, account/role, restart/idempotence and Production-isolation safeguards. No SQL schema, deployment or Production change.
 
+## 2026-09-17 — Process draft persistence Local verification
+
+- Await the actual editor-version Save, serialize concurrent writes and drain edits queued during a request; explicit Save retries temporary failures without automatic retry or bypassing revision/authentication conflicts.
+- Preserve newer saved draft workspaces when reopening an older draft-version snapshot. Keep native legacy drafts until successful complete-content verification; provide explicit recovery for conflicting browser drafts.
+- Add complete Vietnamese draft/recovery/load notices, visible load/render error states, and reject undecodable raster uploads. Fix the line-selection test's portable default path and explicitly initialize the isolated user-management fixture.
+- Pin Playwright/core to the previously installed 1.62.1 for reproducible Local tests. Isolated browser checks verify DTLN A: 4 stages/11 nodes/V1, existing B/PHAODIEN and C/TIEN definitions, refresh/logout-login, media/quota, failure/retry, legacy migration/recovery and desktop/iPhone controls. Seven-view navigation and Chinese/Vietnamese save notices pass; the full seven-page reload/language/logout matrix remains unverified. English application mode is unavailable; historical pnpm image-parser-guard fails under npm in both main and this branch. Full lint retains existing debt with zero new diagnostics.
+- No SQL schema, migration, Production data change or deployment.
+- Integrate the already-merged canonical-image PR #2 without changing its image package/importer/API. Reuse approved route media for legacy BORUAXE demo defaults instead of requesting missing PNG files; browser checks verify decoded images and Git/HTTP WebP hashes. Restore missing exact @emnapi lock metadata and remove an invalid empty entry for clean npm ci without dependency upgrades.
+- Add a focused real-browser race check: hold two API responses, edit another stage during the first request, verify Save success only after drain, then refresh/logout-login and compare all 11 nodes including BOM, media, positions and links. No employee or Production data is used.
+
 ## 2026-09-17 — Local main push guard
 
 - Add a versioned pre-push hook that blocks pushes while on main and any update/deletion targeting main. Enable through safe repository-local npm postinstall setup with an explicit idempotent setup command; existing custom hooks are never replaced.

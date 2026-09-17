@@ -23,6 +23,7 @@
   let revision = 0,
     ready = false,
     posting = false,
+    pendingFlush = null,
     timer,
     dirty = {},
     baseline = {},
@@ -34,13 +35,17 @@
         .filter(isSharedKey)
         .map((key) => [key, originalGet.call(localStorage, key)]),
     );
+  const legacyDrafts = new Map([...sharedValues].filter(([key]) => key.startsWith('processEditor:')));
   const api = (window.ProcessSync = {
     identity: null,
     protected: false,
     status: 'loading',
     paused: false,
     revision: 0,
+    loadError: null,
     flush,
+    legacyDraftKeys: () => [...legacyDrafts.keys()],
+    readLegacyDraft: key => validLegacyDraft(key, legacyDrafts.get(key)),
   });
   function authHeaders() {
     return platformCredential?.id && platformCredential?.password
@@ -56,6 +61,7 @@
     blocked = false;
     paused = false;
     api.paused = false;
+    stageLegacyDrafts();
   };
   api.getPlatformPassword = () => platformCredential?.password || '';
   api.setDemoIdentity = user => {api.setPlatformIdentity(user);sessionStorage.removeItem('process-platform-signed-out');};
@@ -80,17 +86,19 @@
     }
   }
   function apply(shared) {
+    api.loadError = null;
     const values = shared.values || {};
     sharedValues = new Map(
       Object.entries(values).filter(
         ([key, value]) => isSharedKey(key) && typeof value === 'string',
       ),
     );
-    // Shared business data can contain many compressed photos. Keep it in
-    // memory and persist it through D1/R2 instead of consuming the browser's
-    // small localStorage quota. Remove legacy browser copies on every load.
+    // Preserve old browser drafts until a complete server write is verified.
+    for (const [key, value] of legacyDrafts) {
+      if (!sharedValues.has(key) && validLegacyDraft(key, value)) sharedValues.set(key, value);
+    }
     Object.keys(localStorage)
-      .filter(isSharedKey)
+      .filter(key => isSharedKey(key) && !key.startsWith('processEditor:'))
       .forEach((key) => originalRemove.call(localStorage, key));
     baseline = { ...values };
     revision = shared.revision || 0;
@@ -112,19 +120,68 @@
     } else if (request.status === 403) {
       api.protected = true;
       api.expired = true;
+    } else {
+      api.protected = true;
+      api.loadError = 'unavailable';
+      status('offline');
     }
   } catch (error) {
+    api.protected = true;
+    api.loadError = 'unavailable';
     console.warn('共用資料服務無法連線', error);
     status('offline');
   }
   ready = true;
+  stageLegacyDrafts();
+  function validLegacyDraft(key, value) {
+    try {
+      const saved = JSON.parse(value || 'null');
+      return saved && key === `processEditor:${saved.category}:${saved.line}` &&
+        saved.stages && !Array.isArray(saved.stages) && typeof saved.stages === 'object' &&
+        Object.values(saved.stages).every(Array.isArray) ? saved : null;
+    } catch { return null; }
+  }
+  function stageLegacyDrafts() {
+    if (!ready || (api.protected && (!api.identity || ['viewer', 'device'].includes(api.identity.role)))) return;
+    for (const [key, value] of legacyDrafts) {
+      if (!(key in baseline) && validLegacyDraft(key, value)) queue(key, sharedValues.get(key));
+    }
+  }
+  function confirmLegacyDrafts(updates, values) {
+    for (const [key, legacyValue] of legacyDrafts) {
+      const legacy = validLegacyDraft(key, legacyValue), saved = validLegacyDraft(key, values[key]);
+      if (legacy && saved && key in updates && !(key in dirty) &&
+        updates[key] === values[key] && sharedValues.get(key) === values[key] &&
+        originalGet.call(localStorage, key) === legacyValue &&
+        JSON.stringify(saved.stages) === JSON.stringify(legacy.stages)) {
+        originalRemove.call(localStorage, key);
+        legacyDrafts.delete(key);
+      }
+    }
+  }
   api.applyRestore = (shared) => {
     for (const key of ['processCustomRoles', 'processRoleTemplateOverrides'])
       originalRemove.call(localStorage, key);
     dirty = {};
     apply(shared);
   };
-  async function flush() {
+  function flush() {
+    clearTimeout(timer);
+    if (api.loadError) return Promise.resolve(false);
+    if (pendingFlush) return pendingFlush;
+    if (blocked) return Promise.resolve(false);
+    // Explicit Save may retry a temporary failure. No background retry is scheduled.
+    paused = false;
+    api.paused = false;
+    pendingFlush = (async () => {
+      while (Object.keys(dirty).length) {
+        if (!(await writeBatch())) return false;
+      }
+      return true;
+    })().finally(() => { pendingFlush = null; });
+    return pendingFlush;
+  }
+  async function writeBatch() {
     clearTimeout(timer);
     if (posting || blocked || paused) return false;
     if (!Object.keys(dirty).length) return true;
@@ -163,6 +220,7 @@
         return false;
       }
       baseline = { ...shared.values };
+      confirmLegacyDrafts(updates, shared.values || {});
       revision = shared.revision;
       api.revision = revision;
       blocked = false;
@@ -183,7 +241,11 @@
     }
   }
   function queue(key, value) {
-    if (!ready || !isSharedKey(key) || baseline[key] === value) return;
+    if (!ready || !isSharedKey(key)) return;
+    if (!posting && baseline[key] === value) {
+      delete dirty[key];
+      return;
+    }
     // Account/role changes use the revision-checked administration API.
     if(['platformUsers','processCustomRoles','processRoleTemplateOverrides'].includes(key))return;
     if (api.protected && !api.identity) {
