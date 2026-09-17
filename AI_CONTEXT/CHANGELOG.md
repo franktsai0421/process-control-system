@@ -2,7 +2,7 @@
 
 ## 2026-09-17 — Private collaboration CI
 
-- Run isolated CI on Windows because the existing encrypted ZIP backup engine explicitly requires Windows. Use Bash fail-fast command steps so an earlier regression failure cannot be hidden by a later successful command.
+- Run isolated CI on Windows because the existing encrypted ZIP backup engine explicitly requires Windows. Select the native archive engine and check each PowerShell command's exit code so an earlier regression failure cannot be hidden by a later successful command.
 - CI validates Local fixtures, Canonical and upload safety only; it never deploys or uses Production credentials.
 
 ## 2026-09-17 — Portable private collaboration candidate
