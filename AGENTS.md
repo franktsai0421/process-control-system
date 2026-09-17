@@ -4,6 +4,9 @@ These rules apply to the whole repository.
 
 ## Before development
 
+- Frank and employees use work branches and Pull Requests for every change. Never directly or force push main, delete main or use Owner/admin privileges to bypass the daily workflow. CI passing still requires Frank's review and final merge.
+- This Private repository uses GitHub Free without server-side Branch Protection. Local pre-push hooks only prevent mistakes; Write collaborators can technically push main or merge PRs, but company rules prohibit it. Do not retry paid protection, change visibility, invite employees or merge without Frank's applicable authorization.
+
 - Inspect the current implementation before editing. Identify the smallest set of modules and files required by the request.
 - Reuse existing components, utilities, APIs, data flows, and business rules before adding alternatives.
 - Keep each task to the minimum necessary change. Do not perform unrelated refactors or redesigns.

@@ -30,7 +30,10 @@
     "test:data-merge": "node scripts/test-data-merge.mjs",
     "test:task-safety": "node scripts/test-task-safety.mjs",
     "test:portable": "node scripts/test-portable-paths.mjs",
-    "github:preflight": "node scripts/github-preflight.mjs"
+    "github:preflight": "node scripts/github-preflight.mjs",
+    "postinstall": "node scripts/collaboration-setup.mjs --install",
+    "collaboration:setup": "node scripts/collaboration-setup.mjs",
+    "test:collaboration": "node scripts/test-collaboration-guard.mjs"
   },
   "dependencies": {
     "react": "19.2.8",

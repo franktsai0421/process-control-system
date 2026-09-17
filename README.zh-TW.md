@@ -31,8 +31,11 @@ cd process-control-system
 
 需要符合 package.json engines 的 Node（>=22.13.0）與 npm。依賴安裝需要 registry 網路，與 Local runtime 分開；不需要 Cloudflare Token 或 Frank 密碼。
 
+npm install 透過 postinstall 自動啟用版本化本機 pre-push 防呆。安裝後執行 npm run collaboration:setup 確認；若安裝腳本未執行，必須以此啟用。設定只作用於目前 repository，拒絕覆寫既有自訂 hook。
+
 ```sh
 npm install
+npm run collaboration:setup
 ```
 
 ## 啟動 Local
@@ -75,7 +78,7 @@ npm run data:sync
 
 ## 分支與 Pull Request
 
-先執行 task:status；沒有 remote 時 task:start 可建立本機分支。有 remote 時工具拒絕自動網路操作，先手動更新 main 與 sync。task:submit 匯出並檢查，不自動 merge。Commit／push 工作分支，由 Frank 審查 PR；不得直接或 force push main。
+Frank 與員工一律使用工作分支 → Commit → Push工作分支 → PR → GitHub Actions → Frank審查 → Frank Merge。所有人不得直接或 force push main、刪除 main；員工不得 Merge，日常操作不得以 Owner／管理員權限繞過流程。CI 綠燈仍須 Frank 審查。本機 hook 阻擋在 main 上的 push，以及以 main 為目標的 push。詳見 EMPLOYEE_WORKFLOW.zh-TW.md。
 
 ```sh
 npm run task:status
@@ -100,6 +103,7 @@ npm run test:canonical
 npm run test:data-merge
 npm run test:task-safety
 npm run test:portable
+npm run test:collaboration
 npm run data:validate
 npm run github:preflight
 ```
@@ -120,8 +124,13 @@ Local 只使用 loopback，remote bindings 關閉；工具拒絕 Production 參�
 
 Git 保留 205 筆資產索引，原圖留於私有資產包，clone 使用替代圖片。FQC／IQC／IPQC 是 CLI 協作資料，尚無新品質介面。舊 Local 轉換、正式帳號／hash 與完整依賴稽核仍是後續工作。Main 保護取決於 GitHub 方案，操作規範不等於技術強制。
 
+
+此 Private repository 使用 GitHub Free，未啟用伺服器端 Branch Protection。GitHub 目前不會強制阻止 Write 協作者直接 Push main 或 Merge PR。「只有 Frank Merge」是公司正式規則；本機 hook 只防止誤操作，不是伺服器端保護。CODEOWNERS 識別 Frank 為程式與 Canonical 最終審核人，目前不強制其核准。不得重試付費保護、變更公開狀態或加入開源 LICENSE。
+
 ## 工作副本與文件
 
 repository root 為正式 Git 工作副本；舊版只讀保留供回復，不匯入其歷史或資料。本專案為內部 Private repository，公司條款未確認，未建立開源 LICENSE。
 
 [COLLABORATION](COLLABORATION.zh-TW.md) · [BACKUP_AND_RESTORE](BACKUP_AND_RESTORE.zh-TW.md) · [BOM_SEARCH](BOM_SEARCH.zh-TW.md) · [MASTER_ADMIN_UI](MASTER_ADMIN_UI.zh-TW.md)
+
+[EMPLOYEE_WORKFLOW](EMPLOYEE_WORKFLOW.zh-TW.md)

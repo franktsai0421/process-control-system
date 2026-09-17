@@ -1,5 +1,11 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-17 — Local main push guard
+
+- Add a versioned pre-push hook that blocks pushes while on main and any update/deletion targeting main. Enable through safe repository-local npm postinstall setup with an explicit idempotent setup command; existing custom hooks are never replaced.
+- Test real Git operations against a disposable Local bare remote, including working-branch push and clone/pull/fetch/commit. Add aligned three-language employee instructions and clarify that GitHub Free Private has no server-side main/merge enforcement. Frank is the final reviewer and merger; invitations wait for his explicit authorization after PR #1 merge.
+- No Canonical, application permissions, schema, existing Local data or Production changes.
+
 ## 2026-09-17 — Private collaboration CI
 
 - Run isolated CI on Windows because the existing encrypted ZIP backup engine explicitly requires Windows. Select the native archive engine and check each PowerShell command's exit code so an earlier regression failure cannot be hidden by a later successful command.

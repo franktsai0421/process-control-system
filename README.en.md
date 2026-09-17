@@ -31,8 +31,11 @@ cd process-control-system
 
 Use Node satisfying package.json engines (>=22.13.0) and npm. Dependency installation uses registry networking separately from Local runtime. No Cloudflare Token or Frank password is needed.
 
+npm install enables the versioned Local pre-push guard through postinstall. Run npm run collaboration:setup afterward to verify it; this is required if install scripts were disabled. Setup changes only this repository and refuses to replace existing custom hooks.
+
 ```sh
 npm install
+npm run collaboration:setup
 ```
 
 ## Start Local
@@ -75,7 +78,7 @@ npm run data:sync
 
 ## Branches and Pull Requests
 
-Use task:status first. task:start can create a local branch without a remote; with a remote it refuses automatic networking, so update main and sync manually first. task:submit exports/checks without merging. Commit/push a work branch for Frank review; do not directly or force push main.
+Frank and employees must use work branch → commit → branch push → PR → GitHub Actions → Frank review → Frank merge. Nobody may directly or force push main, delete main, merge employee PRs as an employee, or use Owner/admin privileges to bypass the daily workflow. Green CI does not replace Frank review. The Local hook blocks pushes while on main and pushes targeting main. See EMPLOYEE_WORKFLOW.en.md.
 
 ```sh
 npm run task:status
@@ -100,6 +103,7 @@ npm run test:canonical
 npm run test:data-merge
 npm run test:task-safety
 npm run test:portable
+npm run test:collaboration
 npm run data:validate
 npm run github:preflight
 ```
@@ -120,8 +124,13 @@ Local is loopback-only with remote bindings disabled; tools reject Production ov
 
 Git contains 205 asset indexes; original media stays in a private package and clone uses placeholders. FQC/IQC/IPQC are CLI collaboration records, not a new quality UI. Old Local conversion, formal accounts/hashes and a full dependency audit remain future work. Main enforcement depends on the GitHub plan; workflow guidance is not technical enforcement.
 
+
+This Private repository uses GitHub Free with no server-side Branch Protection. GitHub currently does not prevent Write collaborators from directly pushing main or merging PRs. Frank-only merge is the company rule; the Local hook prevents mistakes, not server-side enforcement. CODEOWNERS identifies Frank as the final reviewer for code and Canonical but does not enforce approval under this plan. Do not retry paid protection, change visibility or add an open-source LICENSE.
+
 ## Working copy and documentation
 
 repository root is the formal Git working copy; the older readonly copy is retained for recovery without importing its history/data. This is an internal Private repository. Company terms are unconfirmed and no open-source LICENSE is created.
 
 [COLLABORATION](COLLABORATION.en.md) · [BACKUP_AND_RESTORE](BACKUP_AND_RESTORE.en.md) · [BOM_SEARCH](BOM_SEARCH.en.md) · [MASTER_ADMIN_UI](MASTER_ADMIN_UI.en.md)
+
+[EMPLOYEE_WORKFLOW](EMPLOYEE_WORKFLOW.en.md)

@@ -10,6 +10,8 @@ PROCESS OS is a bilingual Traditional Chinese/Vietnamese manufacturing process-c
 
 ## Runtime and Architecture
 
+- Private Git collaboration uses GitHub Free. Frank and employees must use work branch/PR/CI/Frank review/Frank merge; direct or force main push, main deletion and employee merge are prohibited company rules, currently not enforced by GitHub. Versioned `.githooks/pre-push` checks both the current branch and pushed refs. `npm install` postinstall safely installs the versioned hook/guard into `.git/hooks` and sets repository-local `core.hooksPath` to `.git/hooks`, retaining protection across branch switches. `collaboration:setup` verifies/repeats setup and refuses existing custom hooks. This guard does not affect normal web PR merge or replace server-side protection. CODEOWNERS identifies Frank as final code/Canonical reviewer without mandatory approval under this plan. Employee invitations wait until Frank merges PR #1 and explicitly authorizes them.
+
 - The formal Git working copy is the repository root. The older site source is a readonly recovery copy. Tracked files contain no workstation-specific absolute paths. Browser regressions resolve optional installed tooling through `PLAYWRIGHT_MODULE`/`CHROME_PATH`; missing dependencies fail without downloading. Host backups default to ignored `.local-backups` under the repository, with `PROCESS_BACKUP_PATH` for an explicit local override. `test:portable` verifies these defaults without performing a real backup.
 
 - Vinext `1.0.0-beta.5`, React 19, TypeScript, Vite, and Cloudflare Workers-compatible server routes.

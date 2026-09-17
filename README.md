@@ -31,8 +31,11 @@ cd process-control-system
 
 Cần Node đáp ứng engines trong package.json (>=22.13.0) và npm. Cài đặt cần mạng registry; đây là bước riêng với runtime Local. Không cần Cloudflare Token hoặc mật khẩu của Frank.
 
+npm install tự bật hook pre-push Local được quản lý phiên bản qua postinstall. Sau khi cài, chạy npm run collaboration:setup để xác nhận; bắt buộc dùng lệnh này nếu script cài đặt bị tắt. Thiết lập chỉ áp dụng cho repository hiện tại và từ chối thay hook tùy chỉnh có sẵn.
+
 ```sh
 npm install
+npm run collaboration:setup
 ```
 
 ## Khởi động
@@ -75,7 +78,7 @@ npm run data:sync
 
 ## Nhánh và Pull Request
 
-Kiểm tra task:status; task:start tạo nhánh khi chưa có remote. Khi có remote, công cụ dừng thao tác mạng tự động: cập nhật main và sync thủ công trước. task:submit xuất/kiểm tra, không tự merge. Commit và push nhánh công việc; Frank rà soát PR. Không push trực tiếp main hoặc force push.
+Frank và nhân viên đều phải dùng nhánh công việc → commit → push nhánh → PR → GitHub Actions → Frank duyệt → Frank merge. Không ai được push trực tiếp hoặc force push main, xóa main; nhân viên không được merge và không dùng quyền Owner/admin để bỏ qua quy trình hằng ngày. CI xanh vẫn cần Frank duyệt. Hook Local chặn push khi đang ở main và push có đích main. Xem EMPLOYEE_WORKFLOW.md.
 
 ```sh
 npm run task:status
@@ -100,6 +103,7 @@ npm run test:canonical
 npm run test:data-merge
 npm run test:task-safety
 npm run test:portable
+npm run test:collaboration
 npm run data:validate
 npm run github:preflight
 ```
@@ -120,8 +124,13 @@ Local chỉ loopback, remote bindings bị tắt; công cụ từ chối tham s�
 
 205 chỉ mục tài sản nằm trong Git, ảnh gốc nằm trong gói riêng; clone dùng ảnh thay thế. FQC/IQC/IPQC là dữ liệu cộng tác CLI, chưa có giao diện chất lượng mới. Chuyển Local cũ, tài khoản chính thức/hash và kiểm toán phụ thuộc đầy đủ còn ở giai đoạn sau. Quy tắc bảo vệ main phụ thuộc gói GitHub, không coi hướng dẫn là biện pháp kỹ thuật.
 
+
+Repository Private này dùng GitHub Free, chưa có Branch Protection phía máy chủ. GitHub hiện không bắt buộc chặn cộng tác viên Write push trực tiếp main hoặc merge PR. Chỉ Frank merge là quy tắc chính thức của công ty; hook Local chỉ ngăn thao tác nhầm, không phải bảo vệ phía máy chủ. CODEOWNERS xác định Frank là người duyệt cuối cho mã và Canonical, chưa bắt buộc phê duyệt theo gói này. Không thử lại bảo vệ trả phí, đổi chế độ hiển thị hoặc thêm LICENSE nguồn mở.
+
 ## Bản làm việc và tài liệu
 
 repository root là bản Git chính thức; bản cũ chỉ đọc để phục hồi. Không nhập lịch sử hoặc dữ liệu từ bản cũ. Repository nội bộ Private; chưa xác nhận điều khoản công ty nên không có LICENSE mã nguồn mở.
 
 [COLLABORATION](COLLABORATION.md) · [BACKUP_AND_RESTORE](BACKUP_AND_RESTORE.md) · [BOM_SEARCH](BOM_SEARCH.md) · [MASTER_ADMIN_UI](MASTER_ADMIN_UI.md)
+
+[EMPLOYEE_WORKFLOW](EMPLOYEE_WORKFLOW.md)
