@@ -1,6 +1,6 @@
 # Local Canonical collaboration
 
-`data/canonical/` is the reviewed, shared business baseline. Git merge updates this package, not any database. Each computer owns its ignored Local D1/R2. Future Staging is a separate test mirror; Production is outside these commands.
+`data/canonical/` is the reviewed, shared business baseline. Git merge updates this package, not any database. Each computer owns its ignored Local D1/R2. Staging is a separately synchronized test mirror; Production requires its own approved complete release and remains outside Local data commands.
 
 ## First clone
 
@@ -56,9 +56,9 @@ Canonical references assets by source content digest and versions metadata-strip
 
 Legacy INTEGER PRIMARY KEY is checked as the rowid alias, including SQLite PRAGMA's notnull representation. A legacy TEXT backup PK lacking explicit NOT NULL is allowed only with no NULL/duplicate IDs and reports LEGACY_SCHEMA_WARNING. Existing migrations/schema are not rewritten; new clone uses their explicit correct constraints.
 
-## Future Staging specification — not implemented
+## Complete fixed Staging release
 
-Each PR gets separate preview code and isolated Staging D1/R2, initialized from that branch's Canonical. Preview must never bind Production and may be cleaned after PR closure. After reviewed main merge, a separately authorized pipeline can validate and mirror main's Canonical into fixed Staging. Staging is a mirror, never the sole source or a reverse overwrite of main. Production releases, account conversion, secrets, backups and deployment require a separate decision. No Staging resources or connection are created by this work.
+`npm run release:staging` releases clean latest main to the existing fixed Staging Worker/D1/R2 after verified full D1 backup: code, pending migrations, complete Canonical materialization, missing passwordless demo identities, verified immutable images and HTTP/desktop/iPhone smoke. `npm run sync:staging` repeats backup/migration/data/seed/images/smoke against a matching deployed commit without redeploying code. Managed target edits, missing explicit tombstones, demo ID collisions and image corruption stop synchronization. Accounts, non-approved versions, editor drafts, private audit fields, non-managed keys and historical R2 objects are retained. Identical business data does not change revision or duplicate records/images; separate protective backups are permitted. Generated static image copies and Canonical-derived legacy aliases serve reviewed images without opening the Local-only API or private bucket. R2 checkpoints record the reviewed Canonical version/domains and managed hashes. Staging never updates main or Production. See DEPLOYMENT.md for the full approved release/target-only recovery procedure. Isolated per-PR previews remain a future specification, not an implemented feature.
 
 ## Safety and recovery
 

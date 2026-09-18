@@ -1,5 +1,12 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-18 — Complete hosted release and Staging Canonical mirror
+
+- Add a fixed complete release runner: verify current main/target, restore-test full D1 export, deploy code, apply migrations, materialize all Canonical domains, append missing passwordless demo identities, verify/import R2 images and run HTTP/desktop/iPhone smoke. Production requires explicit matching approved SHA; no Production deployment/data change was performed.
+- Preserve accounts/credentials, non-approved versions, editor drafts, private history, non-managed keys and historical R2 objects. Record reviewed Canonical domains/managed hashes; reject edits, missing tombstones, ID collisions and corrupt images. CAS verification/rollback and repeat/no-duplicate fixtures cover mutation safeguards.
+- Package main's verified images as generated static assets and derive legacy template/equipment/demo aliases from Canonical associations, keeping the Local-only image API unchanged. Live Staging verifies 330 BOM roots/6,237 rows, all Canonical domains, 205 R2/HTTP images, three signed demo logins and seven desktop/iPhone pages; repeat retains revision 392 with no new accounts/images. No SQL schema/migration change.
+- Workers Free CPU exhaustion (`exceededCpu`/503, CPU-setting rejection 100328) was resolved after Frank subscribed to Paid. Redeploy the same reviewed main with a verified 1,000 ms Staging CPU ceiling after a fresh restore-tested D1 backup; complete data/image and API/desktop/iPhone smoke passed. Repeated shared-state requests succeeded, all three demo identities reload correctly and both viewports decode all 187 process-master image elements. The runner never changes subscription/billing; Production resources are unchanged and still require separate approval.
+
 ## 2026-09-18 — Local BOM update
 
 - Update Canonical from the reviewed September workbook: 328 to 330 roots and 6,214 to 6,237 live rows. Add 407HS004 (19 associations), 407DX017 (34 associations), yutaC and yutaM. Preserve 40 valid historical quantities for nonnumeric source values and the historical first-level 106BX03/3060701 relationship; remove 104 absent unused associations. Preserve other repeated occurrences in preorder without merging quantities.
@@ -45,7 +52,6 @@
 - Bootstrap empty Local from Canonical through existing migrations; retain existing data and demo role rules. Support SQLite rowid semantics and valid legacy backup-PK warnings without rewriting schema.
 - Add stable export, three-way sync/conflict refusal, verified backups/rollback, task safety commands and isolated data tests.
 - Use supported Miniflare built-in Request.cf data and loopback-only Local guard; remove remote font loading. No source Git history rewrite, Cloudflare connection, deployment or existing Local conversion.
-
 
 ## 2026-09-16 — Local passwordless demo authentication
 
