@@ -3630,7 +3630,7 @@
       "code": "2016G005",
       "data": {
         "code": "2016G005",
-        "name": "6 GÓC BO TRÒN Þ37.8 TW",
+        "name": "6 GÓC BO TRÒN Þ37.8 TW 酸洗(VANG)",
         "specification": "6 GÓC VAN PHAO 1\"",
         "unit": "KG"
       },
@@ -3729,9 +3729,9 @@
       "code": "2016G025",
       "data": {
         "code": "2016G025",
-        "name": "",
-        "specification": "",
-        "unit": ""
+        "name": "6 GÓC NHON Þ9 VN",
+        "specification": "NOI 8mm PHUNG",
+        "unit": "KG"
       },
       "id": "part:2016G025",
       "kind": "part"
@@ -3751,7 +3751,7 @@
       "code": "2016G032",
       "data": {
         "code": "2016G032",
-        "name": "6 GÓC BO TRÒN Þ37.8 TW",
+        "name": "6 GÓC BO TRÒN Þ37.8 TW 酸洗(VANG)",
         "specification": "6 GÓC VAN PHAO 1\"",
         "unit": "KG"
       },
@@ -3775,7 +3775,7 @@
         "code": "201TR011",
         "name": "TRÒN Þ18 VN",
         "specification": "ỐC ĐỒNG LVB INAX",
-        "unit": "KG 0,00535"
+        "unit": "KG"
       },
       "id": "part:201TR011",
       "kind": "part"
@@ -3818,8 +3818,8 @@
       "data": {
         "code": "201TR019",
         "name": "TRÒN Þ16 VN",
-        "specification": "ỐC ĐỒNG 9.5 (DAY XẢ)",
-        "unit": "KG"
+        "specification": "ỐC ĐỒNG 9.5 (DAY X",
+        "unit": "ẢK)G"
       },
       "id": "part:201TR019",
       "kind": "part"
@@ -3841,7 +3841,7 @@
         "code": "201TR021",
         "name": "TRÒN Þ24 VN",
         "specification": "ĐẦU ĐỒNG DAY TẮM",
-        "unit": "KG INOX"
+        "unit": "KINGOX"
       },
       "id": "part:201TR021",
       "kind": "part"
@@ -3973,7 +3973,7 @@
         "code": "202AB001",
         "name": "HẠT NHỰA ABS 757",
         "specification": "",
-        "unit": "KG 0,032033"
+        "unit": "KG"
       },
       "id": "part:202AB001",
       "kind": "part"
@@ -3984,7 +3984,7 @@
         "code": "202AB003",
         "name": "HAT NHUA ABS 709",
         "specification": "NẮP HOA SEN",
-        "unit": "KG 0,0159444"
+        "unit": "KG"
       },
       "id": "part:202AB003",
       "kind": "part"
@@ -4017,7 +4017,7 @@
         "code": "202PV003",
         "name": "XANH ABL03 (65%)",
         "specification": "DÂY TƯỚI CÂY",
-        "unit": "KG 0,26673"
+        "unit": "KG"
       },
       "id": "part:202PV003",
       "kind": "part"
@@ -4028,7 +4028,7 @@
         "code": "202PV004",
         "name": "AW04 LỚP NGOÀI 55%",
         "specification": "DÂY CẤP MÁY GIẶT",
-        "unit": "KG 0,129234"
+        "unit": "KG"
       },
       "id": "part:202PV004",
       "kind": "part"
@@ -4039,7 +4039,7 @@
         "code": "202PV005",
         "name": "BW05 LỚP TRONG 48%",
         "specification": "DÂY CẤP MÁY GIẶT",
-        "unit": "KG 0,155652"
+        "unit": "KG"
       },
       "id": "part:202PV005",
       "kind": "part"
@@ -4050,7 +4050,7 @@
         "code": "202PV014",
         "name": "HẠT NHỰA ĐEN BBK01 (81%)",
         "specification": "ZOONG NẮP SEN",
-        "unit": "KG 0,00306"
+        "unit": "KG"
       },
       "id": "part:202PV014",
       "kind": "part"
@@ -4061,7 +4061,7 @@
         "code": "202PV016",
         "name": "TRẮNG TRONG ABL01 (60%)",
         "specification": "DAY SEN",
-        "unit": "KG 0,107916"
+        "unit": "KG"
       },
       "id": "part:202PV016",
       "kind": "part"
@@ -4071,8 +4071,8 @@
       "data": {
         "code": "202PV017",
         "name": "TRẮNG ĐỤC BW01 (55%)",
-        "specification": "202PV017 WHITE-DAY",
-        "unit": "KG SEN 0,0575688"
+        "specification": "202PV017 WHITE-DA",
+        "unit": "Y KSEGN"
       },
       "id": "part:202PV017",
       "kind": "part"
@@ -4083,7 +4083,7 @@
         "code": "202PV018",
         "name": "HẠT NHỰA XÁM ĐỤC GR01(55%)",
         "specification": "202PV018 GREY",
-        "unit": "KG 0,02091"
+        "unit": "KG"
       },
       "id": "part:202PV018",
       "kind": "part"
@@ -4093,8 +4093,8 @@
       "data": {
         "code": "202PV021",
         "name": "ABL01 85%",
-        "specification": "RUỘT DÂY TẮM INOXKG",
-        "unit": "0,01938"
+        "specification": "RUỘT DÂY TẮM INOX",
+        "unit": "KG"
       },
       "id": "part:202PV021",
       "kind": "part"
@@ -4104,8 +4104,8 @@
       "data": {
         "code": "202PV027",
         "name": "BBK01 (73%)",
-        "specification": "ZOONG CAO ỐC NHỰAKG",
-        "unit": "0,00306"
+        "specification": "ZOONG CAO ỐC NHỰA",
+        "unit": "KG"
       },
       "id": "part:202PV027",
       "kind": "part"
@@ -4116,7 +4116,7 @@
         "code": "202PV030",
         "name": "HẠT NHỰA G1705005 60% LN",
         "specification": "",
-        "unit": "KG 0,0669222"
+        "unit": "KG"
       },
       "id": "part:202PV030",
       "kind": "part"
@@ -4127,7 +4127,7 @@
         "code": "202PV033",
         "name": "HẠT NHỰA ĐEN BBK01 55%",
         "specification": "DÂY TC XANH LÁ",
-        "unit": "KG 0,031416"
+        "unit": "KG"
       },
       "id": "part:202PV033",
       "kind": "part"
@@ -4149,7 +4149,7 @@
         "code": "202PV035",
         "name": "TRẮNG TRONG ABL01 (50%)",
         "specification": "",
-        "unit": "KG 0,0483888"
+        "unit": "KG"
       },
       "id": "part:202PV035",
       "kind": "part"
@@ -4160,7 +4160,7 @@
         "code": "202PV036",
         "name": "TRẮNG ĐỤC BW01 (45%)",
         "specification": "",
-        "unit": "KG 0,060486"
+        "unit": "KG"
       },
       "id": "part:202PV036",
       "kind": "part"
@@ -4182,7 +4182,7 @@
         "code": "203CU001",
         "name": "CHỈ CU VÀNG",
         "specification": "",
-        "unit": "KG 0,033532"
+        "unit": "KG"
       },
       "id": "part:203CU001",
       "kind": "part"
@@ -4193,7 +4193,7 @@
         "code": "203FL002",
         "name": "CHỈ FILANENT 1000",
         "specification": "",
-        "unit": "KG 0,006235"
+        "unit": "KG"
       },
       "id": "part:203FL002",
       "kind": "part"
@@ -4204,7 +4204,7 @@
         "code": "203FL006",
         "name": "CHỈ FILANENT 750",
         "specification": "",
-        "unit": "KG 0,002322"
+        "unit": "KG"
       },
       "id": "part:203FL006",
       "kind": "part"
@@ -4215,7 +4215,7 @@
         "code": "203SS001",
         "name": "INOX ĐL",
         "specification": "",
-        "unit": "KG 0,014039"
+        "unit": "KG"
       },
       "id": "part:203SS001",
       "kind": "part"
@@ -4248,7 +4248,7 @@
         "code": "204GD001",
         "name": "BỘT MAU GIA ĐỠ CTP",
         "specification": "A11496",
-        "unit": "KG 0,000102"
+        "unit": "KG"
       },
       "id": "part:204GD001",
       "kind": "part"
@@ -4259,7 +4259,7 @@
         "code": "204NS002",
         "name": "BỘT MAU NẮP SEN",
         "specification": "A19463",
-        "unit": "KG 0,00008"
+        "unit": "KG"
       },
       "id": "part:204NS002",
       "kind": "part"
@@ -4269,8 +4269,8 @@
       "data": {
         "code": "204NS004",
         "name": "BỘT MÀU MÓC SEN",
-        "specification": "A23204A, tay sen, nắp senKG",
-        "unit": "0,00081"
+        "specification": "A23204A, tay sen, nắp sen",
+        "unit": "KG"
       },
       "id": "part:204NS004",
       "kind": "part"
@@ -4281,7 +4281,7 @@
         "code": "204NS005",
         "name": "BỘT MÀU MÓC PVC TRẮNG",
         "specification": "A23237",
-        "unit": "KG 0,00023"
+        "unit": "KG"
       },
       "id": "part:204NS005",
       "kind": "part"
@@ -4314,7 +4314,7 @@
         "code": "204PU001",
         "name": "BỘT MÀU CAM TPU",
         "specification": "F01574",
-        "unit": "KG 0,0116699"
+        "unit": "KG"
       },
       "id": "part:204PU001",
       "kind": "part"
@@ -4380,7 +4380,7 @@
         "code": "2990004",
         "name": "MẠT ĐỒNG 2022",
         "specification": "",
-        "unit": "KG 0,03157"
+        "unit": "KG"
       },
       "id": "part:2990004",
       "kind": "part"
@@ -4996,7 +4996,7 @@
         "code": "3030101",
         "name": "DÂY SEN 16mm",
         "specification": "10mm Inner hose",
-        "unit": "KG 0,10921153"
+        "unit": "KG"
       },
       "id": "part:3030101",
       "kind": "part"
@@ -5634,7 +5634,7 @@
         "code": "3040901",
         "name": "RUỘT PVC INOX KG",
         "specification": "",
-        "unit": "KG 0,0190855"
+        "unit": "KG"
       },
       "id": "part:3040901",
       "kind": "part"
@@ -5887,7 +5887,7 @@
         "code": "3050402",
         "name": "DÂY SỮA 14MM",
         "specification": "",
-        "unit": "KG 0,1290562"
+        "unit": "KG"
       },
       "id": "part:3050402",
       "kind": "part"
@@ -5930,7 +5930,7 @@
       "data": {
         "code": "3050702",
         "name": "CHỤP 13.6 (INOX)",
-        "specification": "",
+        "specification": "高14.2, 內14.2, 後13.6",
         "unit": "CAI"
       },
       "id": "part:3050702",
@@ -6151,7 +6151,7 @@
         "code": "3060102",
         "name": "DÂY PVC 14MM KG",
         "specification": "9mm Inner hose",
-        "unit": "KG 0,234003"
+        "unit": "KG"
       },
       "id": "part:3060102",
       "kind": "part"
@@ -6173,7 +6173,7 @@
         "code": "3060104",
         "name": "DÂY INOX 14MM KG",
         "specification": "",
-        "unit": "KG 0,028364"
+        "unit": "KG"
       },
       "id": "part:3060104",
       "kind": "part"
@@ -6184,7 +6184,7 @@
         "code": "3060105",
         "name": "DÂY SỌC 14MM KG",
         "specification": "",
-        "unit": "KG 0,027351"
+        "unit": "KG"
       },
       "id": "part:3060105",
       "kind": "part"
@@ -6195,7 +6195,7 @@
         "code": "3060108",
         "name": "DÂY INOX 13MM",
         "specification": "",
-        "unit": "KG 0,103326"
+        "unit": "KG"
       },
       "id": "part:3060108",
       "kind": "part"
@@ -6205,8 +6205,8 @@
       "data": {
         "code": "3060121",
         "name": "DÂY PVC 14MM 2024",
-        "specification": "GIẢM 10% LƯỢNG DẦUKG",
-        "unit": "0,160054"
+        "specification": "GIẢM 10% LƯỢNG DẦU",
+        "unit": "KG"
       },
       "id": "part:3060121",
       "kind": "part"
@@ -6217,7 +6217,7 @@
         "code": "3060201",
         "name": "RUỘT DÂY ĐEN 13MM",
         "specification": "9mm Inner hose",
-        "unit": "KG 0,047571"
+        "unit": "KG"
       },
       "id": "part:3060201",
       "kind": "part"
@@ -6228,7 +6228,7 @@
         "code": "3060202",
         "name": "RUỘT DÂY ĐEN 14MM",
         "specification": "10mm Inner hose",
-        "unit": "KG 0,031108"
+        "unit": "KG"
       },
       "id": "part:3060202",
       "kind": "part"
@@ -6800,7 +6800,7 @@
         "code": "3080202",
         "name": "DÂY CAO ÁP VÀNG 8.5MM/50KG",
         "specification": "cam",
-        "unit": "KG 0,6293094"
+        "unit": "KG"
       },
       "id": "part:3080202",
       "kind": "part"
@@ -6811,7 +6811,7 @@
         "code": "3080203",
         "name": "DÂY TƯỚI CÂY XANH",
         "specification": "",
-        "unit": "KG 0,618943"
+        "unit": "KG"
       },
       "id": "part:3080203",
       "kind": "part"
@@ -6822,7 +6822,7 @@
         "code": "3080211",
         "name": "RUỘT DTC INOX",
         "specification": "",
-        "unit": "SỢI 0,20072"
+        "unit": "SỢI"
       },
       "id": "part:3080211",
       "kind": "part"
@@ -8131,7 +8131,7 @@
         "code": "401CT007",
         "name": "THÙNG YUTA",
         "specification": "",
-        "unit": "CAI 0,01666666667"
+        "unit": "CAI"
       },
       "id": "part:401CT007",
       "kind": "part"
@@ -8241,7 +8241,7 @@
         "code": "401HS001",
         "name": "THÙNG BỘ HOA SEN",
         "specification": "",
-        "unit": "CAI 0,04167"
+        "unit": "CAI"
       },
       "id": "part:401HS001",
       "kind": "part"
@@ -8351,7 +8351,7 @@
         "code": "401VS001",
         "name": "THÙNG BỘ VỆ SINH",
         "specification": "LOM",
-        "unit": "CAI 0,04167"
+        "unit": "CAI"
       },
       "id": "part:401VS001",
       "kind": "part"
@@ -8362,7 +8362,7 @@
         "code": "401VS002",
         "name": "THÙNG BỘ VỆ SINH",
         "specification": "PHANG",
-        "unit": "CAI 0,03333"
+        "unit": "CAI"
       },
       "id": "part:401VS002",
       "kind": "part"
@@ -8617,6 +8617,7 @@
         "specification": "",
         "unit": "TO"
       },
+      "deletedAt": "2026-09-18T07:27:36.379Z",
       "id": "part:403DT001",
       "kind": "part"
     },
@@ -8628,6 +8629,7 @@
         "specification": "",
         "unit": "TO"
       },
+      "deletedAt": "2026-09-18T07:27:36.379Z",
       "id": "part:403DT002",
       "kind": "part"
     },
@@ -9086,7 +9088,7 @@
       "code": "405MC013",
       "data": {
         "code": "405MC013",
-        "name": "",
+        "name": "MÀNG CO ĐÔI BỘ RX",
         "specification": "",
         "unit": "CAI"
       },
@@ -9352,7 +9354,7 @@
         "code": "407CA001",
         "name": "TÚI ỐNG HƠI (600*110)",
         "specification": "",
-        "unit": "KG 0,011016"
+        "unit": "KG"
       },
       "id": "part:407CA001",
       "kind": "part"
@@ -9363,7 +9365,7 @@
         "code": "407CA002",
         "name": "TÚI ỐNG HƠI (800*110)",
         "specification": "",
-        "unit": "KG 0,005916"
+        "unit": "KG"
       },
       "id": "part:407CA002",
       "kind": "part"
@@ -9374,7 +9376,7 @@
         "code": "407CA003",
         "name": "TÚI ỐNG HƠI (700*135)",
         "specification": "",
-        "unit": "KG 0,014076"
+        "unit": "KG"
       },
       "id": "part:407CA003",
       "kind": "part"
@@ -9431,6 +9433,7 @@
         "specification": "",
         "unit": "KG"
       },
+      "deletedAt": "2026-09-18T07:27:36.379Z",
       "id": "part:407DX005",
       "kind": "part"
     },
@@ -9446,6 +9449,17 @@
       "kind": "part"
     },
     {
+      "code": "407DX017",
+      "data": {
+        "code": "407DX017",
+        "name": "Túi dây dẫn nước",
+        "specification": "28x32cm",
+        "unit": "CAI"
+      },
+      "id": "part:407DX017",
+      "kind": "part"
+    },
+    {
       "code": "407HS001",
       "data": {
         "code": "407HS001",
@@ -9454,6 +9468,17 @@
         "unit": "KG"
       },
       "id": "part:407HS001",
+      "kind": "part"
+    },
+    {
+      "code": "407HS004",
+      "data": {
+        "code": "407HS004",
+        "name": "Túi dây tắm",
+        "specification": "27x31cm",
+        "unit": "CAI"
+      },
+      "id": "part:407HS004",
       "kind": "part"
     },
     {
@@ -9983,6 +10008,22 @@
       },
       "id": "part:6120102",
       "kind": "part"
+    },
+    {
+      "code": "yutaC",
+      "data": {
+        "code": "yutaC"
+      },
+      "id": "part:yutaC",
+      "kind": "semi-finished"
+    },
+    {
+      "code": "yutaM",
+      "data": {
+        "code": "yutaM"
+      },
+      "id": "part:yutaM",
+      "kind": "semi-finished"
     }
   ],
   "schemaVersion": 1

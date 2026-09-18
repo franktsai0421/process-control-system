@@ -1,5 +1,10 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-18 — Local BOM update
+
+- Update Canonical from the reviewed September workbook: 328 to 330 roots and 6,214 to 6,237 live rows. Add 407HS004 (19 associations), 407DX017 (34 associations), yutaC and yutaM. Preserve 40 valid historical quantities for nonnumeric source values and the historical first-level 106BX03/3060701 relationship; remove 104 absent unused associations. Preserve other repeated occurrences in preorder without merging quantities.
+- Exclude precisely Excel row 2697 by object identity, retaining the identical 2691 row at its original position. Check that order before writing and after import. Add a Local transaction coordinator with D1/R2 and project-file backups, revision checks, explicit Canonical tombstones, rollback/reapplication and sync-base updates. Browser fixtures cover existing drafts, A/B/C selection and new-part checkbox/save/refresh on desktop and iPhone. Local manual acceptance passed. No SQL schema, Staging/Production or approval-flow change.
+
 ## 2026-09-17 — Canonical Web image synchronization
 
 - Package 205 locally recovered, metadata-stripped WebP images with relative paths, source IDs, content versions and manifests; preserve all 7,971 Canonical records and their associations. High-resolution originals/videos/R2 blobs remain outside Git.
