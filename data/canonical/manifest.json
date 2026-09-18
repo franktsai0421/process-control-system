@@ -1,15 +1,15 @@
 {
   "bootstrapVersion": 1,
-  "dataVersion": "fbde9e2c1c8e146f404cfe919340b0a16ba34991c4b74876eec845bd15352064",
+  "dataVersion": "ec44855354f0b27c4fc4da9d518db0b735c7a71e8f3a553c038152e771d7f83b",
   "files": {
     "assets/manifest.json": "79be05bbd75e97b98c41eb631b2cefa00179ce4d097bc34d4f2e9ef7dd4b3664",
     "assets/web-manifest.json": "9f829d295e1001d7af4284e59c9e1b909f4682115d889b2f3583d561ff89e194",
-    "bom.json": "5b207abe51120aa34f18b2ec744ca1de79d45d1cd39c0271603cf4581ae9db5b",
+    "bom.json": "02d3b77276e79f900827699063d8178952d1e8ef04b15b6a77530e9a8037d2bf",
     "categories.json": "b759dcc762cd7db29747c2d4f425db07c5eb96163ff0b3b0e5f90e37fd5cc712",
     "dispatch.json": "4942bee1530860ad6e9e20676dd962df9e58f4edd05bcbaef4ba5cd3250698df",
     "lines.json": "f18862a2844aeab3c56af79e554baa97541404bec4a8530dd9d08adfc5c4fb85",
     "master-versions.json": "3d8c13970ac2d350bdeb76ab5ab4402aa6dd35e51aa912cb0c5f4b1d0e3c8d14",
-    "parts.json": "bc48305968f55a93558338f7618e97d4ee6e5834b2c5f31bb82c50ea41d01cab",
+    "parts.json": "6c7bdabf54d172d6f47873a5a0b785cd019be05baa3afc60af105518f08484ba",
     "permissions/role-templates.json": "982271cd96773ae39450237ee64382bf9d1fec755d9e9ae0d7344da0272ba263",
     "process-versions.json": "3bdd47e5a68bd23e0ae69b4a1739ac4787bd20e27684ede461886fbd9387d495",
     "processes.json": "aa0f3536a3b9d3394f861bf5829e6952e1607456e3012f68876ffd372747d94e",
@@ -20,7 +20,7 @@
     "settings.json": "197ba34afdf16c8e1d10ca5f3b90b6f12b09e568993bac665543f35ebfd0eb3e",
     "stages.json": "464ec96f20b99c1d4d261eb5ea152cc0666095de7d7711eb69cd6d7e8bc42610"
   },
-  "generatedAt": "2026-09-17T07:22:03.190Z",
+  "generatedAt": "2026-09-18T07:27:38.989Z",
   "schemaVersion": 1,
   "sourceClassification": "approved-local-and-bundled-business"
 }
