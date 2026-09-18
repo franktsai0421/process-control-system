@@ -58,6 +58,9 @@ const expectedBom = {
             missing.push(new URL(r.url()).pathname);
         });
         await page.goto(base + '/process/', { waitUntil: 'networkidle' });
+        await page.waitForFunction(
+          () => window.ProcessSync?.demoEnabled === true,
+        );
         const b = page.locator(`[data-quick-login=${button}]`);
         if (width === 390) await b.tap();
         else await b.click();
