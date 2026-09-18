@@ -5,6 +5,7 @@
 - Add a fixed complete release runner: verify current main/target, restore-test full D1 export, deploy code, apply migrations, materialize all Canonical domains, append missing passwordless demo identities, verify/import R2 images and run HTTP/desktop/iPhone smoke. Production requires explicit matching approved SHA; no Production deployment/data change was performed.
 - Preserve accounts/credentials, non-approved versions, editor drafts, private history, non-managed keys and historical R2 objects. Record reviewed Canonical domains/managed hashes; reject edits, missing tombstones, ID collisions and corrupt images. CAS verification/rollback and repeat/no-duplicate fixtures cover mutation safeguards.
 - Package main's verified images as generated static assets and derive legacy template/equipment/demo aliases from Canonical associations, keeping the Local-only image API unchanged. Live Staging verifies 330 BOM roots/6,237 rows, all Canonical domains, 205 R2/HTTP images, three signed demo logins and seven desktop/iPhone pages; repeat retains revision 392 with no new accounts/images. No SQL schema/migration change.
+- Final repeated browser/API checks exposed Workers Free CPU exhaustion (`exceededCpu`, 503); a target-only CPU-limit update was rejected with 100328. Full synchronization is retained, but final stable release acceptance is blocked. The generated release config specifies a 1,000 ms CPU ceiling requiring a separately approved Paid plan; no account subscription/billing or Production resource was changed.
 
 ## 2026-09-18 — Local BOM update
 

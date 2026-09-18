@@ -4,6 +4,8 @@ A Git merge or Worker upload changes code only. A release is complete only after
 
 ## Staging
 
+The current complete main dataset requires more than the Workers Free 10 ms CPU allowance. The generated target Worker config sets a 1,000 ms CPU ceiling and requires an already approved Workers Paid subscription; the runner never upgrades a plan or changes account billing. On 2026-09-18, complete Staging data/image synchronization succeeded, but repeated `/api/shared-state` checks hit `exceededCpu`/503. Cloudflare rejected a Staging-only CPU increase with code 100328 (Free plan). Earlier successful smoke runs do not make this release stable: final acceptance remains blocked until Frank approves the account-level upgrade or merges a separately reviewed runtime optimization and repeats Staging for that new main SHA. Production data/deployment remains unchanged.
+
 Stop Staging business edits for the release. Authenticate using the project-local Wrangler version, switch to clean main, fetch and fast-forward origin/main. The release refuses a different branch, dirty tracked/untracked source, or HEAD that differs from freshly fetched origin/main.
 
 ```sh

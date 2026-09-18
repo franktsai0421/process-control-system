@@ -571,6 +571,7 @@ export async function runRelease(
         topLevelName: target.name,
         account_id: target.account_id,
         keep_vars: true,
+        limits: { ...built.limits, cpu_ms: 1000 },
         d1_databases: [
           { ...config.d1_databases[0], migrations_dir: '../../drizzle' },
         ],
