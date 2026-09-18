@@ -21,11 +21,12 @@ const expectedBom = {
   dx: bomRecords.filter((r) => r.data.itemCode === '407DX017').length,
 };
 (async () => {
-  const browser = await chromium.launch({
+  const browserOptions = {
     headless: true,
     channel: runtime.browserExecutable ? undefined : 'chrome',
     executablePath: runtime.browserExecutable,
-  });
+  };
+  let browser = await chromium.launch(browserOptions);
   try {
     for (const width of [1440, 390]) {
       for (const [button, role] of [
@@ -43,6 +44,15 @@ const expectedBom = {
           missing = [];
         let writes = 0;
         page.on('pageerror', (e) => errors.push(e.message));
+        page.on('requestfailed', (r) => {
+          if (new URL(r.url()).pathname === '/api/shared-state')
+            console.log(
+              'SHARED TRANSPORT FAILURE',
+              role,
+              width,
+              r.failure()?.errorText,
+            );
+        });
         page.on('request', (r) => {
           if (
             r.method() === 'POST' &&
@@ -51,6 +61,11 @@ const expectedBom = {
             writes++;
         });
         page.on('response', (r) => {
+          if (
+            new URL(r.url()).pathname === '/api/shared-state' &&
+            r.status() !== 200
+          )
+            console.log('SHARED HTTP FAILURE', role, width, r.status());
           if (
             r.status() >= 400 &&
             new URL(r.url()).pathname.startsWith('/process/')
@@ -71,8 +86,32 @@ const expectedBom = {
           'shared state must load with demo login enabled',
         );
         const b = page.locator(`[data-quick-login=${button}]`);
-        if (width === 390) await b.tap();
-        else await b.click();
+        await page.waitForFunction(
+          (button) =>
+            document
+              .querySelector(`[data-quick-login=${button}]`)
+              ?.onclick?.toString()
+              .includes('demoRole'),
+          button,
+        );
+        let loginResponse;
+        for (let attempt = 0; attempt < 2 && !loginResponse; attempt++) {
+          const response = page
+            .waitForResponse(
+              (r) =>
+                new URL(r.url()).pathname === '/api/platform-login' &&
+                r.request().method() === 'POST',
+              { timeout: 8000 },
+            )
+            .catch(() => null);
+          if (width === 390) await b.tap();
+          else await b.click();
+          loginResponse = await response;
+          if (!loginResponse)
+            console.log('RETRY login without response', role, width);
+        }
+        assert.ok(loginResponse, 'quick login must receive an API response');
+        assert.equal(loginResponse.status(), 200, 'quick login API');
         await page.waitForFunction(
           (role) => currentUser?.id === 'demo-' + role,
           role,
@@ -172,6 +211,8 @@ const expectedBom = {
         assert.equal(missing.length, 0, missing.join(','));
         assert.equal(writes, 0, 'browser smoke must not mutate shared state');
         await ctx.close();
+        await browser.close();
+        browser = await chromium.launch(browserOptions);
       }
     }
     console.log(
