@@ -13,6 +13,8 @@ These rules apply to the whole repository.
 - Preserve backward compatibility and existing production data. Never invent schema, entities, features, or behavior to satisfy documentation.
 - Treat verified current code and schema as the source of truth when documentation disagrees.
 
+- Use the complete release procedure in `DEPLOYMENT.md` for every Staging or approved Production release: verify latest reviewed main/SHA and target DB/R2 bindings, backup and restore-test target D1 before mutations, then code, migrations, full Canonical sync, safe passwordless demo seed, immutable images and Smoke Test. A code-only upload or Git merge is not a complete release. Preserve non-managed records/credentials/history and require Frank's applicable Production approval for the exact main SHA.
+
 ## Data and security
 
 - Do not alter production records, seed data, credentials, backup contents, or deployment access unless the task explicitly requires it.

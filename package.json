@@ -39,7 +39,11 @@
     "test:editor-browser": "node scripts/test-editor-draft-browser.cjs",
     "test:editor-race": "node scripts/test-editor-draft-browser.cjs --race-only",
     "test:editor-images": "node scripts/test-editor-real-images.cjs",
-    "test:editor-lines": "node scripts/test-editor-line-selection.cjs"
+    "test:editor-lines": "node scripts/test-editor-line-selection.cjs",
+    "release:staging": "node scripts/release-main.mjs --target staging",
+    "release:production": "node scripts/release-main.mjs --target production",
+    "sync:staging": "node scripts/release-main.mjs --target staging --sync-only",
+    "test:release": "node scripts/test-release-main.mjs"
   },
   "dependencies": {
     "react": "19.2.8",

@@ -1,6 +1,6 @@
 # PROCESS OS - Current Data Model
 
-Last verified: 2026-09-17. This document describes only the current repository implementation.
+Last verified: 2026-09-18. This document describes only the current repository implementation.
 
 ## Persistence Overview
 
@@ -235,4 +235,4 @@ Schema/bootstrap versions are 1. Domain files have fixed-ID records, optional ex
 
 Ignored `.wrangler/local-only/canonical-base.json` holds last-synced domain values/version and last-export hash. Three-way sync rejects unexported or conflicting Local edits. Physical backups preserve complete D1/WAL/SHM/R2 and Local session/base settings; CAS updates revision, retains old R2 snapshots, verifies projection and rolls back failure. Unchanged domains retain Local serialized contents; existing accounts and private version history stay Local. Assets retain source-content IDs/hashes and add web metadata (relative path, SHA-256/content version, MIME, bytes, width and height). assets/web-manifest.json is hashed in the main manifest and includes image tombstones/package version. Verified WebP files enter Git; original content remains outside Git. Local R2 keeps immutable canonical-images/<source-sha>/<web-sha>.webp objects. The Local-only image route streams these objects; bootstrap/sync resolve Canonical references to that route while preserving private uploads and drafts. Unreferenced image objects are retained for recovery, not physically deleted. No SQL schema or bootstrap-version change.
 
-Four layers: Canonical in reviewed main, individual Local D1/R2, future separate Staging mirror, and out-of-scope Production. Git merge only changes Canonical. See LOCAL_DATA_COLLABORATION.md for implemented commands and future-only Staging specification.
+Four layers: Canonical in reviewed main, individual Local D1/R2, an explicitly synchronized separate Staging mirror, and separately approved Production. Git merge changes Canonical only. Complete release materialization reuses the existing shared-state keys/serializer, preserves accounts/private drafts/history and non-managed keys, and appends only missing passwordless demo identities. No SQL table, field or migration is added. Target R2 retains immutable images and snapshots; `<environment>-canonical/latest.json` and revision/content-specific checkpoints store Canonical domains, dataVersion/generatedAt and managed hashes for conflict/tombstone checks. Reviewed image references use generated static copies of the same R2 WebP bytes; the Local image API stays loopback-only. Full D1 SQL exports are ignored private artifacts, and pre-write logical snapshots use state_backups. See DEPLOYMENT.md and LOCAL_DATA_COLLABORATION.md.
