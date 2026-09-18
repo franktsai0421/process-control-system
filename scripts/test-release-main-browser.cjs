@@ -58,8 +58,17 @@ const expectedBom = {
             missing.push(new URL(r.url()).pathname);
         });
         await page.goto(base + '/process/', { waitUntil: 'networkidle' });
-        await page.waitForFunction(
-          () => window.ProcessSync?.demoEnabled === true,
+        const unavailable = await page.evaluate(
+          () => window.ProcessSync?.loadError === 'unavailable',
+        );
+        if (unavailable) {
+          console.log('RETRY initial shared-state transport', role, width);
+          await page.reload({ waitUntil: 'networkidle' });
+        }
+        assert.equal(
+          await page.evaluate(() => window.ProcessSync?.demoEnabled),
+          true,
+          'shared state must load with demo login enabled',
         );
         const b = page.locator(`[data-quick-login=${button}]`);
         if (width === 390) await b.tap();
