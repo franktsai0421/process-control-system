@@ -132,6 +132,9 @@ const expectedBom = {
             .filter((r) => r.itemCode === '407DX017').length,
         }));
         assert.deepEqual(bom, expectedBom);
+        const dashboardBom = page.locator('.stat').filter({ hasText: 'BOM 對應產品' });
+        assert.equal(await dashboardBom.locator('strong').innerText(), String(expectedBom.roots), 'visible dashboard roots match live BOM');
+        assert.equal((await dashboardBom.locator('small').innerText()).replace(/[^0-9]/g, ''), String(expectedBom.rows), 'visible dashboard rows match live BOM');
         console.log(
           'PASS quick login/reload/runtime BOM',
           role,
@@ -177,6 +180,13 @@ const expectedBom = {
             ),
           );
           console.log('PASS new BOM visible', width);
+          for (const code of ['407HS004', '407DX017']) {
+            await page.locator('#bom-query').fill(code);
+            const expectedSources = bomRecords.filter(r => r.data.itemCode === code).map(r => r.rootCode).sort();
+            const renderedSources = await page.locator('#bom-detail .bom-source-info li code').allTextContents();
+            assert.deepEqual(renderedSources.sort(), expectedSources, 'visible parent sources match Canonical for ' + code);
+            assert.equal((await page.locator('#bom-detail .bom-summary b').first().innerText()).replace(/\s/g, ''), '0下層組成', 'purchased component has no invented children');
+          }
           await page.locator('[data-tab=process-master]').click();
           await page.waitForTimeout(1000);
           const images = page.locator('#data-content img');

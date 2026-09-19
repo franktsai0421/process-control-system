@@ -7,6 +7,12 @@
   aliases.push(['其他資料JSON','OTHER DATA JSON']);
   const t=(zh,vi)=>document.documentElement.lang==='vi'?vi:zh;
   const h=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+  function refreshBomCounts(){
+    if(!data.meta)return;
+    const rows=Object.values(data.bom||{});
+    data.meta.bomProductCount=rows.filter(items=>items.length>0).length;
+    data.meta.bomRowCount=rows.reduce((total,items)=>total+items.length,0);
+  }
   function parseRows(matrix){
     if(matrix.length>limit+1)throw new Error(t(`最多可匯入 ${limit} 列。`,`Tối đa ${limit} dòng.`));
     const header=matrix[0]?.map(x=>String(x).trim().toUpperCase())||[];
@@ -82,7 +88,7 @@
           try{
             const existing=readStore(key,{}),saved=info.complete?{__format:'PROCESS_OS_BOM_OVERRIDES_V2',replaceAll:true,data:imported}:{...(existing?.data||existing),...imported};localStorage.setItem(key,JSON.stringify(saved));
             if(info.complete)Object.keys(data.bom).forEach(code=>delete data.bom[code]);
-            Object.assign(data.bom,imported);data.meta.bomProductCount=Object.keys(data.bom).length;data.meta.bomRowCount=Object.values(data.bom).reduce((n,r)=>n+r.length,0);
+            Object.assign(data.bom,imported);refreshBomCounts();
             dialog.close();repaint();toast(t(`已匯入 ${codes.length} 個主件 BOM。`,`Đã nhập BOM cho ${codes.length} SKU gốc.`));
           }catch{dialog.querySelector('.master-dialog-error').textContent=t('儲存失敗，未套用本次匯入。請減少檔案大小後重試。','Không lưu được; chưa áp dụng dữ liệu nhập. Hãy giảm kích thước tệp.');}
         };
@@ -94,5 +100,6 @@
     const saved=readStore(key,{});
     if(saved?.replaceAll&&saved?.data){Object.keys(data.bom).forEach(code=>delete data.bom[code]);Object.assign(data.bom,saved.data);}
     else Object.assign(data.bom,saved||{});
+    refreshBomCounts();
   }
 })(typeof window==='undefined'?globalThis:window);

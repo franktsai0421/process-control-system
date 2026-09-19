@@ -73,6 +73,16 @@ const server=http.createServer(async(req,res)=>{try{
   const page=await browser.newPage({viewport:{width:1366,height:900}}),errors=[];
   page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());page.setDefaultTimeout(30000);
   await page.goto(origin+'/process/');await page.locator('[data-quick-login=admin]').click();
+  for(const width of [1366,390]){
+   await page.setViewportSize({width,height:844});
+   const stat=page.locator('.stat').filter({hasText:'BOM 對應產品'});
+   assert.equal(await stat.locator('strong').innerText(),'330');
+   assert.equal((await stat.locator('small').innerText()).replace(/[^0-9]/g,''),'6237');
+   await page.reload({waitUntil:'networkidle'});
+   assert.equal(await stat.locator('strong').innerText(),'330','reload preserves visible Canonical root count');
+   assert.equal((await stat.locator('small').innerText()).replace(/[^0-9]/g,''),'6237','reload preserves visible Canonical row count');
+  }
+  await page.setViewportSize({width:1366,height:900});
   async function editor(line,category){
    if(await page.locator('#menu-toggle').isVisible()&&!await page.locator('.sidebar.open').count())await page.locator('#menu-toggle').click();
    await page.locator('.nav-item[data-view=editor]').click();await page.locator('#editor-line-select').selectOption(line);
