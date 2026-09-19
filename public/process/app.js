@@ -3540,6 +3540,10 @@ document.querySelector('#menu-toggle').onclick = () =>
 document.querySelector('#account-button').onclick = () =>
   document.querySelector('#account-menu').classList.toggle('open');
 document.querySelector('#logout-button').onclick = async () => {
+  if(await window.ProcessSync?.flush?.()!==true){
+    toast('草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。修訂衝突或登入失效需先處理。');
+    return;
+  }
   await fetch('/api/platform-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout'})});
   window.ProcessSync?.clearIdentity?.();
   sessionStorage.setItem('process-platform-signed-out', '1');

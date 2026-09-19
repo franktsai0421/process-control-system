@@ -1,6 +1,6 @@
 # PROCESS OS - AI Development Context
 
-Last verified against repository code: 2026-09-18. Current application build: `2026.09.15.7100`.
+Last verified against repository code: 2026-09-19. Current application build: `2026.09.15.7100`.
 
 Product Status renders an isolated approved snapshot and restores the editor workspace afterward; switching pages does not replace unsaved draft nodes or photos.
 
@@ -100,6 +100,8 @@ Important implementation areas:
 3. Reviewers compare versions and may approve, reject with a reason, request a revision, revoke approval when a safe fallback exists, or let the author withdraw a pending version.
 4. Approval supersedes the previous approved version. Dispatch and production screens consume the current approved version.
 
+Save, submission, review and withdrawal wait for verified server persistence. Status transitions keep the confirmed status visible while saving, block concurrent actions, and restore the previous status on failure so the same action can be retried. Revision conflicts remain blocked; no other account's update is overwritten. Reopening a newer draft workspace refreshes its version controls, including Submit. Login refreshes shared data before opening the workspace; logout waits for pending writes and stays on the page if saving fails.
+
 ### Dispatch and playback
 
 - Each A/B/C line accepts at most three unique products. Every slot selects a product category first, then a product from that line/category.
@@ -154,6 +156,7 @@ Important implementation areas:
 - `/api/users` provides ADMIN-only create, update, password reset, enable/disable, and deletion. IDs are normalized case-insensitively; historical users are archived with deletedAt/deletedBy and disabled; unreferenced users are removed. Self-deletion and final enabled ADMIN removal/demotion are blocked. Roles and users are written only through this API, not bulk shared-state updates.
 - Permission families include approval actions, status visibility/media, master delete/import/export, and view access.
 - The shared-state API allows only an explicit key allowlist and uses optimistic `revision` checks. Same-origin checks protect writes.
+- Startup uses asynchronous shared-state loading and parallel script preloads, executing the existing scripts in order after the snapshot arrives. Large embedded raster images and videos are delivered separately through immutable R2 copies and the permission-checked `/api/state-media` route, including byte-range playback. Writes resolve those delivery URLs back to the original data URIs and return SHA-256 receipts; neither the stored snapshot format nor original image/video bytes change. Original R2 snapshots remain intact. There is no polling or automatic conflict overwrite.
 - Shared business JSON and new uploaded photos are held in memory and sent to the protected revision-checked API; large snapshots use private R2 with D1 references. Device preferences remain in `localStorage`. Existing browser process drafts are retained on load: a valid draft missing from the backend is staged after authentication, while a conflicting draft can be explicitly recovered from the editor. A legacy cache is cleared only after the returned complete stage content matches it and no later update is queued; changed or invalid old caches remain preserved. Save waits for all queued writes, including changes made during a write, and cannot report success before the server accepts them. A temporary failure retains the in-page data and best-effort session recovery, pauses background writes, and can be retried by pressing Save; 401/403/409 remain blocked for login/conflict handling. There is no polling or automatic failure retry.
 - Reopening a draft keeps a saved workspace at least as recent as its draft-version snapshot, including operation Apply and coordinate changes; approved/pending versions retain their existing locks. Initial shared-data failure refuses writes and displays a reloadable error state. Rendering errors also display an error state instead of an empty content area. Raster files that cannot be decoded are rejected rather than retained as broken photos; valid images can still fall back to their original bytes if compression fails.
 - Legacy BORUAXE demo-photo defaults reuse matching media from approved versions of the same route before falling back to legacy static paths; existing operation photos are preserved. Image acceptance must verify decoded pixels and actual response content, because a successfully loaded placeholder is not proof that the image exists. The separately merged canonical-image baseline is required for Fresh Clone real-image availability.

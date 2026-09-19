@@ -1,5 +1,11 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-19 — Durable review actions and startup media delivery
+
+- Reuse the merged draft-persistence fixes; the employee video uses the older Sites publication, not the separate Workers production URL. Its Save still reports success before server confirmation; logs show rejected writes. Fix the remaining submit/review/withdraw actions to wait for persistence, preserve content and original status on failure, and prevent concurrent transitions. Reopening a newer draft now refreshes Submit controls. Login reloads current shared data; logout refuses to abandon failed writes.
+- Remove synchronous startup networking. Deliver large embedded images/videos separately as byte-identical immutable R2 copies, with range playback and verified compact write receipts. Resolve delivery URLs back to the original stored data URIs; retain existing D1 records, credentials, history, R2 snapshots and media. No migration or data sync.
+- Isolated browser checks cover A/B/C text, ordered steps/media/graphs, staff-to-RD save/submit/approve, failed-action retry without duplicate history, browser closure/reopen, effective production selection, stale revision rejection and desktop/iPhone behavior. At the same 10 Mbps limit using an ignored current-data fixture, ready time improved from 27.8 s to 5.1 s and startup state from 31.8 MB to 1.88 MB. The old live Sites first contentful paint measured 65.3 s; this is a separate network observation, not the controlled comparison.
+
 ## 2026-09-19 — Effective BOM dashboard counts
 
 - Recalculate dashboard BOM statistics after loading persisted BOM overrides, including full replacements, and after Excel import. Count only nonempty roots; retain all existing row order and component relationships.

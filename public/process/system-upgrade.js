@@ -51,7 +51,7 @@
   renderLogin=function(){priorRenderLogin();const demo=document.querySelector('.demo-identities')||document.querySelector('.role-login-grid')?.parentElement;if(demo)demo.hidden=false;
     document.querySelectorAll('[data-quick-login]').forEach(b=>b.onclick=async()=>{const role={admin:'admin',rd:'rd',operator:'staff'}[b.dataset.quickLogin],hint=document.querySelector('.login-hint');document.querySelector('#login-id').value='demo-'+role;const showDemoError=message=>{hint.textContent=message;hint.setAttribute('role','alert');hint.classList.add('error');hint.scrollIntoView({block:'nearest'});};
       if(!window.ProcessSync?.demoEnabled){showDemoError('此網站未開啟公開示範登入');return;}
-      try{b.disabled=true;const r=await fetch('/api/platform-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({demoRole:role})}),v=await r.json();if(!r.ok)throw Error(v.error);window.ProcessSync.setDemoIdentity(v.user);enterPlatform(v.user);}catch(error){showDemoError(error.message);}finally{b.disabled=false;}
+      try{b.disabled=true;const r=await fetch('/api/platform-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({demoRole:role})}),v=await r.json();if(!r.ok)throw Error(v.error);window.ProcessSync.setDemoIdentity(v.user);await window.ProcessSync.refresh();state.editorByCategory={};state.editorVersionId=null;enterPlatform(v.user);}catch(error){showDemoError(error.message);}finally{b.disabled=false;}
     });
   };
 

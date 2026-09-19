@@ -93,6 +93,7 @@ const context = vm.createContext({
   },
   URL,
   URLSearchParams,
+  AbortSignal,
   XMLHttpRequest: FixtureRequest,
   CustomEvent: class {
     constructor(type, options) {
@@ -105,6 +106,7 @@ const context = vm.createContext({
   setTimeout,
   fetch: async (url, options) => {
     assert.equal(url, '/api/shared-state');
+    if (!options.body) return {status:200,json:async()=>({revision,values,identity:{id:'operator',role:'staff'},serverProtected:true})};
     lastPost = JSON.parse(options.body);
     if (holdWrite) await holdWrite;
     if (failWrites)
@@ -131,6 +133,7 @@ vm.runInContext(
 );
 
 (async () => {
+  await window.ProcessSync.ready;
   assert.equal(
     localStorage.getItem('processEditor:quota-test:A'),
     initialEditor,

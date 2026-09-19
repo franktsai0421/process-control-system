@@ -38,6 +38,8 @@
     "test:editor-drafts": "node scripts/test-build7100-storage.cjs && node scripts/test-editor-draft-persistence.cjs",
     "test:editor-browser": "node scripts/test-editor-draft-browser.cjs",
     "test:editor-race": "node scripts/test-editor-draft-browser.cjs --race-only",
+    "test:workflow": "node scripts/test-editor-draft-browser.cjs --workflow-only",
+    "test:state-media": "node scripts/test-editor-draft-browser.cjs --media-only",
     "test:editor-images": "node scripts/test-editor-real-images.cjs",
     "test:editor-lines": "node scripts/test-editor-line-selection.cjs",
     "release:staging": "node scripts/release-main.mjs --target staging",
