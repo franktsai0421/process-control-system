@@ -1,5 +1,10 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-19 — Effective BOM dashboard counts
+
+- Recalculate dashboard BOM statistics after loading persisted BOM overrides, including full replacements, and after Excel import. Count only nonempty roots; retain all existing row order and component relationships.
+- Browser regression checks now verify visible dashboard totals after login/reload on desktop and iPhone, plus the Canonical parent sources and zero descendants of the purchased components 407HS004 and 407DX017. Prior release checks verified runtime totals but missed stale dashboard metadata. No schema or Canonical data changes.
+
 ## 2026-09-18 — Complete hosted release and Staging Canonical mirror
 
 - Add a fixed complete release runner: verify current main/target, restore-test full D1 export, deploy code, apply migrations, materialize all Canonical domains, append missing passwordless demo identities, verify/import R2 images and run HTTP/desktop/iPhone smoke. Production requires explicit matching approved SHA; no Production deployment/data change was performed.

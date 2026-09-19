@@ -54,6 +54,7 @@ Important implementation areas:
 - `public/process/permission-controls.js` and `system-upgrade.js`: role templates, complete user administration, page/line/action scope, responsive editor controls, modal editing, pointer movement, and connection mode.
 - `public/process/shared-state.js`: in-memory shared-state mirror, explicit browser-to-D1/R2 writes, revision conflict handling, and local recovery state. Automatic cross-tab polling/retry is disabled.
 - `public/process/bom-search-engine.js`, `bom-search.js`, and `bom-excel.js`: BOM lookup, tree selection, and Excel exchange.
+- Dashboard BOM totals are recalculated from the effective BOM after persisted overrides or Excel import: nonempty roots and all rows (including L0). Purchased leaf components can occur in many parent BOMs while correctly having no descendants of their own.
 - `public/process/master-page-excel.js` and `line-stage-excel.js`: complete-page, versioned Excel exchange for product/category and line/stage master pages, with legacy partial-import compatibility.
 - `public/process/data-safety-ui.js`, `app/api/backups/route.ts`, and `lib/local-backup.mjs`: cloud snapshots and host ZIP backup/restore.
 

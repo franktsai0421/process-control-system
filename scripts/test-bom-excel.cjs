@@ -1,3 +1,4 @@
+/* oxlint-disable typescript/no-require-imports -- VM regression fixture uses the existing CommonJS test runtime. */
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),assert=require('node:assert/strict');
 const base=path.resolve(process.argv[2]||path.join(__dirname,'..'));
 const sandbox={document:{documentElement:{lang:'zh-Hant'}}};sandbox.window=sandbox;vm.createContext(sandbox);
@@ -20,4 +21,11 @@ const data=vm.runInContext('IMPORTED_DATA',sandbox),all=api.parseRows(api.export
 assert.equal(Object.keys(all).length,Object.keys(data.bom).length);assert.equal(Object.values(all).reduce((s,r)=>s+r.length,0),Object.values(data.bom).reduce((s,r)=>s+r.length,0));
 sandbox.document.documentElement.lang='vi';assert.match(api.toolbar(),/Nhập Excel/);assert.match(api.toolbar(),/Xuất toàn bộ Excel/);
 assert.doesNotMatch(api.toolbar(),/bom-excel-current|bom-excel-template/);
+for(const saved of [{B:[{level:0,itemCode:'B'},{level:1,itemCode:'C'}],EMPTY:[]},{replaceAll:true,data:{B:[{level:0,itemCode:'B'},{level:1,itemCode:'C'}],EMPTY:[]}}]){
+ const context={data:{bom:{A:[{level:0,itemCode:'A'}]},meta:{bomProductCount:99,bomRowCount:999}},readStore:()=>saved};
+ context.window=context;vm.createContext(context);
+ vm.runInContext(fs.readFileSync(path.join(base,'bom-excel.js'),'utf8'),context);
+ assert.equal(context.data.meta.bomProductCount,saved.replaceAll?1:2,'count effective nonempty roots after persisted override');
+ assert.equal(context.data.meta.bomRowCount,saved.replaceAll?2:3,'count effective rows after persisted override');
+}
 console.log('PASS: real XLSX roundtrip, complete source roundtrip, decimal and zero preservation, invalid headers/levels/root/code rejected, bilingual toolbar.');
