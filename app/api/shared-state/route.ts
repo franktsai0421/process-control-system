@@ -1,4 +1,5 @@
 import { env } from 'cloudflare:workers';
+import { mediaState, restoreMediaUpdates, writeReceipt } from '@/lib/state-media';
 import {
   readState,
   encodeValues,
@@ -95,7 +96,7 @@ export async function GET(request: Request) {
     console.error('[cloud-backup] scheduled snapshot failed', error);
   }
   return Response.json(
-    { ...publicState(state), identity: user, serverProtected: true, demoEnabled: demoEnabled(request) },
+    { ...(request.headers.get('X-Process-Media') === 'deferred-v1' ? await mediaState(state) : publicState(state)), identity: user, serverProtected: true, demoEnabled: demoEnabled(request) },
     { headers },
   );
 }
@@ -174,6 +175,13 @@ export async function POST(request: Request) {
       );
     if (value === null) delete values[key];
     else values[key] = value as string;
+  }
+  if (Object.values(body.updates).some(value=>typeof value==='string'&&value.includes('/api/state-media?id='))) {
+    try {
+      for (const [key,value] of Object.entries(await restoreMediaUpdates(body.updates))) if(value!==null)values[key]=value;
+    } catch {
+      return Response.json({error:'媒體讀取失敗，未儲存；請重試。'}, {status:503,headers});
+    }
   }
   const master = parse(values.masterDataControl, null);
   if (
@@ -421,7 +429,7 @@ export async function POST(request: Request) {
   // Treat an identical snapshot as a successful no-op so it does not create a
   // backup or consume a revision number on every polling cycle.
   if (JSON.stringify(values) === JSON.stringify(state.values))
-    return Response.json(publicState(state), { headers });
+    return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(state, request, body.updates) : publicState(state), { headers });
   await backup(state, '整站資料異動前保護備份', user.id, true);
   const next = { revision: state.revision + 1, values };
   const result = await env.DB.prepare(
@@ -439,5 +447,5 @@ export async function POST(request: Request) {
       status: 409,
       headers,
     });
-  return Response.json(publicState(next), { headers });
+  return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(next, request, body.updates) : publicState(next), { headers });
 }

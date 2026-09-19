@@ -12,6 +12,7 @@ const state = {category:'DTLN',editorLine:'A',editorVersionId:null,editorByCateg
 let release, success = true, calls = 0;
 const button = {disabled:false};
 const context = vm.createContext({
+  changingVersion:false,
   state, approvalVersions:versions, crypto:{randomUUID}, currentUser:{id:'fixture',name:'Fixture'},
   document:{querySelector:()=>button}, console,
   deepCopy:value=>JSON.parse(JSON.stringify(value)),
@@ -59,9 +60,9 @@ const stages = line => Object.fromEntries(['CUT','ASSY','PACKING','FINAL'].map((
   const newer={category:'DTLN',line:'A',savedAt:'2026-01-02',stages:stages('A')};
   let loaded=0;
   const reopen=vm.createContext({state:{view:'editor',category:'DTLN',editorLine:'A',editorVersionId:null},
-    versionsForRoute:()=>[latest],readStore:()=>newer,editorKey:()=> 'DTLN:A',loadVersion:()=>{loaded++;}});
+    versionsForRoute:()=>[latest],readStore:()=>newer,editorKey:()=> 'DTLN:A',render(){},loadVersion:()=>{loaded++;}});
   vm.runInContext(guard.slice(guard.indexOf('  function autoOpenCurrentVersion()'),guard.indexOf('  function lockEditor(')),reopen);
-  assert.equal(reopen.autoOpenCurrentVersion(),false);assert.equal(loaded,0,'newer workspace is not replaced by older draft');
+  assert.equal(reopen.autoOpenCurrentVersion(),true);assert.equal(loaded,0,'newer workspace is not replaced by older draft and controls are rerendered');
   assert.equal(reopen.state.editorVersionId,'draft');
   for(const status of ['approved','pending']){
     latest.status=status;reopen.state.editorVersionId=null;

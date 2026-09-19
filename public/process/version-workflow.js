@@ -96,8 +96,64 @@
     document.querySelector("#approval-current-version")?.addEventListener("change",event=>{state.approvalVersionId=event.target.value;state.approvalCompareId=null;render()});
     document.querySelector("#approval-compare-version")?.addEventListener("change",event=>{state.approvalCompareId=event.target.value;render()});
     document.querySelectorAll("[data-edit-version]").forEach(button=>button.onclick=()=>{const version=approvalVersions.find(item=>item.id===button.dataset.editVersion);if(!version)return;state.category=version.category;state.editorLine=version.line;state.editorVersionId=button.dataset.revise?`revision:${version.id}`:version.id;state.editorByCategory[`${version.category}:${version.line}`]=deepCopy(version.stages);state.selectedOperation=Object.values(version.stages||{}).flat()[0]?.id||null;navigate("editor")});
-    document.querySelectorAll("[data-version-action]").forEach(button=>button.onclick=()=>{const version=approvalVersions.find(item=>item.id===state.approvalVersionId)||approvalVersions[0],action=button.dataset.versionAction,note=document.querySelector("#review-note")?.value.trim()||"";if(["reject","request-change"].includes(action)&&!note){toast("請先填寫要求修改或拒絕原因");return}if(action==="approve"){const errors=validate(version);if(errors.length){toast(`尚有 ${errors.length} 項確認錯誤，無法核准`);return}approvalVersions.filter(item=>item.category===version.category&&item.line===version.line&&item.status==="approved"&&item.id!==version.id).forEach(item=>item.status="superseded");version.status="approved";version.reviewNote=note||"版本內容確認完成";version.reviewerName=currentUser.name;version.reviewedAt=new Date().toISOString();history(version,"approved","確認核准",version.reviewNote)}if(action==="reject"){version.status="rejected";version.reviewNote=note;history(version,"rejected","拒絕並要求修改",note)}if(action==="request-change"){version.reviewNote=note;version.changeRequested=true;history(version,"change_requested","已核准版本要求建立修訂",note)}if(action==="revoke"){const check=returnCheck(version);if(!check.allowed){toast(check.reason);return}if(!confirm(`返回確認 V${version.number}？產線會先恢復 V${check.fallback.number}，本版回到主管審核中。`))return;check.fallback.status="approved";history(check.fallback,"restored","恢復為產線使用版本",`V${version.number} 返回確認`);version.status="pending";version.reviewNote=note||"主管返回確認，等待重新確認";history(version,"approval_revoked","主管返回確認",`暫時恢復 V${check.fallback.number}`)}if(action==="withdraw"){version.status="draft";history(version,"withdrawn","編輯者解除送審","繼續修改中")}persistPlatform();toast("版本狀態已更新");render()})
+    document.querySelectorAll("[data-version-action]").forEach(button=>button.onclick=()=>{
+      const version=approvalVersions.find(item=>item.id===state.approvalVersionId)||approvalVersions[0];
+      return changeVersionStatus(version,button.dataset.versionAction,document.querySelector('#review-note')?.value.trim()||'');
+    });
   }
+
+  let changingVersion=false;
+  const workflowFailure='版本尚未完成伺服器儲存，內容與原狀態已保留。請確認連線後重試；衝突或登入失效需先重新登入確認。';
+  async function commitVersionChange(change,success){
+    if(changingVersion||savingEditorVersion)return false;
+    changingVersion=true;
+    const controls=[...document.querySelectorAll('#submit-version,[data-version-action],.direct-withdraw,#save-process,#logout-button')];
+    const disabled=controls.map(button=>button.disabled);controls.forEach(button=>button.disabled=true);
+    const panels=[document.querySelector('#view-root'),document.querySelector('#main-nav')].filter(Boolean);
+    panels.forEach(panel=>{panel.inert=true;panel.setAttribute('aria-busy','true');});
+    const before=deepCopy(approvalVersions),prior=localStorage.getItem('approvalVersions');
+    try{
+      // Finish prior workspace writes before staging a status transition.
+      if(await window.ProcessSync?.flush?.()!==true)throw Error('Workspace not saved');
+      change();
+      const staged=JSON.stringify(approvalVersions);
+      // Production views keep reading the confirmed status while the request runs.
+      approvalVersions=deepCopy(before);
+      localStorage.setItem('approvalVersions',staged);
+      if(await window.ProcessSync?.flush?.()!==true)throw Error('Version not saved');
+      approvalVersions=JSON.parse(staged);toast(success);return true;
+    }catch(error){
+      approvalVersions=before;
+      window.ProcessSync?.discardPending?.('approvalVersions',prior);
+      toast(workflowFailure);return false;
+    }finally{
+      changingVersion=false;controls.forEach((button,index)=>button.disabled=disabled[index]);panels.forEach(panel=>{panel.inert=false;panel.removeAttribute('aria-busy');});render();
+    }
+  }
+  async function changeVersionStatus(version,action,note=''){
+    if(!version||changingVersion)return false;
+    const permission={approve:'approval.approve',reject:'approval.reject','request-change':'approval.requestChange',revoke:'approval.revoke',withdraw:'approval.withdraw'}[action];
+    if(!permission||!(currentUser?.role==='admin'||currentUser?.permissions?.includes(permission)))return false;
+    if(['approve','reject','withdraw'].includes(action)&&version.status!=='pending')return false;
+    if(['request-change','revoke'].includes(action)&&version.status!=='approved')return false;
+    if(['reject','request-change'].includes(action)&&!note){toast('請先填寫要求修改或拒絕原因');return false;}
+    if(action==='approve'){const errors=validate(version);if(errors.length){toast(`尚有 ${errors.length} 項確認錯誤，無法核准`);return false;}}
+    const back=action==='revoke'?returnCheck(version):null;
+    if(back&&!back.allowed){toast(back.reason);return false;}
+    if(back&&!confirm(`返回確認 V${version.number}？產線會先恢復 V${back.fallback.number}，本版回到主管審核中。`))return false;
+    return commitVersionChange(()=>{
+      if(action==='approve'){
+        approvalVersions.filter(item=>item.category===version.category&&item.line===version.line&&item.status==='approved'&&item.id!==version.id).forEach(item=>item.status='superseded');
+        version.status='approved';version.reviewNote=note||'版本內容確認完成';version.reviewerName=currentUser.name;version.reviewedAt=new Date().toISOString();history(version,'approved','確認核准',version.reviewNote);
+      }
+      if(action==='reject'){version.status='rejected';version.reviewNote=note;history(version,'rejected','拒絕並要求修改',note);}
+      if(action==='request-change'){version.reviewNote=note;version.changeRequested=true;history(version,'change_requested','已核准版本要求建立修訂',note);}
+      if(back){back.fallback.status='approved';history(back.fallback,'restored','恢復為產線使用版本',`V${version.number} 返回確認`);version.status='pending';version.reviewNote=note||'主管返回確認，等待重新確認';history(version,'approval_revoked','主管返回確認',`暫時恢復 V${back.fallback.number}`);}
+      if(action==='withdraw'){version.status='draft';history(version,'withdrawn','編輯者解除送審','繼續修改中');}
+      version.updatedAt=new Date().toISOString();
+    },'版本狀態已更新');
+  }
+  window.ProcessVersionActions={changeVersionStatus};
 
   const issueActionLabel=error=>error.type==='connection'?'前往建立連線':error.type==='instruction'?'前往補寫作業說明':error.type==='content'?'前往填寫基本資料':error.type==='bom'?'前往分配 BOM':'前往建立流程';
   function showConnectionGuide(error,op){
@@ -178,23 +234,26 @@
 
   let savingEditorVersion=false;
   async function saveEditorVersion(){
-    if(savingEditorVersion)return;
+    if(savingEditorVersion||changingVersion)return;
     savingEditorVersion=true;
     const save=document.querySelector('#save-process');if(save)save.disabled=true;
     try{
       const stages=deepCopy(ensureCategoryEditor()),now=new Date().toISOString(),selected=group().find(item=>item.id===state.editorVersionId),isRevision=String(state.editorVersionId||"").startsWith("revision:"),parentId=isRevision?String(state.editorVersionId).split(":")[1]:null;
       localStorage.setItem(`processEditor:${editorKey()}`,JSON.stringify({category:state.category,line:state.editorLine,stages,savedAt:now}));if(selected?.status==="draft"){selected.stages=stages;selected.updatedAt=now;history(selected,"draft_saved","草稿已儲存");state.approvalVersionId=selected.id}else{const versions=group(),version={id:`PV-${crypto.randomUUID()}`,number:Math.max(0,...versions.map(item=>item.number||0))+1,category:state.category,line:state.editorLine,stages,createdAt:now,updatedAt:now,creatorId:currentUser?.id||"local",creatorName:currentUser?.name||"本機使用者",status:"draft",parentVersionId:parentId,history:[]};history(version,"draft_created",parentId?"新修訂草稿建立":"版本草稿建立");approvalVersions.unshift(version);state.editorVersionId=version.id;state.approvalVersionId=version.id}persistPlatform();
       const saved=await window.ProcessSync?.flush?.();
-      if(saved===false)toast("草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。修訂衝突或登入失效需先處理。");
+      if(saved!==true)toast("草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。修訂衝突或登入失效需先處理。");
       else toast("草稿已儲存，可檢查後再送審");
     }catch(error){console.warn('Process draft save failed',error);toast("草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。修訂衝突或登入失效需先處理。");}
     finally{savingEditorVersion=false;if(save)save.disabled=false;render();}
   }
 
   function submitEditorVersion(){
+    if(changingVersion||savingEditorVersion)return;
     const version=approvalVersions.find(item=>item.id===state.editorVersionId);if(!version||version.status!=="draft")return;
     version.stages=deepCopy(ensureCategoryEditor());const errors=validate(version);if(errors.length){state.editorSubmissionVersionId=version.id;state.editorSubmissionErrors=errors;toast(`草稿尚有 ${errors.length} 項問題，請查看送審按鈕旁的原因`);render();return}
-    state.editorSubmissionVersionId=null;state.editorSubmissionErrors=[];const now=new Date().toISOString();version.status="pending";version.updatedAt=now;history(version,"submitted","草稿送出確認");state.approvalVersionId=version.id;persistPlatform();toast(`V${version.number} 已送出確認`);render()
+    if(group().some(item=>item.status==='pending'&&item.id!==version.id))return;
+    state.editorSubmissionVersionId=null;state.editorSubmissionErrors=[];
+    return commitVersionChange(()=>{version.status='pending';version.updatedAt=new Date().toISOString();history(version,'submitted','草稿送出確認');state.approvalVersionId=version.id;},`V${version.number} 已送出確認`);
   }
 
   function stepEditorHtml(title,steps,kind,productCode=""){

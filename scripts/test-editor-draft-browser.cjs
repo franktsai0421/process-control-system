@@ -23,7 +23,7 @@ const env = {PROCESS_SESSION_SECRET:randomUUID(), DEMO_LOGIN_ENABLED:'true',
     async first(){return db.prepare(sql).get(...args)||null;},
     async all(){return {results:db.prepare(sql).all(...args)};}};},
     async batch(statements){db.exec('BEGIN');try{const result=[];for(const statement of statements)result.push(await statement.run());db.exec('COMMIT');return result;}catch(error){db.exec('ROLLBACK');throw error;}}},
-  STATE_ARCHIVE:{async put(key,value){objects.set(key,value);},async get(key){return objects.has(key)?{text:async()=>objects.get(key)}:null;}}};
+  STATE_ARCHIVE:{async put(key,value,options){objects.set(key,{value,options});},async head(key){return objects.has(key)?{}:null;},async get(key,options){const item=objects.get(key);if(!item)return null;const full=Buffer.from(item.value),rangeHeader=options?.range?.get('range'),match=/^bytes=(\d+)-(\d*)$/.exec(rangeHeader||'');const range=match?{offset:Number(match[1]),length:(match[2]?Number(match[2])+1:full.length)-Number(match[1])}:undefined;const body=range?full.subarray(range.offset,range.offset+range.length):item.value;return {text:async()=>typeof item.value==='string'?item.value:full.toString(),arrayBuffer:async()=>Uint8Array.from(full).buffer,body,httpMetadata:item.options?.httpMetadata,size:full.length,range};}}};
 const lines=['A','B','C'].map(code=>({code,name:`Fixture ${code}`,stages:['CUT','ASSY','PACKING','FINAL'].map(stage=>({code:`${code}-${stage}`,name:`Fixture ${stage}`}))}));
 const products=lines.flatMap(line=>['DTLN','OTHER'].map(category=>({code:`FIX-${line.code}-${category}`,name:`Fixture ${category}`,category,line:line.code,stages:line.stages.map(s=>s.code),unit:'pcs'})));
 const canonical=require('../lib/canonical-data.mjs'),reviewedMaster=JSON.parse(canonical.materialize({},canonical.readPackage(runtime.repositoryRoot).domains).masterDataControl);
@@ -50,10 +50,17 @@ function load(file){file=path.resolve(file);if(cache.has(file))return cache.get(
     const target=id.startsWith('@/')?path.resolve(id.slice(2)):path.resolve(path.dirname(file),id);return target.endsWith('.mjs')?require(target):load(target.endsWith('.ts')?target:target+'.ts');},
     Request,Response,URL,crypto:webcrypto,Date,TextEncoder,TextDecoder,atob,btoa,console});return fixtureModule.exports;}
 const core=load('lib/process-state.ts');
-const apis={'/api/shared-state':load('app/api/shared-state/route.ts'),'/api/platform-login':load('app/api/platform-login/route.ts')};
+const apis={'/api/shared-state':load('app/api/shared-state/route.ts'),'/api/platform-login':load('app/api/platform-login/route.ts'),'/api/state-media':load('app/api/state-media/route.ts')};
+let baselineMode=false;
+const baselineAssets=new Map();
+if(process.argv.includes('--perf-only')){
+  for(const file of ['index.html','shared-state.js','version-workflow.js','editor-version-guard.js','app.js','data-safety-ui.js','system-upgrade.js'])baselineAssets.set('/process/'+file,require('node:child_process').execFileSync('git',['show','origin/main:public/process/'+file]));
+}
 let rejectSave=false, writeDelay=0, origin, raceGate=null;
 const server=http.createServer(async(req,res)=>{try{
   const url=new URL(req.url,origin), api=apis[url.pathname];
+  if(baselineMode&&url.pathname==='/process/')url.pathname='/process/index.html';
+  if(baselineMode&&baselineAssets.has(url.pathname)){res.writeHead(200,{'Content-Type':url.pathname.endsWith('.html')?'text/html':'text/javascript'});res.end(baselineAssets.get(url.pathname));return;}
   if(api){const chunks=[];for await(const chunk of req)chunks.push(chunk);
     if(url.pathname==='/api/shared-state'&&req.method==='POST'){
       if(rejectSave){res.writeHead(503,{'Content-Type':'application/json'});res.end('{"error":"Fixture unavailable"}');return;}
@@ -78,7 +85,42 @@ const server=http.createServer(async(req,res)=>{try{
   await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));origin=`http://127.0.0.1:${server.address().port}`;
   let browser;
   try{
+    if(process.argv.includes('--media-only')){
+      const {mediaState,digest}=load('lib/state-media.ts');
+      const bytes=require('node:crypto').randomBytes(1024*1024),uri='data:image/png;base64,'+bytes.toString('base64');
+      const source={revision:3,values:{platformUsers:seed.values.platformUsers,'processEditor:fixture:A':JSON.stringify({stages:{'A-CUT':[{mediaItems:[{src:uri}],productMediaItems:{FIX:[{src:uri}]} }],'A-ASSY':[{media:uri}]}})}};
+      const original=JSON.stringify(source),result=await mediaState(source),raw=JSON.parse(result.values['processEditor:fixture:A']),url=raw.stages['A-CUT'][0].mediaItems[0].src;
+      assert.ok(JSON.stringify(result).length<original.length/100);assert.equal(JSON.stringify(source),original,'projection never rewrites source');
+      const image=await apis['/api/state-media'].GET(new Request(origin+url));assert.deepEqual(Buffer.from(await image.arrayBuffer()),bytes,'exact original bytes');
+      const restored=await load('lib/state-media.ts').restoreMediaUpdates(result.values);assert.deepEqual(JSON.parse(restored['processEditor:fixture:A']),JSON.parse(source.values['processEditor:fixture:A']),'transport URLs never alter stored media');
+      const partial=await apis['/api/state-media'].GET(new Request(origin+url,{headers:{Range:'bytes=10-29'}}));assert.equal(partial.status,206);assert.deepEqual(Buffer.from(await partial.arrayBuffer()),bytes.subarray(10,30),'video seeking byte range');
+      const count=objects.size;assert.deepEqual(await mediaState(source),result);assert.equal(objects.size,count,'cache/dedup writes are idempotent');
+      assert.equal((await apis['/api/state-media'].GET(new Request(origin+'/api/state-media?id=../secret'))).status,404);
+      env.DEMO_LOGIN_ENABLED='false';assert.equal((await apis['/api/state-media'].GET(new Request(origin+url))).status,403);env.DEMO_LOGIN_ENABLED='true';
+      const receipt=await load('lib/state-media.ts').writeReceipt(source,new Request(origin,{headers:{'X-Process-Receipt':'sha256'}}),{'processEditor:fixture:A':source.values['processEditor:fixture:A']});
+      assert.equal(receipt.accepted['processEditor:fixture:A'],await digest(JSON.stringify(source.values['processEditor:fixture:A'])));
+      const saved=await apis['/api/shared-state'].POST(new Request(origin+'/api/shared-state?manage=1',{method:'POST',headers:{'Content-Type':'application/json','X-Process-Receipt':'sha256'},body:JSON.stringify({baseRevision:1,updates:{'processEditor:fixture:A':result.values['processEditor:fixture:A']}})}));
+      assert.equal(saved.status,200);assert.equal((await core.readState()).values['processEditor:fixture:A'],source.values['processEditor:fixture:A'],'real POST preserves original data-URI storage');
+      console.log('PASS: immutable byte-exact media, >99% projected payload reduction, source unchanged, cache/dedup, traversal/auth refusal, exact hashed write receipt');return;
+    }
     browser=await chromium.launch({headless:true,executablePath:runtime.browserExecutable});
+    if(process.argv.includes('--perf-only')){
+      assert.ok(process.env.PROCESS_PERF_SNAPSHOT,'explicit ignored snapshot fixture required');
+      const snapshot=JSON.parse(fs.readFileSync(process.env.PROCESS_PERF_SNAPSHOT,'utf8'));
+      snapshot.values.platformUsers=seed.values.platformUsers;
+      db.prepare('UPDATE shared_state SET revision=?,"values"=? WHERE id=1').run(snapshot.revision,JSON.stringify(snapshot.values));
+      const timings=[];
+      for(const before of [true,false]){
+        baselineMode=before;const ctx=await browser.newContext(),p=await ctx.newPage(),cdp=await ctx.newCDPSession(p);
+        await cdp.send('Network.enable');await cdp.send('Network.emulateNetworkConditions',{offline:false,latency:40,downloadThroughput:10*1024*1024/8,uploadThroughput:10*1024*1024/8});
+        await p.route('**/api/shared-state',route=>route.request().method()==='POST'?route.abort():route.continue());
+        const start=performance.now();await p.goto(origin+'/process/',{timeout:120000});await p.locator('[data-quick-login=admin]').waitFor({state:'visible',timeout:120000});
+        if(!before)await p.waitForFunction(()=>!document.documentElement.hasAttribute('data-process-boot'));
+        timings.push({variant:before?'main-before':'candidate',readyMs:Math.round(performance.now()-start),...await p.evaluate(()=>({paintMs:Math.round(performance.getEntriesByName('first-contentful-paint')[0]?.startTime||0),shared:performance.getEntriesByType('resource').filter(r=>r.name.includes('/api/shared-state')).map(r=>({ms:Math.round(r.duration),bytes:r.encodedBodySize}))}))});
+        await ctx.close();
+      }
+      fs.writeFileSync('work/performance-comparison.json',JSON.stringify(timings,null,2));console.log(JSON.stringify(timings));return;
+    }
     const context=await browser.newContext({viewport:{width:1366,height:900}}),page=await context.newPage(),errors=[];
     page.on('pageerror',error=>errors.push(error.message));page.on('dialog',dialog=>dialog.accept());
     page.setDefaultTimeout(30000);
@@ -132,6 +174,66 @@ const server=http.createServer(async(req,res)=>{try{
       return result;
     }
     if(process.argv.includes('--race-only')){await concurrentBrowserSave();return;}
+    if(process.argv.includes('--workflow-only')){
+      // Real handlers and separate signed accounts; never use a production record.
+      async function login(target,role){await target.goto(origin+'/process/');await target.locator(`[data-quick-login=${role}]`).click();await target.waitForFunction(()=>currentUser?.authMode==='demo');}
+      async function choose(target,line){await target.locator('.nav-item[data-view=editor]').click();await target.locator('#editor-line-select').selectOption(line);await target.locator('#category-select').selectOption('DTLN');}
+      const staffState=JSON.parse((await core.readState()).values.platformUsers);
+      const staff=staffState.find(u=>u.role==='staff');staff.inheritRole=false;staff.lines=['A','B','C'];staff.permissions=['approval.submit','approval.withdraw','approval.viewAll','approval.compare','approval.revise'];
+      db.prepare('UPDATE shared_state SET "values"=? WHERE id=1').run(JSON.stringify({...seed.values,platformUsers:JSON.stringify(staffState)}));
+      const staffContext=await browser.newContext({viewport:{width:1366,height:900}}),staffPage=await staffContext.newPage();await login(staffPage,'operator');
+      const records=[];
+      for(const line of ['A','B','C']){
+        await choose(staffPage,line);
+        await staffPage.evaluate(line=>{
+          const code=`FIX-${line}-DTLN`,stages=Object.fromEntries(routeFor(code).stages.map(stage=>[stage,[0,1].map(i=>{
+            const op=newOperation(stage,i+1);op.id=`WF-${stage}-${i}`;op.name=`${stage} 文字 ${i}`;op.mode='manual';op.productCodes=[code];
+            op.instructionSteps=[{text:'第一步',standard:'標準一'},{text:'第二步',standard:'標準二'}];op.productInstructionSteps={[code]:[{text:'補充',standard:'補充標準'}]};op.noteProductCode=code;op.productInstructions={};
+            const photo={src:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="blue"/></svg>'),type:'image/svg+xml',name:'Fixture photo'};op.mediaItems=[photo];op.productMediaItems={[code]:[photo]};
+            op.nextIds=i===0?[`WF-${stage}-1`]:[];op.bomSelections={[code]:rootBom(code).map(x=>x.itemCode)};return op;
+          })]));state.editorByCategory[editorKey()]=normalizeEditorData(stages);state.editorVersionId=null;state.selectedOperation=null;render();
+        },line);
+        await staffPage.locator('#save-process').click();await staffPage.waitForFunction(()=>document.querySelector('#toast').textContent.includes('草稿已儲存'));
+        const record=await staffPage.evaluate(()=>({id:state.editorVersionId,stages:JSON.stringify(ensureCategoryEditor())}));record.line=line;records.push(record);
+        await staffPage.reload();await choose(staffPage,line);assertWorkspace(await staffPage.evaluate(()=>JSON.stringify(ensureCategoryEditor())),record.stages,'staff saved stages after reopen');
+        if(line==='A'){
+          rejectSave=true;await staffPage.locator('#submit-version').click();await staffPage.waitForFunction(()=>document.querySelector('#toast').textContent.includes('原狀態已保留'));
+          assert.equal(await staffPage.evaluate(id=>approvalVersions.find(v=>v.id===id).status,record.id),'draft');rejectSave=false;
+        }
+        await staffPage.locator('#submit-version').click();await staffPage.waitForFunction(id=>approvalVersions.find(v=>v.id===id)?.status==='pending',record.id);
+        const durable=JSON.parse((await core.readState()).values.approvalVersions).find(v=>v.id===record.id);
+        assert.equal(durable.history.filter(h=>h.action==='submitted').length,1,'failed submit/retry produces one submission');
+        assertWorkspace(JSON.stringify(durable.stages),record.stages,'submitted complete snapshot');
+      }
+      // Fully close the editing context, then review using a different account.
+      await staffContext.close();
+      const reviewContext=await browser.newContext(),reviewPage=await reviewContext.newPage();await login(reviewPage,'rd');
+      for(const record of records){
+        await reviewPage.evaluate(async id=>{state.approvalVersionId=id;state.approvalTab='process';await navigate('approval');},record.id);
+        await reviewPage.waitForSelector('[data-version-action=approve]');
+        if(record.line==='A'){
+          rejectSave=true;await reviewPage.locator('[data-version-action=approve]').click();await reviewPage.waitForFunction(()=>document.querySelector('#toast').textContent.includes('原狀態已保留'));
+          assert.equal(await reviewPage.evaluate(id=>approvalVersions.find(v=>v.id===id).status,record.id),'pending');rejectSave=false;
+        }
+        await reviewPage.locator('[data-version-action=approve]').click();await reviewPage.waitForFunction(id=>approvalVersions.find(v=>v.id===id)?.status==='approved',record.id);
+        await reviewPage.reload();await reviewPage.waitForFunction(()=>!document.documentElement.hasAttribute('data-process-boot'));
+        const version=await reviewPage.evaluate(id=>approvalVersions.find(v=>v.id===id),record.id);
+        assertWorkspace(JSON.stringify(version.stages),record.stages,'approved snapshot after reload');assert.equal(version.history.filter(h=>h.action==='approved').length,1);
+      }
+      await reviewContext.close();
+      const reopened=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true}),phone=await reopened.newPage();await login(phone,'operator');
+      for(const record of records){
+        assert.equal(await phone.evaluate(id=>approvalVersions.find(v=>v.id===id)?.status,record.id),'approved','new browser reads approved status');
+        assert.equal(await phone.evaluate(({line})=>window.ProcessVersionValidation.dispatchReadiness(`FIX-${line}-DTLN`,line).ok,record),true,'approved version effective in production');
+      }
+      // Stale editor cannot replace another account's revision.
+      await phone.evaluate(()=>{const version=approvalVersions.find(v=>v.line==='B');version.reviewNote='stale fixture';localStorage.setItem('approvalVersions',JSON.stringify(approvalVersions));});
+      db.prepare('UPDATE shared_state SET revision=revision+1 WHERE id=1').run();
+      assert.equal(await phone.evaluate(()=>window.ProcessSync.flush()),false);assert.equal(await phone.evaluate(()=>window.ProcessSync.status),'conflict');
+      assert.ok(!JSON.parse((await core.readState()).values.approvalVersions).some(v=>v.reviewNote==='stale fixture'));
+      await reopened.close();
+      console.log('PASS: staff A/B/C complete steps/order -> durable Save -> failed/retried single Submit -> separate RD failed/retried Approve -> browser close/reopen -> effective dispatch; stale revision rejected; iPhone signed login.');return;
+    }
     for(const line of ['A','B','C']){
       await select(line);
       await page.evaluate(line=>{

@@ -1,6 +1,7 @@
 (() => {
   const STORAGE_KEY = "processUILanguage";
   const exact = new Map(Object.entries({
+    "版本尚未完成伺服器儲存，內容與原狀態已保留。請確認連線後重試；衝突或登入失效需先重新登入確認。":"Phiên bản chưa được lưu trên máy chủ. Nội dung và trạng thái trước đó được giữ lại. Kiểm tra kết nối rồi thử lại; nếu có xung đột hoặc phiên đăng nhập hết hạn, hãy đăng nhập lại để kiểm tra.",
     "缺少適用流程":"Thiếu quy trình áp dụng", "BOM 未分配":"BOM chưa phân bổ", "前往修正":"Đi đến sửa", "查看問題":"Xem vấn đề",
     "前往建立連線":"Đi đến tạo liên kết", "前往補寫作業說明":"Đi đến bổ sung hướng dẫn", "前往填寫基本資料":"Đi đến điền thông tin cơ bản", "前往分配 BOM":"Đi đến phân bổ BOM", "前往建立流程":"Đi đến tạo quy trình",
     "請建立連線":"Hãy tạo liên kết", "共用操作照片":"Ảnh thao tác dùng chung", "按住圓點拖到這裡":"Giữ điểm tròn và kéo đến đây",

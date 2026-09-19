@@ -15,7 +15,7 @@
     // Operation Apply/drag saves the workspace independently of the version snapshot.
     // Reopening a draft must not replace that newer workspace with its older version.
     if(latest.status==="draft"&&saved?.category===state.category&&saved?.line===state.editorLine&&saved?.stages&&saved.savedAt>=(latest.updatedAt||latest.createdAt)){
-      state.editorVersionId=latest.id;return false;
+      state.editorVersionId=latest.id;render();return true;
     }
     loadVersion(latest);return true
   }
@@ -40,7 +40,7 @@
     panel.after(versionTimeline(versions,current));
     const notice=document.createElement("div");notice.className=`editor-version-rule ${current?.status||revision?"revision":"new"}`;
     if(current?.status==="pending"){
-      notice.className="editor-version-rule pending";notice.innerHTML=`<div><b>此版本已送審，現在不能修改</b><span>解除送審後，此項目會從確認平台移除，並立即解鎖同一版本。</span></div><button class="button signal direct-withdraw" type="button">解除送審，繼續修改</button>`;notice.querySelector(".direct-withdraw").onclick=()=>{current.status="draft";current.history=current.history||[];current.history.push({action:"withdrawn",label:"編輯者解除送審",note:"回到製程編輯台繼續修改",actor:currentUser?.name||"製程人員",at:new Date().toISOString()});persistPlatform();toast(`V${current.number} 已解除送審，可以繼續修改`);render()};lockEditor("版本待確認，無法再次送審")
+      notice.className="editor-version-rule pending";notice.innerHTML=`<div><b>此版本已送審，現在不能修改</b><span>解除送審後，此項目會從確認平台移除，並立即解鎖同一版本。</span></div><button class="button signal direct-withdraw" type="button">解除送審，繼續修改</button>`;notice.querySelector(".direct-withdraw").onclick=()=>window.ProcessVersionActions.changeVersionStatus(current,'withdraw');lockEditor("版本待確認，無法再次送審")
     }else if(current?.status==="draft"){
       notice.remove()
     }else if(["approved","superseded"].includes(current?.status)){

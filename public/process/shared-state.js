@@ -61,13 +61,18 @@
     blocked = false;
     paused = false;
     api.paused = false;
-    stageLegacyDrafts();
   };
   api.getPlatformPassword = () => platformCredential?.password || '';
   api.setDemoIdentity = user => {api.setPlatformIdentity(user);sessionStorage.removeItem('process-platform-signed-out');};
   api.clearIdentity = () => {platformCredential=null;api.identity=null;blocked=false;paused=false;api.paused=false;};
   api.platformHeaders = () => ({ 'Content-Type': 'application/json', ...authHeaders() });
   api.applyServerState = apply;
+  api.discardPending = (key, value) => {
+    if (posting) throw Error('Cannot discard an in-flight write');
+    delete dirty[key];
+    if (value === null) sharedValues.delete(key); else sharedValues.set(key, value);
+    preserveRecovery();
+  };
   function status(message) {
     api.status = message;
     window.dispatchEvent(
@@ -87,6 +92,7 @@
   }
   function apply(shared) {
     api.loadError = null;
+    api.expired = false;
     const values = shared.values || {};
     sharedValues = new Map(
       Object.entries(values).filter(
@@ -104,15 +110,11 @@
     revision = shared.revision || 0;
     api.revision = revision;
   }
-  try {
-    const request = new XMLHttpRequest();
-    request.open('GET', endpoint, false);
-    Object.entries(authHeaders()).forEach(([key, value]) =>
-      request.setRequestHeader(key, value),
-    );
-    request.send();
+  async function load() {
+   try {
+    const request = await fetch(endpoint, { cache: 'no-store', headers: { 'X-Process-Media': 'deferred-v1', ...authHeaders() }, signal: AbortSignal.timeout(45000) });
     if (request.status === 200) {
-      const shared = JSON.parse(request.responseText);
+      const shared = await request.json();
       api.identity = shared.identity || null;
       api.protected = !!shared.serverProtected;
       api.demoEnabled = !!shared.demoEnabled;
@@ -130,9 +132,18 @@
     api.loadError = 'unavailable';
     console.warn('共用資料服務無法連線', error);
     status('offline');
+  } finally {
+    ready = true;
+    stageLegacyDrafts();
+   }
   }
-  ready = true;
-  stageLegacyDrafts();
+  api.ready = load();
+  api.refresh = async () => {
+    if (pendingFlush || Object.keys(dirty).length) throw Error('Unsaved changes');
+    await load();
+    if(api.loadError || api.expired) throw Error('Shared state unavailable');
+    window.dispatchEvent(new CustomEvent('process-shared-state-updated'));
+  };
   function validLegacyDraft(key, value) {
     try {
       const saved = JSON.parse(value || 'null');
@@ -163,7 +174,7 @@
     for (const key of ['processCustomRoles', 'processRoleTemplateOverrides'])
       originalRemove.call(localStorage, key);
     dirty = {};
-    apply(shared);
+      apply(shared);
   };
   function flush() {
     clearTimeout(timer);
@@ -192,7 +203,7 @@
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...authHeaders() },
+        headers: { 'Content-Type': 'application/json', 'X-Process-Receipt': 'sha256', ...authHeaders() },
         body: JSON.stringify({ updates, baseRevision: revision }),
       });
       const text = await response.text();
@@ -219,8 +230,17 @@
         );
         return false;
       }
-      baseline = { ...shared.values };
-      confirmLegacyDrafts(updates, shared.values || {});
+      let acceptedValues = shared.values;
+      if (shared.accepted) {
+        for (const [key, value] of Object.entries(updates)) {
+          const digest = Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(value)))), b => b.toString(16).padStart(2, '0')).join('');
+          if (shared.accepted[key] !== digest) throw Error('Server receipt mismatch');
+        }
+        acceptedValues = { ...baseline, ...updates };
+      }
+      if (!acceptedValues || !Number.isInteger(shared.revision)) throw Error('Invalid server receipt');
+      baseline = { ...acceptedValues };
+      confirmLegacyDrafts(updates, acceptedValues);
       revision = shared.revision;
       api.revision = revision;
       blocked = false;

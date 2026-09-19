@@ -85,6 +85,8 @@
     if (!response.ok) throw Error(value.error || '帳號或密碼錯誤');
     const user = { ...value.user };
     sync?.setPlatformIdentity?.(user, password);
+    await sync?.refresh?.();
+    state.editorByCategory={};state.editorVersionId=null;
     enterPlatform(user);
   }
   function bindProtectedPlatformLogin() {

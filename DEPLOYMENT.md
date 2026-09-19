@@ -1,6 +1,12 @@
 # Complete release procedure
 
-A Git merge or Worker upload changes code only. A release is complete only after code, migrations, Canonical business data, passwordless demo identities, images and smoke checks have passed against the same reviewed main commit.
+## Data-preserving maintenance releases
+
+When Frank explicitly requests a code repair while preserving Production data, do not run the Canonical/seed synchronization described below. First identify the actual employee URL and its bindings: `process-control-20260829.franktsai0421.chatgpt.site` is the existing Sites publication bound by `.openai/hosting.json`, and is distinct from `central-control-production.franktsai0421.workers.dev`. A passing Workers deployment does not update the Sites URL.
+
+For this maintenance path, restore-test a complete target backup before release, retain the previous deployed version and all R2 objects, verify that no migration changed, and validate the candidate on the existing isolated Staging target before merging. Verify the merged SHA again and publish that exact source to the identified Production site. Preserve its bindings, audience, secrets, credentials, records and media; do not seed or replace its business data. Check source hashes, real login/reload, existing content/media and timing on the same public URL. Temporary maintenance access used for backup must be disabled and removed afterward. A failed check blocks publication; a truncated database preview is not a valid backup.
+
+For full data releases (not the explicitly data-preserving maintenance path above), a Git merge or Worker upload changes code only. The complete procedure below additionally verifies migrations, Canonical business data, passwordless demo identities, images and smoke checks against the same reviewed main commit.
 
 ## Staging
 
