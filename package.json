@@ -16,6 +16,7 @@
     "format": "oxfmt",
     "db:generate": "drizzle-kit generate",
     "test:demo": "node scripts/test-demo-auth.cjs",
+    "test:sites-demo": "node scripts/test-sites-demo-login.mjs",
     "test:local-init": "node scripts/test-local-init.mjs",
     "data:export": "node scripts/data-cli.mjs export",
     "data:sync": "node scripts/data-cli.mjs sync",
