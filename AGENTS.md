@@ -14,6 +14,7 @@ These rules apply to the whole repository.
 - Treat verified current code and schema as the source of truth when documentation disagrees.
 
 - Use the complete release procedure in `DEPLOYMENT.md` for every Staging or approved Production release: verify latest reviewed main/SHA and target DB/R2 bindings, backup and restore-test target D1 before mutations, then code, migrations, full Canonical sync, safe passwordless demo seed, immutable images and Smoke Test. A code-only upload or Git merge is not a complete release. Preserve non-managed records/credentials/history and require Frank's applicable Production approval for the exact main SHA.
+- In this project, a request to publish a new or updated web page means publishing the exact approved merged source to the existing ChatGPT Site URL recorded in `.openai/hosting.json`, not only pushing GitHub or deploying the separate Workers URL. Unless Frank explicitly names another target, keep that ChatGPT Site URL and its audience/bindings, then verify the live URL after publication.
 
 ## Data and security
 
