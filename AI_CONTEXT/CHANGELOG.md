@@ -73,6 +73,11 @@
 
 This file records verified, meaningful changes only. `AI_CONTEXT.md` describes the current system state.
 
+## 2026-09-21 — Sites demo-login release guard
+
+- Add a fixed Sites/Staging acceptance check for all three passwordless demo logins, signed cookies, effective role scopes, refresh/logout/re-login, and reviewed live asset hashes.
+- Document that the existing ChatGPT Sites project has an independent D1: when public demo mode is enabled, a data-preserving Sites release must restore-test the complete state and append only missing `createDemoUsers(roleDefaults)` identities with revision conflict checks and verified before/after backups. Existing accounts, credentials, drafts, versions, business data and media remain untouched; conflicts stop the release.
+
 ## [Build 2026.09.15.7100] - 2026-09-15 — large-photo saves bypass browser quota
 
 - Removed shared business JSON from `localStorage`. The compatibility layer now serves existing SPA reads/writes from an in-memory mirror, clears legacy shared browser copies, and sends process/media changes directly to the revision-checked API, where large snapshots continue through D1 references to private R2.
