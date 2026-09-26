@@ -27,6 +27,7 @@
     timer,
     dirty = {},
     baseline = {},
+    staleKeys = new Set(),
     blocked = false,
     paused = false,
     platformCredential = null,
@@ -43,10 +44,24 @@
     paused: false,
     revision: 0,
     loadError: null,
+    saveError: null,
     flush,
     legacyDraftKeys: () => [...legacyDrafts.keys()],
     readLegacyDraft: key => validLegacyDraft(key, legacyDrafts.get(key)),
   });
+  api.saveFailureMessage = () => {
+    const vi = document.documentElement.lang === 'vi';
+    const code = api.saveError?.status;
+    if (code === 409) return vi
+      ? 'Bản nháp chưa được lưu trên máy chủ: dữ liệu đã được cập nhật ở nơi khác. Giữ trang này và đối chiếu thay đổi trước khi lưu lại.'
+      : '草稿尚未完成伺服器儲存：資料已在其他位置更新。請保留目前頁面並核對差異，不要重新整理或覆蓋他人的修改。';
+    if (code === 401 || code === 403) return vi
+      ? 'Bản nháp chưa được lưu trên máy chủ: phiên đăng nhập đã hết hạn hoặc không có quyền. Giữ trang này và liên hệ quản trị viên.'
+      : '草稿尚未完成伺服器儲存：登入已失效或沒有儲存權限。請保留目前頁面並聯絡管理員。';
+    return vi
+      ? 'Bản nháp chưa được lưu trên máy chủ. Giữ trang này, kiểm tra kết nối rồi nhấn Lưu lại.'
+      : '草稿尚未完成伺服器儲存。請保留目前頁面，確認連線後再次按儲存。';
+  };
   function authHeaders() {
     return platformCredential?.id && platformCredential?.password
       ? {
@@ -93,6 +108,7 @@
   function apply(shared) {
     api.loadError = null;
     api.expired = false;
+    api.saveError = null;
     const values = shared.values || {};
     sharedValues = new Map(
       Object.entries(values).filter(
@@ -107,6 +123,7 @@
       .filter(key => isSharedKey(key) && !key.startsWith('processEditor:'))
       .forEach((key) => originalRemove.call(localStorage, key));
     baseline = { ...values };
+    staleKeys.clear();
     revision = shared.revision || 0;
     api.revision = revision;
   }
@@ -185,14 +202,17 @@
     paused = false;
     api.paused = false;
     pendingFlush = (async () => {
+      let rebases = 0;
       while (Object.keys(dirty).length) {
-        if (!(await writeBatch())) return false;
+        const result = await writeBatch(rebases < 2);
+        if (result === 'retry') { rebases++; continue; }
+        if (!result) return false;
       }
       return true;
     })().finally(() => { pendingFlush = null; });
     return pendingFlush;
   }
-  async function writeBatch() {
+  async function writeBatch(canRebase) {
     clearTimeout(timer);
     if (posting || blocked || paused) return false;
     if (!Object.keys(dirty).length) return true;
@@ -203,7 +223,7 @@
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-Process-Receipt': 'sha256', ...authHeaders() },
+        headers: { 'Content-Type': 'application/json', 'X-Process-Receipt': 'sha256', 'X-Process-Media': 'deferred-v1', ...authHeaders() },
         body: JSON.stringify({ updates, baseRevision: revision }),
       });
       const text = await response.text();
@@ -215,9 +235,25 @@
       }
       if (!response.ok) {
         dirty = { ...updates, ...dirty };
+        // A different page/key may have been saved since this editor loaded.
+        // Retry only when none of the keys in this request changed on the server.
+        // Keep local edits and stop if another writer changed the same key.
+        if (response.status === 409 && canRebase &&
+          Number.isInteger(shared.revision) && shared.values &&
+          Object.keys(updates).every(key => baseline[key] === shared.values[key])) {
+          for (const key of new Set([...Object.keys(baseline), ...Object.keys(shared.values)])) {
+            if (!(key in updates) && baseline[key] !== shared.values[key]) staleKeys.add(key);
+          }
+          baseline = { ...shared.values };
+          revision = shared.revision;
+          api.revision = revision;
+          api.saveError = null;
+          return 'retry';
+        }
         // Never create an endless retry loop. Client/conflict responses need
         // human review; server failures pause until the user retries once.
         blocked = [401, 403, 409].includes(response.status);
+        api.saveError = { status: response.status, message: shared.error || '' };
         paused = !blocked;
         api.paused = paused;
         preserveRecovery();
@@ -244,6 +280,7 @@
       revision = shared.revision;
       api.revision = revision;
       blocked = false;
+      api.saveError = null;
       paused = false;
       api.paused = false;
       originalRemove.call(sessionStorage, 'process-unsynced-recovery');
@@ -251,6 +288,7 @@
       return true;
     } catch (error) {
       dirty = { ...updates, ...dirty };
+      api.saveError = { status: 0, message: 'network' };
       paused = true;
       api.paused = true;
       preserveRecovery();
@@ -283,6 +321,13 @@
     )
       return;
     dirty[key] = value;
+    if (staleKeys.has(key)) {
+      blocked = true;
+      api.saveError = { status: 409, message: '此資料已由其他人更新，請保留目前頁面內容並核對差異。' };
+      preserveRecovery();
+      status('conflict');
+      return;
+    }
     clearTimeout(timer);
     if (paused || blocked) {
       preserveRecovery();

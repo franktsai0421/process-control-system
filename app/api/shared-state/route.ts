@@ -128,7 +128,7 @@ export async function POST(request: Request) {
   )
     return Response.json({ error: '資料格式錯誤' }, { status: 400, headers });
   if (body.baseRevision !== state.revision)
-    return Response.json(publicState(state), { status: 409, headers });
+    return Response.json(request.headers.get('X-Process-Media') === 'deferred-v1' ? await mediaState(state) : publicState(state), { status: 409, headers });
   const values = { ...state.values };
   for (const [key, value] of Object.entries(body.updates)) {
     if (!allowedKey(key) || !(value === null || typeof value === 'string'))
@@ -442,10 +442,12 @@ export async function POST(request: Request) {
       state.revision,
     )
     .run();
-  if (!result.meta.changes)
-    return Response.json(publicState(await readState()), {
+  if (!result.meta.changes) {
+    const current = await readState();
+    return Response.json(request.headers.get('X-Process-Media') === 'deferred-v1' ? await mediaState(current) : publicState(current), {
       status: 409,
       headers,
     });
+  }
   return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(next, request, body.updates) : publicState(next), { headers });
 }
