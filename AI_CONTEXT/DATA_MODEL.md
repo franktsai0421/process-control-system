@@ -1,6 +1,6 @@
 # PROCESS OS - Current Data Model
 
-Last verified: 2026-09-18. This document describes only the current repository implementation.
+Last verified: 2026-09-28. This document describes only the current repository implementation.
 
 ## Persistence Overview
 
@@ -38,7 +38,7 @@ The SPA retains its legacy `localStorage` call sites, but `public/process/shared
 
 The opt-in `X-Process-Media: deferred-v1` read representation replaces large raster/video data URIs with `/api/state-media?id=<sha256>` delivery URLs. R2 `delivery/media/` contains byte-identical immutable copies, and `delivery/v1/` caches sanitized snapshot projections by content digest. The media route retains the shared-state read policy and supports ranges. POST resolves delivery URLs and verifies their hashes before validation/persistence, retaining the original data-URI representation and backup/export compatibility. `X-Process-Receipt: sha256` requests a compact receipt for each exact submitted value after the revision-checked write; the client verifies every digest before reporting success. Older clients still receive the existing full response. No SQL table, field, key or migration is added, and existing R2 objects are never deleted.
 
-All writes include a base revision. On HTTP 409, the same deferred-media representation used at load is returned; the browser checks only the keys it is trying to write. If those keys are unchanged, explicit Save may rebase and retry twice while preserving changes in other keys; keys changed elsewhere remain stale locally and cannot be written without review. Same-key 409 and HTTP 401/403 block writes and preserve unsynced updates in memory, with a best-effort `sessionStorage` copy under `process-unsynced-recovery` when it fits. A network/temporary failure pauses automatic writes; explicit Save retries it. Concurrent Saves share the same pending operation and drain later dirty updates before reporting success. There is no polling or automatic failure retry. Failed initial loading refuses writes until data is reloaded. No schema or new shared-state key is introduced.
+Legacy shared writes include a base revision. On HTTP 409, the same deferred-media representation used at load is returned; the browser checks only the keys it is trying to write. If those keys are unchanged, explicit Save may rebase and retry twice while preserving changes in other keys; keys changed elsewhere remain stale locally and cannot be written without review. Same-key 409 and HTTP 401/403 block writes and preserve unsynced updates in memory, with a best-effort `sessionStorage` copy under `process-unsynced-recovery` when it fits. A network/temporary failure pauses automatic writes; explicit Save retries it. Concurrent Saves share the same pending operation and drain later dirty updates before reporting success. There is no polling or automatic failure retry. Failed initial loading refuses writes until data is reloaded. Personal workflow drafts use the same D1 row/R2 serializer and whole-state CAS, plus a separate per-draft version; no SQL schema or migration is introduced.
 
 An old native `processEditor:<category>:<line>` cache is validated against its envelope and stage-array shape and is never deleted merely by loading. When its server key is absent, the valid cached workspace remains readable and is staged for an authenticated editor. A differing server snapshot remains authoritative until explicit legacy recovery and Save. Clearing the cache requires a successful API echo of the current write, identical complete stage content to the old cache, an unchanged native copy, and no later queued update. Modified or invalid caches are retained. Reopening a draft uses its saved workspace when `savedAt` is at least its version's `updatedAt`/`createdAt`; protected version snapshots keep their existing authority. This uses the existing workspace/version JSON and adds no shared-state key, table, entity, SQL schema change or migration.
 
@@ -58,6 +58,18 @@ An old native `processEditor:<category>:<line>` cache is validated against its e
 - any key beginning with `processEditor:`
 
 The server rejects other shared keys and rejects values that are not valid JSON strings (or explicit deletion).
+
+`workflowDraftsV1` is an internal server-managed value in the same serialized state, not a client-writable allowed key. `publicState()` removes it from shared-state responses. Only `/api/workflow-drafts` may read or mutate it after identity, ownership, scope, permission, expected-version, and current-state checks.
+
+### Personal Workflow Draft Store
+
+Stored internally under `workflowDraftsV1` with `schemaVersion: 1`.
+
+- `drafts[]`: `id`, `kind` (`process`, `master`, or `bom`), `scope`, `ownerId`/`ownerName`, monotonically increasing `version`, `status` (`draft`, `locked`, `archived`), immutable creation `base`, current `payload`, timestamps, optional locked case ID, and explicit “retain mine” resolutions bound to the observed current/mine values.
+- `cases[]`: immutable submission identity, source draft/version, kind/scope/owner, `status` (`pending`, `approved`, `rejected`, `withdrawn`), review-time base and merged payload, field-level changes, timestamps, reviewer identity, and note.
+- Process scope is `<category>|<line>`; master scopes are `AB`, `C`, and `PROCESS`; BOM scope is `BOM`.
+- Pending cases are mirrored into existing `approvalVersions` or `masterDataControl.versions` so the current approval platform and history remain compatible. The private draft payload itself is never copied to another employee's draft response.
+- A save may proceed while another employee has an overlapping pending case. Submission is atomic for the complete draft and is refused until no pending overlap or unresolved base/current/mine conflict remains. Approval reapplies only the submitted field changes over the latest approved snapshot and stops on a changed submitted field instead of restoring stale values.
 
 ## Core Entities
 
@@ -91,7 +103,7 @@ Built-in defaults live in code; custom roles are stored in `processCustomRoles`,
 Stored in `masterDataControl`.
 
 - `active.AB` and `active.C`: currently approved catalog snapshots.
-- `versions[]`: historical/draft/pending master snapshots.
+- `versions[]`: approved/historical versions and pending review mirrors. New personal draft payloads live in `workflowDraftsV1`; legacy draft entries remain readable for compatibility.
 
 Each master version contains:
 
@@ -141,7 +153,7 @@ The unified Machine Setting template may contain `equipment[]`. A record has a s
 
 ### Process Editor Workspace
 
-Stored under `processEditor:<category>:<line>`.
+Legacy/shared compatibility projection stored under `processEditor:<category>:<line>`. New personal editable workspaces are stored as `workflowDraftsV1` process drafts and projected here only when approved; preexisting browser/server workspaces remain recoverable.
 
 - `category`, `line`, `savedAt`.
 - `stages`: map of `stageCode -> ProcessOperation[]`.
@@ -173,7 +185,7 @@ Stored in `approvalVersions`.
 - review fields such as `reviewNote`, `reviewerName`, `reviewedAt`, `changeRequested`.
 - `history[]` entries with action/label, actor, timestamp, and optional note.
 
-Statuses used by current workflow: `draft`, `pending`, `approved`, `superseded`, and `rejected`. At most one version per category/line is treated as current approved production data; approving a replacement supersedes the previous approved version.
+Statuses used by the compatibility version list are `pending`, `approved`, `superseded`, `rejected`, and `withdrawn`; legacy `draft` entries remain readable. New personal drafts have their own `draft`/`locked`/`archived` lifecycle in `workflowDraftsV1`. At most one version per category/line is treated as current approved production data; approving a replacement supersedes the previous approved version.
 
 ### Product and BOM Source Data
 
@@ -181,7 +193,7 @@ Statuses used by current workflow: `draft`, `pending`, `approved`, `superseded`,
 - Base line, stage, and product-route data is in `public/process/data/line-process-data.js` as `window.LINE_PROCESS_DATA`.
 - C-line master input is in `public/process/data/line-c-master.js`.
 - Approved `masterDataControl.active` is applied over these sources at runtime and becomes the authoritative operational catalog.
-- `bomOverrides` stores imported/replaced root BOM structures. Legacy values remain a plain SKU map and overlay the generated source. A complete-page BOM Excel import stores `{ __format, replaceAll: true, data }`; runtime loading clears the generated BOM before applying `data`, so omitted SKUs remain omitted after reload.
+- `bomOverrides` stores only approved imported/replaced root BOM structures. Legacy values remain a plain SKU map and overlay the generated source. A complete-page BOM Excel import first writes `{ __format, replaceAll: true, data }` to the current employee's personal BOM draft; approval copies it to `bomOverrides`. Runtime loading clears the generated BOM before applying approved `data`, so omitted SKUs remain omitted after reload.
 
 BOM rows retain source identifiers, names, levels, quantities, units, specifications, waste, and source type as available. Tree relationships are determined by preorder level and contiguous descendants, not by a normalized parent foreign key.
 

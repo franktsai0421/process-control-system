@@ -65,14 +65,16 @@
     return {complete:values['格式識別']===format&&Number(values['格式版本'])>=formatVersion,version:Number(values['格式版本'])||0};
   }
   const permitted=key=>typeof currentUser==='undefined'||window.hasPermission?.(key);
-  function toolbar(){const canImport=permitted('master.import'),canExport=permitted('master.export');return `<section class="bom-excel-toolbar"><b>${t('本頁完整 Excel 資料','Dữ liệu Excel đầy đủ của trang')}</b><div><input hidden type="file" id="bom-excel-file" accept=".xlsx,.xls,.csv">${canImport?`<button class="bom-quiet" id="bom-excel-import">${t('匯入 Excel','Nhập Excel')}</button>`:''}${canExport?`<button class="bom-quiet" id="bom-excel-all">${t('匯出全部 Excel','Xuất toàn bộ Excel')}</button>`:''}</div><p>${canImport||canExport?t('匯出包含本頁全部 BOM；匯回同格式檔案可完整還原本頁資料。','Tệp xuất chứa toàn bộ BOM của trang; nhập lại cùng định dạng để khôi phục đầy đủ.'):t('只有主管可以匯入或匯出資料。','Chỉ quản lý được nhập hoặc xuất dữ liệu.')}</p></section>`;}
+  const draft=()=>host.WorkflowDrafts?.get?.('bom','BOM')?.draft||null;
+  const effective=()=>{const value=draft()?.payload;if(!value)return data.bom;if(value.replaceAll&&value.data)return value.data;return {...data.bom,...(value.data||value)};};
+  function toolbar(){const canImport=permitted('master.import')&&(typeof currentUser==='undefined'||draft()?.status==='draft'),canExport=permitted('master.export');return `<section class="bom-excel-toolbar"><b>${t('本頁完整 Excel 資料','Dữ liệu Excel đầy đủ của trang')}</b><div><input hidden type="file" id="bom-excel-file" accept=".xlsx,.xls,.csv">${canImport?`<button class="bom-quiet" id="bom-excel-import">${t('匯入 Excel 到個人草稿','Nhập Excel vào bản nháp cá nhân')}</button>`:''}${canExport?`<button class="bom-quiet" id="bom-excel-all">${t('匯出全部 Excel','Xuất toàn bộ Excel')}</button>`:''}</div><p>${canImport||canExport?t('匯出包含本頁全部 BOM；匯入只儲存到目前帳號的草稿，核准前不會生效。','Tệp xuất chứa toàn bộ BOM; dữ liệu nhập chỉ lưu vào bản nháp cá nhân cho đến khi được duyệt.'):t('請先建立個人 BOM 草稿；只有有權限的帳號可匯入或匯出。','Hãy tạo bản nháp BOM cá nhân trước; chỉ tài khoản có quyền mới được nhập hoặc xuất.')}</p></section>`;}
   function bind({repaint}){
     const on=(id,event,fn)=>{const element=document.querySelector(id);if(element)element['on'+event]=fn;};
     const write=(bom,name)=>{try{XLSX.writeFile(workbook(bom),`${name}_${new Date().toISOString().slice(0,10)}.xlsx`);toast(t('已產生 Excel，請查看下載。','Đã tạo Excel, hãy xem tệp tải xuống.'));}catch{toast(t('Excel 匯出失敗，請重試。','Xuất Excel thất bại, hãy thử lại.'));}};
-    on('#bom-excel-all','click',()=>{if(permitted('master.export'))write(data.bom,'BOM_ALL');});
-    on('#bom-excel-import','click',()=>{if(permitted('master.import'))document.querySelector('#bom-excel-file').click();});
+    on('#bom-excel-all','click',()=>{if(permitted('master.export'))write(effective(),'BOM_ALL');});
+    on('#bom-excel-import','click',()=>{if(permitted('master.import')&&draft()?.status==='draft')document.querySelector('#bom-excel-file').click();});
     on('#bom-excel-file','change',async event=>{
-      const file=event.target.files?.[0];event.target.value='';if(!file||!permitted('master.import'))return;
+      const file=event.target.files?.[0];event.target.value='';if(!file||!permitted('master.import')||draft()?.status!=='draft')return;
       const dialog=document.createElement('dialog');dialog.className='master-edit-dialog bom-import-dialog';dialog.dataset.i18nSkip='true';dialog.setAttribute('aria-label',t('匯入 BOM 預覽','Xem trước nhập BOM'));
       document.body.appendChild(dialog);dialog.addEventListener('close',()=>dialog.remove());
       dialog.innerHTML=`<div class="master-dialog-body">${t('正在讀取 Excel…','Đang đọc Excel…')}</div>`;dialog.showModal();
@@ -82,15 +84,14 @@
         const info=workbookInfo(book),imported=parseRows(XLSX.utils.sheet_to_json(sheet,{header:1,defval:'',raw:true})),codes=Object.keys(imported);
         Object.values(imported).forEach(rows=>rows.forEach(row=>{row.sourceFile=file.name;}));
         if(!dialog.isConnected)return;
-        dialog.innerHTML=`<header><h2>${t('確認 BOM 匯入','Xác nhận nhập BOM')}</h2></header><div class="master-dialog-body"><p>${h(file.name)} · ${codes.length} SKU · ${Object.values(imported).reduce((n,r)=>n+r.length,0)} ${t('列','dòng')}</p><p>${info.complete?t('這是本頁完整匯出檔，確認後會完整取代目前 BOM。','Đây là tệp xuất đầy đủ; xác nhận sẽ thay toàn bộ BOM hiện tại.'):t('這是舊格式或外部檔案，只更新檔案內的主件，其他 BOM 保留。','Đây là tệp cũ hoặc bên ngoài; chỉ cập nhật SKU trong tệp và giữ BOM khác.')}</p><div class="bom-import-preview">${codes.slice(0,200).map(c=>`<p><code>${h(c)}</code> · ${imported[c].length-1} ${t('下層組成','thành phần con')} · ${data.bom[c]?t('更新','Cập nhật'):t('新增','Thêm mới')}</p>`).join('')}${codes.length>200?`<p>+ ${codes.length-200}</p>`:''}</div><p class="master-dialog-error" role="alert"></p></div><footer><button class="bom-quiet" data-import-cancel>${t('取消 / Esc','Hủy / Esc')}</button><button class="button signal" data-import-confirm>${t('確認匯入','Xác nhận nhập')}</button></footer>`;
+        dialog.innerHTML=`<header><h2>${t('確認 BOM 匯入','Xác nhận nhập BOM')}</h2></header><div class="master-dialog-body"><p>${h(file.name)} · ${codes.length} SKU · ${Object.values(imported).reduce((n,r)=>n+r.length,0)} ${t('列','dòng')}</p><p>${info.complete?t('這是本頁完整匯出檔，確認後會完整取代草稿中的 BOM。','Đây là tệp xuất đầy đủ; xác nhận sẽ thay toàn bộ BOM trong bản nháp.'):t('這是舊格式或外部檔案，只更新草稿內的主件，其他 BOM 保留。','Đây là tệp cũ hoặc bên ngoài; chỉ cập nhật SKU trong bản nháp và giữ BOM khác.')}</p><div class="bom-import-preview">${codes.slice(0,200).map(c=>`<p><code>${h(c)}</code> · ${imported[c].length-1} ${t('下層組成','thành phần con')} · ${effective()[c]?t('更新','Cập nhật'):t('新增','Thêm mới')}</p>`).join('')}${codes.length>200?`<p>+ ${codes.length-200}</p>`:''}</div><p class="master-dialog-error" role="alert"></p></div><footer><button class="bom-quiet" data-import-cancel>${t('取消 / Esc','Hủy / Esc')}</button><button class="button signal" data-import-confirm>${t('確認匯入','Xác nhận nhập')}</button></footer>`;
         dialog.querySelector('[data-import-cancel]').onclick=()=>dialog.close();
-        dialog.querySelector('[data-import-confirm]').onclick=()=>{
+        dialog.querySelector('[data-import-confirm]').onclick=async()=>{
           try{
-            const existing=readStore(key,{}),saved=info.complete?{__format:'PROCESS_OS_BOM_OVERRIDES_V2',replaceAll:true,data:imported}:{...(existing?.data||existing),...imported};localStorage.setItem(key,JSON.stringify(saved));
-            if(info.complete)Object.keys(data.bom).forEach(code=>delete data.bom[code]);
-            Object.assign(data.bom,imported);refreshBomCounts();
-            dialog.close();repaint();toast(t(`已匯入 ${codes.length} 個主件 BOM。`,`Đã nhập BOM cho ${codes.length} SKU gốc.`));
-          }catch{dialog.querySelector('.master-dialog-error').textContent=t('儲存失敗，未套用本次匯入。請減少檔案大小後重試。','Không lưu được; chưa áp dụng dữ liệu nhập. Hãy giảm kích thước tệp.');}
+            const existing=draft()?.payload||readStore(key,{}),saved=info.complete?{__format:'PROCESS_OS_BOM_OVERRIDES_V2',replaceAll:true,data:imported}:{...(existing?.data||existing),...imported};
+            await host.WorkflowDrafts.save('bom','BOM',saved);
+            dialog.close();repaint();toast(t(`已匯入 ${codes.length} 個主件 BOM 至個人草稿。`,`Đã nhập BOM của ${codes.length} SKU gốc vào bản nháp cá nhân.`));
+          }catch(error){dialog.querySelector('.master-dialog-error').textContent=error.message||t('儲存失敗，未套用本次匯入。請減少檔案大小後重試。','Không lưu được; chưa áp dụng dữ liệu nhập. Hãy giảm kích thước tệp.');}
         };
       }catch(error){if(!dialog.isConnected)return;dialog.innerHTML=`<header><h2>${t('無法匯入 BOM','Không thể nhập BOM')}</h2></header><div class="master-dialog-body"><p>${t('本次未變更任何 BOM。','Không thay đổi BOM nào.')}</p><pre class="master-dialog-error">${h(error.message)}</pre></div><footer><button class="bom-quiet" data-import-close>${t('關閉','Đóng')}</button></footer>`;dialog.querySelector('[data-import-close]').onclick=()=>dialog.close();}
     });

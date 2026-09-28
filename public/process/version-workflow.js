@@ -1,8 +1,13 @@
 (function(){
-  const statusLabels={draft:"草稿 · 未送審",pending:"主管審核中",approved:"已核准",superseded:"歷史核准",rejected:"要求修改"};
+  const statusLabels={draft:"草稿 · 未送審",pending:"主管審核中",approved:"已核准",superseded:"歷史核准",rejected:"要求修改",withdrawn:"已解除送審"};
   const fieldLabels={name:"名稱",people:"人數",mode:"方式",productCodes:"產品",bomSelections:"BOM",machineIds:"設備",instructionSteps:"操作步驟",productInstructionSteps:"產品補充",ipqc:"IPQC",nextIds:"流程連線"};
   const deepCopy=value=>JSON.parse(JSON.stringify(value||{}));
-  const group=(category=state.category,line=state.editorLine)=>approvalVersions.filter(item=>item.category===category&&item.line===line).sort((a,b)=>(b.number||0)-(a.number||0));
+  const group=(category=state.category,line=state.editorLine)=>{
+    const personal=window.WorkflowDrafts?.version?.('process',`${category}|${line}`),
+      shared=approvalVersions.filter(item=>item.category===category&&item.line===line&&item.status!=="draft"),
+      legacy=!personal?approvalVersions.filter(item=>item.category===category&&item.line===line&&item.status==="draft"&&item.creatorId===currentUser?.id):[];
+    return [...(personal?[personal]:legacy),...shared].sort((a,b)=>String(b.number||0).localeCompare(String(a.number||0),undefined,{numeric:true}));
+  };
   const approved=(category,line)=>group(category,line).find(item=>item.status==="approved")||group(category,line).find(item=>item.status==="superseded");
   const returnCheck=version=>VersionReturnPolicy?.check(group(version.category,version.line),version)||{allowed:false,reason:"無法檢查返回條件。"};
   const history=(version,action,label,note="")=>{version.history=version.history||[];version.history.push({action,label,note,actor:currentUser?.name||"系統",at:new Date().toISOString()})};
@@ -137,6 +142,16 @@
     if(['approve','reject','withdraw'].includes(action)&&version.status!=='pending')return false;
     if(['request-change','revoke'].includes(action)&&version.status!=='approved')return false;
     if(['reject','request-change'].includes(action)&&!note){toast('請先填寫要求修改或拒絕原因');return false;}
+    if(version.workflowCaseId&&['approve','reject','withdraw'].includes(action)){
+      changingVersion=true;
+      try{
+        await window.WorkflowDrafts.review(version,action,note);
+        toast(action==='approve'?'版本已確認並套用':action==='reject'?'版本已退回修改':'已解除送審');
+        render();
+        return true;
+      }catch(error){toast(error.message||workflowFailure);render();return false;}
+      finally{changingVersion=false;}
+    }
     if(action==='approve'){const errors=validate(version);if(errors.length){toast(`尚有 ${errors.length} 項確認錯誤，無法核准`);return false;}}
     const back=action==='revoke'?returnCheck(version):null;
     if(back&&!back.allowed){toast(back.reason);return false;}
@@ -209,11 +224,13 @@
   function refreshSubmissionIssues(){const panel=document.querySelector('.editor-version-panel');if(panel&&state.editorSubmissionVersionId===state.editorVersionId)renderSubmissionIssues(panel,validate({category:state.category,line:state.editorLine,stages:ensureCategoryEditor()}));}
   document.addEventListener?.('change',event=>{if(event.target.closest('#inspector-form'))setTimeout(refreshSubmissionIssues,0);},true);
   function editorVersionPanel(){
-    const versions=group(),selected=approvalVersions.find(item=>item.id===state.editorVersionId),base=selected?versions.find(item=>(item.number||0)<selected.number):null,locked=currentUser?.role==="rd"||["approved","superseded","rejected"].includes(selected?.status);
+    const versions=group(),selected=versions.find(item=>item.id===state.editorVersionId),base=selected?versions.find(item=>Number(item.number||0)<Number(selected.number||0)):null,locked=currentUser?.role==="rd"||["pending","approved","superseded","rejected"].includes(selected?.status);
     const canCreateRevision=selected?.status==="approved"&&currentUser?.role!=="rd";
     const heading=selected?.status==="draft"?`正在編輯 V${selected.number} 草稿`:selected?.status==="pending"?`V${selected.number} 已送主管審核`:selected?.status==="approved"?`正在查看已核准 V${selected.number}`:selected?`正在查看 V${selected.number}`:"目前工作內容";
     const panel=document.createElement("section");panel.className=`editor-version-panel ${locked?"locked":""}`;panel.innerHTML=`<div><p class="eyebrow">VERSION WORKSPACE</p><h3>${heading} ${selected?`<span class="version-status ${selected.status}">${statusLabels[selected.status]}</span>`:""}</h3><small>${selected?.status==="draft"?"尚未送審，可反覆儲存":locked?"此版本已鎖定":"先儲存草稿，再送主管審核"}</small></div><div class="field"><label>切換版本</label><select id="editor-version-select"><option value="">目前工作內容</option>${versions.map(version=>`<option value="${version.id}" ${version.id===state.editorVersionId?"selected":""}>V${version.number} · ${statusLabels[version.status]}${versions[0]?.id===version.id?" · 最新版":""}</option>`).join("")}</select></div>${selected?`<div class="editor-mini-diff"><b>與${base?` V${base.number}`:"上一版"}差異</b>${diffHtml(selected,base)}</div>`:""}${selected?.status==="draft"?`<button class="button signal" id="submit-version">送出主管審核</button>`:""}${canCreateRevision?`<button class="button signal" id="create-revision">建立新版本草稿</button>`:""}${validationRulesMarkup()}`;
     document.querySelector(".editor-toolbar")?.after(panel);
+    const workflowScope=`${state.category}|${state.editorLine}`,workflowPanel=window.WorkflowDrafts?.panel?.('process',workflowScope);
+    if(workflowPanel)panel.insertAdjacentHTML('afterend',workflowPanel);
     const legacyKey=`processEditor:${editorKey()}`;
     if(window.ProcessSync?.legacyDraftKeys?.().includes(legacyKey)&&currentUser?.role!=="rd"&&currentUser?.role!=="viewer"&&(!selected||selected.status==="draft"||canCreateRevision)){
       const recover=document.createElement('button');recover.type='button';recover.className='button ghost';recover.textContent='復原此瀏覽器的舊草稿';
@@ -225,10 +242,11 @@
     const showSubmissionErrors=selected?.status==="draft"&&state.editorSubmissionVersionId===selected.id,currentErrors=showSubmissionErrors?validate({category:state.category,line:state.editorLine,stages:ensureCategoryEditor()}):[];
     if(showSubmissionErrors) renderSubmissionIssues(panel,currentErrors);
     currentErrors.flatMap(error=>error.operationIds||[]).forEach(id=>{const block=document.querySelector(`[data-operation="${id}"]`);if(block&&!block.querySelector(".operation-error-badge")){block.classList.add("validation-error");block.insertAdjacentHTML("beforeend",`<span class="operation-error-badge">!</span>`)}});
-    panel.querySelector("#editor-version-select").onchange=event=>{const version=approvalVersions.find(item=>item.id===event.target.value);state.editorVersionId=event.target.value||null;if(version){state.editorByCategory[editorKey()]=deepCopy(version.stages);state.selectedOperation=Object.values(version.stages||{}).flat()[0]?.id||null}else{const saved=readStore(`processEditor:${editorKey()}`,null);if(saved?.stages)state.editorByCategory[editorKey()]=deepCopy(saved.stages)}render()};
+    panel.querySelector("#editor-version-select").onchange=event=>{const version=versions.find(item=>item.id===event.target.value);state.editorVersionId=event.target.value||null;if(version){state.editorByCategory[editorKey()]=deepCopy(version.stages);state.selectedOperation=Object.values(version.stages||{}).flat()[0]?.id||null}else{const saved=readStore(`processEditor:${editorKey()}`,null);if(saved?.stages)state.editorByCategory[editorKey()]=deepCopy(saved.stages)}render()};
     panel.querySelector("#create-revision")?.addEventListener("click",()=>{state.editorVersionId=`revision:${selected.id}`;state.editorByCategory[editorKey()]=deepCopy(selected.stages);toast(`已由 V${selected.number} 建立新版本草稿`);render()});
     panel.querySelector("#submit-version")?.addEventListener("click",submitEditorVersion);
     const save=document.querySelector("#save-process");if(save){save.textContent=selected?.status==="draft"?`儲存 V${selected.number} 草稿`:state.editorVersionId?.startsWith("revision:")?"儲存為新版本草稿":"建立第一版草稿";save.onclick=saveEditorVersion}
+    window.WorkflowDrafts?.bindPanel?.(document,'process',workflowScope);
     if(locked){document.querySelector(".editor-page")?.classList.add("editor-readonly");document.querySelectorAll(".add-operation,.auto-layout-stage,.arrange-all-stages,.operation-delete,#save-process").forEach(element=>{element.disabled=true;element.style.pointerEvents="none"});document.querySelectorAll(".operation-block").forEach(block=>block.setAttribute("draggable","false"));document.querySelectorAll("#inspector-form input,#inspector-form select,#inspector-form textarea,#inspector-form button").forEach(element=>element.disabled=true)}
   }
 
@@ -238,22 +256,27 @@
     savingEditorVersion=true;
     const save=document.querySelector('#save-process');if(save)save.disabled=true;
     try{
-      const stages=deepCopy(ensureCategoryEditor()),now=new Date().toISOString(),selected=group().find(item=>item.id===state.editorVersionId),isRevision=String(state.editorVersionId||"").startsWith("revision:"),parentId=isRevision?String(state.editorVersionId).split(":")[1]:null;
-      localStorage.setItem(`processEditor:${editorKey()}`,JSON.stringify({category:state.category,line:state.editorLine,stages,savedAt:now}));if(selected?.status==="draft"){selected.stages=stages;selected.updatedAt=now;history(selected,"draft_saved","草稿已儲存");state.approvalVersionId=selected.id}else{const versions=group(),version={id:`PV-${crypto.randomUUID()}`,number:Math.max(0,...versions.map(item=>item.number||0))+1,category:state.category,line:state.editorLine,stages,createdAt:now,updatedAt:now,creatorId:currentUser?.id||"local",creatorName:currentUser?.name||"本機使用者",status:"draft",parentVersionId:parentId,history:[]};history(version,"draft_created",parentId?"新修訂草稿建立":"版本草稿建立");approvalVersions.unshift(version);state.editorVersionId=version.id;state.approvalVersionId=version.id}persistPlatform();
-      const saved=await window.ProcessSync?.flush?.();
-      if(saved!==true)toast(window.ProcessSync?.saveFailureMessage?.() || "草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。");
-      else toast("草稿已儲存，可檢查後再送審");
+      const stages=deepCopy(ensureCategoryEditor()),scope=`${state.category}|${state.editorLine}`;
+      const result=await window.WorkflowDrafts.save('process',scope,stages);
+      state.editorByCategory[editorKey()]=deepCopy(result.draft.payload);
+      state.editorVersionId=result.draft.id;
+      toast("個人草稿已由伺服器確認儲存，可關閉後再開啟");
     }catch(error){console.warn('Process draft save failed',error);toast(window.ProcessSync?.saveFailureMessage?.() || "草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。");}
     finally{savingEditorVersion=false;if(save)save.disabled=false;render();}
   }
 
-  function submitEditorVersion(){
+  async function submitEditorVersion(){
     if(changingVersion||savingEditorVersion)return;
-    const version=approvalVersions.find(item=>item.id===state.editorVersionId);if(!version||version.status!=="draft")return;
+    const version=group().find(item=>item.id===state.editorVersionId);if(!version||version.status!=="draft")return;
     version.stages=deepCopy(ensureCategoryEditor());const errors=validate(version);if(errors.length){state.editorSubmissionVersionId=version.id;state.editorSubmissionErrors=errors;toast(`草稿尚有 ${errors.length} 項問題，請查看送審按鈕旁的原因`);render();return}
-    if(group().some(item=>item.status==='pending'&&item.id!==version.id))return;
     state.editorSubmissionVersionId=null;state.editorSubmissionErrors=[];
-    return commitVersionChange(()=>{version.status='pending';version.updatedAt=new Date().toISOString();history(version,'submitted','草稿送出確認');state.approvalVersionId=version.id;},`V${version.number} 已送出確認`);
+    try{
+      const scope=`${state.category}|${state.editorLine}`;
+      await window.WorkflowDrafts.save('process',scope,deepCopy(ensureCategoryEditor()));
+      const result=await window.WorkflowDrafts.submit('process',scope);
+      state.editorVersionId=result.case?.id||null;state.approvalVersionId=result.case?.id||null;
+      toast('整份草稿已送出確認並鎖定');render();return true;
+    }catch(error){toast(error.message||workflowFailure);render();return false;}
   }
 
   function stepEditorHtml(title,steps,kind,productCode=""){
@@ -267,7 +290,7 @@
     state.openBomGroups=state.openBomGroups||{};const openGroups=state.openBomGroups[operation.id]||[];document.querySelectorAll(".bom-product-group").forEach((card,index)=>{const code=card.dataset.bomGroup,shouldOpen=openGroups.length?openGroups.includes(code):index===0;card.classList.toggle("collapsed",!shouldOpen);card.querySelector("header").onclick=event=>{if(event.target.closest("button"))return;card.classList.toggle("collapsed");state.openBomGroups[operation.id]=[...document.querySelectorAll(".bom-product-group:not(.collapsed)")].map(item=>item.dataset.bomGroup)}});
     const general=document.querySelector("#operation-instructions")?.closest(".field");if(general){general.classList.add("legacy-instructions");general.insertAdjacentHTML("afterend",stepEditorHtml("共用操作流程",operation.instructionSteps,"general"))}const product=document.querySelector("#operation-product-instructions")?.closest(".field");if(product&&operation.noteProductCode){operation.productInstructionSteps[operation.noteProductCode]=operation.productInstructionSteps[operation.noteProductCode]||stepsFor(operation,operation.noteProductCode);operation.productMediaItems[operation.noteProductCode]=operation.productMediaItems[operation.noteProductCode]||[];product.classList.add("legacy-instructions");product.insertAdjacentHTML("afterend",stepEditorHtml(`${operation.noteProductCode} 專用補充流程`,operation.productInstructionSteps[operation.noteProductCode],"product",operation.noteProductCode)+productMediaEditorHtml(operation,operation.noteProductCode))}bindStepEditor(operation);bindProductMediaEditor(operation);
     const selected=approvalVersions.find(item=>item.id===state.editorVersionId),showErrors=selected?.status==="draft"&&state.editorSubmissionVersionId===selected.id,errors=showErrors?validate({category:state.category,line:state.editorLine,stages:ensureCategoryEditor()}).filter(error=>(error.operationIds||[]).includes(operation.id)):[];if(errors.length){const notice=document.createElement("section");notice.className="inspector-validation";notice.innerHTML=`<b>此流程需補 ${errors.length} 項資料</b>${errors.map(error=>`<p>${escapeHtml(error.message)}</p>`).join("")}`;document.querySelector("#inspector-form .inspector-form")?.prepend(notice);const selectors={name:"#operation-name",products:".product-multi",machines:".machine-fields",instructions:'.step-editor[data-step-kind="general"]',bom:".bom-groups"};errors.forEach(error=>{const field=document.querySelector(selectors[error.field]);field?.classList.add("validation-field-error")})}
-    const locked=currentUser?.role==="rd"||["approved","superseded","rejected"].includes(selected?.status);if(locked)document.querySelectorAll("#inspector-form input,#inspector-form select,#inspector-form textarea,#inspector-form button").forEach(element=>element.disabled=true)
+    const locked=currentUser?.role==="rd"||["pending","approved","superseded","rejected"].includes(selected?.status);if(locked)document.querySelectorAll("#inspector-form input,#inspector-form select,#inspector-form textarea,#inspector-form button").forEach(element=>element.disabled=true)
   }
   function bindStepEditor(operation){document.querySelectorAll(".step-editor").forEach(editor=>{const isProduct=editor.dataset.stepKind==="product",code=editor.dataset.productCode,list=isProduct?(operation.productInstructionSteps[code]||[]):operation.instructionSteps;const sync=()=>{editor.querySelectorAll("[data-step-text]").forEach(input=>{const index=Number(input.dataset.stepText);list[index]=list[index]||{text:"",standard:""};list[index].text=input.value});editor.querySelectorAll("[data-step-standard]").forEach(input=>{const index=Number(input.dataset.stepStandard);list[index]=list[index]||{text:"",standard:""};list[index].standard=input.value});operation.instructions=operation.instructionSteps.map((step,index)=>`${index+1}. ${step.text}｜標準：${step.standard}`).join("\n");operation.ipqc=operation.instructionSteps.map(step=>step.standard).filter(Boolean).join("；");if(isProduct)operation.productInstructions[code]=list.map((step,index)=>`${index+1}. ${step.text}｜標準：${step.standard}`).join("\n")};editor.querySelectorAll("textarea").forEach(input=>input.oninput=()=>{sync();const last=list.at(-1);editor.querySelector(".add-step").disabled=!(last?.text?.trim()&&last?.standard?.trim())});editor.querySelector(".add-step").onclick=()=>{sync();list.push({text:"",standard:""});renderInspector(operation)};editor.querySelectorAll("[data-remove-step]").forEach(button=>button.onclick=()=>{list.splice(Number(button.dataset.removeStep),1);renderInspector(operation)})})}
   function bindProductMediaEditor(operation){

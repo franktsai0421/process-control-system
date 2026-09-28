@@ -95,3 +95,5 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node scripts/test-master-admin.cjs public/process
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          npm run test:workflow-drafts
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

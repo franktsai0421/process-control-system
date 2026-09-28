@@ -11,6 +11,9 @@
 
   function autoOpenCurrentVersion(){
     if(state.view!=="editor"||state.editorVersionId)return false;const latest=versionsForRoute()[0];if(!latest)return false;
+    // Another employee's pending case remains available in history, but must
+    // not lock this employee out of creating and saving a personal draft.
+    if(latest.status==="pending"&&latest.creatorId!==currentUser?.id)return false;
     const saved=readStore(`processEditor:${editorKey()}`,null);
     // Operation Apply/drag saves the workspace independently of the version snapshot.
     // Reopening a draft must not replace that newer workspace with its older version.
@@ -51,10 +54,8 @@
       notice.innerHTML=`<div><b>尚未建立版本</b><span>完成編輯後先建立第一版草稿。</span></div>`
     }
     if(current?.status!=="draft")panel.after(notice);
-    const pending=versions.find(version=>version.status==="pending"),save=document.querySelector("#save-process"),createRevision=document.querySelector("#create-revision");
-    if(pending&&createRevision){createRevision.disabled=true;createRevision.style.pointerEvents="none";createRevision.textContent=`已有 V${pending.number} 待確認`}
-    if(save&&!current&&pending){save.disabled=true;save.textContent="已有待確認版本"}
-    if(save)save.addEventListener("click",event=>{const otherPending=versionsForRoute().find(version=>version.status==="pending"&&version.id!==state.editorVersionId);if(otherPending){event.preventDefault();event.stopImmediatePropagation();toast(`V${otherPending.number} 尚待確認，不能重複送審`)}},true)
+    const pending=versions.find(version=>version.status==="pending");
+    if(pending&&!current){notice.className="editor-version-rule pending";notice.innerHTML=`<div><b>V${pending.number} 正在主管確認</b><span>你仍可儲存自己的草稿；若修改到同一筆資料，整份送審會暫緩到審核完成。</span></div>`}
   }
 
   const priorBindView=bindView;

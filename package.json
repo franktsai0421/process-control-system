@@ -41,6 +41,7 @@
     "test:editor-race": "node scripts/test-editor-draft-browser.cjs --race-only",
     "test:workflow": "node scripts/test-editor-draft-browser.cjs --workflow-only",
     "test:state-media": "node scripts/test-editor-draft-browser.cjs --media-only",
+    "test:workflow-drafts": "node scripts/test-workflow-drafts.cjs",
     "test:editor-images": "node scripts/test-editor-real-images.cjs",
     "test:editor-lines": "node scripts/test-editor-line-selection.cjs",
     "release:staging": "node scripts/release-main.mjs --target staging",

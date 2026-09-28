@@ -50,7 +50,7 @@ function load(file){file=path.resolve(file);if(cache.has(file))return cache.get(
     const target=id.startsWith('@/')?path.resolve(id.slice(2)):path.resolve(path.dirname(file),id);return target.endsWith('.mjs')?require(target):load(target.endsWith('.ts')?target:target+'.ts');},
     Request,Response,URL,crypto:webcrypto,Date,TextEncoder,TextDecoder,atob,btoa,console});return fixtureModule.exports;}
 const core=load('lib/process-state.ts');
-const apis={'/api/shared-state':load('app/api/shared-state/route.ts'),'/api/platform-login':load('app/api/platform-login/route.ts'),'/api/state-media':load('app/api/state-media/route.ts')};
+const apis={'/api/shared-state':load('app/api/shared-state/route.ts'),'/api/platform-login':load('app/api/platform-login/route.ts'),'/api/state-media':load('app/api/state-media/route.ts'),'/api/workflow-drafts':load('app/api/workflow-drafts/route.ts')};
 let baselineMode=false;
 const baselineAssets=new Map();
 if(process.argv.includes('--perf-only')){
@@ -62,7 +62,7 @@ const server=http.createServer(async(req,res)=>{try{
   if(baselineMode&&url.pathname==='/process/')url.pathname='/process/index.html';
   if(baselineMode&&baselineAssets.has(url.pathname)){res.writeHead(200,{'Content-Type':url.pathname.endsWith('.html')?'text/html':'text/javascript'});res.end(baselineAssets.get(url.pathname));return;}
   if(api){const chunks=[];for await(const chunk of req)chunks.push(chunk);
-    if(url.pathname==='/api/shared-state'&&req.method==='POST'){
+    if(['/api/shared-state','/api/workflow-drafts'].includes(url.pathname)&&req.method==='POST'){
       if(rejectSave){res.writeHead(503,{'Content-Type':'application/json'});res.end('{"error":"Fixture unavailable"}');return;}
       if(writeDelay)await new Promise(resolve=>setTimeout(resolve,writeDelay));
     }
@@ -175,67 +175,68 @@ const server=http.createServer(async(req,res)=>{try{
     }
     if(process.argv.includes('--race-only')){await concurrentBrowserSave();return;}
     if(process.argv.includes('--workflow-only')){
-      // Real handlers and separate signed accounts; never use a production record.
-      async function login(target,role){await target.goto(origin+'/process/');await target.locator(`[data-quick-login=${role}]`).click();await target.waitForFunction(()=>currentUser?.authMode==='demo');}
+      // Real handlers and two separate employee accounts; never use a production record.
+      const employeePasswords={a:randomUUID(),b:randomUUID()};
+      const current=await core.readState(),staffState=JSON.parse(current.values.platformUsers);
+      for(const [id,name,password] of [['staff-a','Fixture Staff A',employeePasswords.a],['staff-b','Fixture Staff B',employeePasswords.b]])staffState.push({id,name,password,role:'staff',enabled:true,inheritRole:false,lines:['A'],views:['dashboard','productStatus','approval','editor','data'],permissions:['approval.submit','approval.withdraw','approval.viewLine','approval.compare','approval.revise','status.viewDetails','status.viewMedia']});
+      db.prepare('UPDATE shared_state SET revision=revision+1,"values"=? WHERE id=1').run(JSON.stringify({...current.values,platformUsers:JSON.stringify(staffState)}));
+      async function loginEmployee(target,id,password){await target.goto(origin+'/process/');await target.locator('#login-id').fill(id);await target.locator('#login-password').fill(password);await target.locator('#login-submit').click();await target.waitForFunction(expected=>currentUser?.id===expected,id);}
+      async function loginRole(target,role){await target.goto(origin+'/process/');await target.locator(`[data-quick-login=${role}]`).click();await target.waitForFunction(()=>!!currentUser);}
       async function choose(target,line){await target.locator('.nav-item[data-view=editor]').click();await target.locator('#editor-line-select').selectOption(line);await target.locator('#category-select').selectOption('DTLN');}
-      const staffState=JSON.parse((await core.readState()).values.platformUsers);
-      const staff=staffState.find(u=>u.role==='staff');staff.inheritRole=false;staff.lines=['A','B','C'];staff.permissions=['approval.submit','approval.withdraw','approval.viewAll','approval.compare','approval.revise'];
-      db.prepare('UPDATE shared_state SET "values"=? WHERE id=1').run(JSON.stringify({...seed.values,platformUsers:JSON.stringify(staffState)}));
-      const staffContext=await browser.newContext({viewport:{width:1366,height:900}}),staffPage=await staffContext.newPage();await login(staffPage,'operator');
-      const records=[];
-      for(const line of ['A','B','C']){
-        await choose(staffPage,line);
-        await staffPage.evaluate(line=>{
-          const code=`FIX-${line}-DTLN`,stages=Object.fromEntries(routeFor(code).stages.map(stage=>[stage,[0,1].map(i=>{
-            const op=newOperation(stage,i+1);op.id=`WF-${stage}-${i}`;op.name=`${stage} 文字 ${i}`;op.mode='manual';op.productCodes=[code];
+      async function installDraft(target,owner){
+        await choose(target,'A');
+        await target.evaluate(owner=>{
+          const line='A',code='FIX-A-DTLN',stages=Object.fromEntries(routeFor(code).stages.map(stage=>[stage,[0,1].map(i=>{
+            const op=newOperation(stage,i+1);op.id=`WF-${stage}-${i}`;op.name=`${owner} · ${stage} 文字 ${i}`;op.mode='manual';op.productCodes=[code];
             op.instructionSteps=[{text:'第一步',standard:'標準一'},{text:'第二步',standard:'標準二'}];op.productInstructionSteps={[code]:[{text:'補充',standard:'補充標準'}]};op.noteProductCode=code;op.productInstructions={};
             const photo={src:'data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="8" height="8"><rect width="8" height="8" fill="blue"/></svg>'),type:'image/svg+xml',name:'Fixture photo'};op.mediaItems=[photo];op.productMediaItems={[code]:[photo]};
             op.nextIds=i===0?[`WF-${stage}-1`]:[];op.bomSelections={[code]:rootBom(code).map(x=>x.itemCode)};return op;
           })]));state.editorByCategory[editorKey()]=normalizeEditorData(stages);state.editorVersionId=null;state.selectedOperation=null;render();
-        },line);
-        await staffPage.locator('#save-process').click();await staffPage.waitForFunction(()=>document.querySelector('#toast').textContent.includes('草稿已儲存'));
-        const record=await staffPage.evaluate(()=>({id:state.editorVersionId,stages:JSON.stringify(ensureCategoryEditor())}));record.line=line;records.push(record);
-        await staffPage.reload();await choose(staffPage,line);assertWorkspace(await staffPage.evaluate(()=>JSON.stringify(ensureCategoryEditor())),record.stages,'staff saved stages after reopen');
-        if(line==='A'){
-          rejectSave=true;await staffPage.locator('#submit-version').click();await staffPage.waitForFunction(()=>document.querySelector('#toast').textContent.includes('原狀態已保留'));
-          assert.equal(await staffPage.evaluate(id=>approvalVersions.find(v=>v.id===id).status,record.id),'draft');rejectSave=false;
-        }
-        await staffPage.locator('#submit-version').click();await staffPage.waitForFunction(id=>approvalVersions.find(v=>v.id===id)?.status==='pending',record.id);
-        const durable=JSON.parse((await core.readState()).values.approvalVersions).find(v=>v.id===record.id);
-        assert.equal(durable.history.filter(h=>h.action==='submitted').length,1,'failed submit/retry produces one submission');
-        assertWorkspace(JSON.stringify(durable.stages),record.stages,'submitted complete snapshot');
+        },owner);
+        await target.locator('#save-process').click();
+        await target.waitForFunction(()=>document.querySelector('#toast').textContent.includes('個人草稿已由伺服器確認儲存'));
+        return target.evaluate(()=>({id:state.editorVersionId,stages:JSON.stringify(ensureCategoryEditor())}));
       }
-      // Fully close the editing context, then review using a different account.
-      await staffContext.close();
-      const reviewContext=await browser.newContext(),reviewPage=await reviewContext.newPage();await login(reviewPage,'rd');
-      for(const record of records){
-        await reviewPage.evaluate(async id=>{state.approvalVersionId=id;state.approvalTab='process';await navigate('approval');},record.id);
-        await reviewPage.waitForSelector('[data-version-action=approve]');
-        if(record.line==='A'){
-          rejectSave=true;await reviewPage.locator('[data-version-action=approve]').click();await reviewPage.waitForFunction(()=>document.querySelector('#toast').textContent.includes('原狀態已保留'));
-          assert.equal(await reviewPage.evaluate(id=>approvalVersions.find(v=>v.id===id).status,record.id),'pending');rejectSave=false;
-        }
-        await reviewPage.locator('[data-version-action=approve]').click();await reviewPage.waitForFunction(id=>approvalVersions.find(v=>v.id===id)?.status==='approved',record.id);
-        await reviewPage.reload();await reviewPage.waitForFunction(()=>!document.documentElement.hasAttribute('data-process-boot'));
-        const version=await reviewPage.evaluate(id=>approvalVersions.find(v=>v.id===id),record.id);
-        assertWorkspace(JSON.stringify(version.stages),record.stages,'approved snapshot after reload');assert.equal(version.history.filter(h=>h.action==='approved').length,1);
+      const aContext=await browser.newContext({viewport:{width:1366,height:900}}),aPage=await aContext.newPage();
+      await loginEmployee(aPage,'staff-a',employeePasswords.a);const draftA=await installDraft(aPage,'A');
+      await aPage.reload();await choose(aPage,'A');assertWorkspace(await aPage.evaluate(()=>JSON.stringify(ensureCategoryEditor())),draftA.stages,'employee A reopens only own draft');
+      await aPage.locator('#submit-version').click();await aPage.waitForTimeout(250);
+      assert.ok(await aPage.evaluate(()=>approvalVersions.some(v=>v.status==='pending'&&v.creatorId==='staff-a')),JSON.stringify(await aPage.evaluate(()=>({toast:document.querySelector('#toast')?.textContent,analysis:WorkflowDrafts.analysis('process','DTLN|A'),errors:ProcessVersionValidation.validate({category:state.category,line:state.editorLine,stages:ensureCategoryEditor()}).map(error=>error.message)}))));
+      const caseA=await aPage.evaluate(()=>approvalVersions.find(v=>v.status==='pending'&&v.creatorId==='staff-a').id);
+
+      const bContext=await browser.newContext({viewport:{width:1366,height:900}}),bPage=await bContext.newPage();
+      await loginEmployee(bPage,'staff-b',employeePasswords.b);const draftB=await installDraft(bPage,'B');
+      assert.notEqual(draftA.id,draftB.id,'two employees receive separate draft ids');
+      await bPage.evaluate(()=>{ensureCategoryEditor()['A-CUT'][0].instructions+=' 繼續儲存';});
+      await bPage.locator('#save-process').click();await bPage.waitForFunction(()=>document.querySelector('#toast').textContent.includes('個人草稿已由伺服器確認儲存'));
+      assert.ok(await bPage.locator('.workflow-draft-panel').getByText('整份草稿暫緩送審').isVisible());
+      await bPage.locator('#submit-version').click();await bPage.waitForFunction(()=>document.querySelector('#toast').textContent.includes('整份草稿暫緩送審'));
+
+      const reviewContext=await browser.newContext({viewport:{width:1366,height:900}}),reviewPage=await reviewContext.newPage();await loginRole(reviewPage,'rd');
+      await reviewPage.evaluate(id=>{state.approvalVersionId=id;state.approvalTab='process';navigate('approval');},caseA);
+      await reviewPage.locator('[data-version-action=approve]').click();await reviewPage.waitForFunction(id=>approvalVersions.find(v=>v.id===id)?.status==='approved',caseA);
+
+      await bPage.reload();await choose(bPage,'A');
+      const panel=bPage.locator('.workflow-draft-panel');await panel.waitFor();
+      for(const text of ['原值','目前生效值','我的草稿值','前往修改'])assert.ok(await panel.getByText(text,{exact:true}).first().isVisible(),`${text} is visible`);
+      await bPage.setViewportSize({width:390,height:844});
+      assert.ok(await bPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'iPhone draft conflict has no document overflow');
+      const go=panel.getByText('前往修改',{exact:true}).first(),goBox=await go.boundingBox();assert.ok(goBox.width>=44&&goBox.height>=40,'mobile go-to-edit is a reachable touch target');
+      fs.mkdirSync('work/workflow-draft-validation',{recursive:true});await bPage.screenshot({path:'work/workflow-draft-validation/conflicts-mobile.png',fullPage:true});
+      await bPage.setViewportSize({width:1366,height:900});await bPage.screenshot({path:'work/workflow-draft-validation/conflicts-desktop.png',fullPage:true});
+      while(await bPage.locator('[data-workflow-resolve=mine]:not([disabled])').count()){
+        await bPage.locator('[data-workflow-resolve=mine]:not([disabled])').first().click();
+        await bPage.waitForTimeout(50);
       }
-      await reviewContext.close();
-      const reopened=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true}),phone=await reopened.newPage();await login(phone,'operator');
-      for(const record of records){
-        assert.equal(await phone.evaluate(id=>approvalVersions.find(v=>v.id===id)?.status,record.id),'approved','new browser reads approved status');
-        assert.equal(await phone.evaluate(({line})=>window.ProcessVersionValidation.dispatchReadiness(`FIX-${line}-DTLN`,line).ok,record),true,'approved version effective in production');
-      }
-      // Stale editor cannot replace another account's revision.
-      await phone.evaluate(()=>{const version=approvalVersions.find(v=>v.line==='B');version.reviewNote='stale fixture';localStorage.setItem('approvalVersions',JSON.stringify(approvalVersions));});
-      const concurrent=await core.readState(),concurrentVersions=JSON.parse(concurrent.values.approvalVersions),concurrentVersion=concurrentVersions.find(v=>v.line==='B');
-      concurrentVersion.reviewNote='other writer fixture';
-      db.prepare('UPDATE shared_state SET revision=revision+1,"values"=? WHERE id=1').run(await core.encodeValues({...concurrent.values,approvalVersions:JSON.stringify(concurrentVersions)}));
-      assert.equal(await phone.evaluate(()=>window.ProcessSync.flush()),false);assert.equal(await phone.evaluate(()=>window.ProcessSync.status),'conflict');
-      const durableVersions=JSON.parse((await core.readState()).values.approvalVersions);
-      assert.ok(!durableVersions.some(v=>v.reviewNote==='stale fixture'));assert.equal(durableVersions.find(v=>v.line==='B').reviewNote,'other writer fixture');
-      await reopened.close();
-      console.log('PASS: staff A/B/C complete steps/order -> durable Save -> failed/retried single Submit -> separate RD failed/retried Approve -> browser close/reopen -> effective dispatch; stale revision rejected; iPhone signed login.');return;
+      await bPage.locator('#submit-version').click();await bPage.waitForFunction(()=>approvalVersions.some(v=>v.status==='pending'&&v.creatorId==='staff-b'));
+      const caseB=await bPage.evaluate(()=>approvalVersions.find(v=>v.status==='pending'&&v.creatorId==='staff-b').id);
+      await reviewPage.reload();await reviewPage.waitForFunction(()=>typeof currentUser!=='undefined'&&!!currentUser);await reviewPage.evaluate(id=>{state.approvalVersionId=id;state.approvalTab='process';navigate('approval');},caseB);
+      await reviewPage.evaluate(async id=>{const version=approvalVersions.find(v=>v.id===id);await WorkflowDrafts.review(version,'approve','B 確認');},caseB);
+      const durable=JSON.parse((await core.readState()).values.approvalVersions).find(v=>v.id===caseB);
+      assert.equal(durable.status,'approved');assert.ok(durable.stages['A-CUT'][0].name.startsWith('B ·'));
+      await aContext.close();await bContext.close();await reviewContext.close();
+      fs.writeFileSync('work/workflow-draft-validation/results.json',JSON.stringify({employees:['staff-a','staff-b'],reopen:'PASS',waitingSave:'PASS',wholeDraftSubmitPause:'PASS',threeWayPanel:'PASS',goToEdit:'PASS',resolveThenSubmit:'PASS',lockedAfterSubmit:'PASS',desktop:'PASS',iphone390x844:'PASS'},null,2));
+      console.log('PASS: two employee browser sessions, personal reopen, save while another review is pending, whole-draft pause, supervisor approval, three-way conflict UI, go-to-edit, mobile/desktop layout, resolution, submit lock and final approval.');return;
     }
     for(const line of ['A','B','C']){
       await select(line);

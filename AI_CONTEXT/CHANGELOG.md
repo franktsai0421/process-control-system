@@ -1,5 +1,12 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-28 — per-employee drafts and three-way review conflicts (PR #11)
+
+- Added server-owned personal drafts for the existing process editor and AB/C/PROCESS/BOM master-data pages. Draft reads and writes enforce signed-in ownership, scope permissions, monotonic draft versions, submit permission, deletion permission, and verified persistence through the existing D1/R2 serializer and pre-write backups.
+- Employees can save and reopen separate drafts for the same data. Another employee's overlapping pending case does not block Save, but pauses the whole submission. After review, base/current/mine conflicts appear below the draft controls with real-location navigation and explicit adopt-current/retain-mine resolution; submission stays blocked until every conflict is resolved.
+- Successful submission locks only that draft. Approval rechecks reviewer permission and every submitted base value against the current approved snapshot, merges non-conflicting submitted fields over current data, and stops without writing stale values on mismatch. Existing approval-version/master-version mirrors and approved production consumers remain compatible.
+- Added isolated D1 two-account coverage for ownership, reopen, old-tab rejection, waiting, three-way conflict, resolution, lock, approval race, rejection unlock, master/BOM structure, and backups. Browser coverage exercises two employee sessions, the existing approval platform, desktop and 390×844 conflict UI, touch targets, no horizontal overflow, resolution and final approval. No SQL migration or quality-system integration is included.
+
 ## 2026-09-28 — Sites draft-save memory and revision recovery
 
 - Live Sites logs confirmed `POST /api/shared-state` failed with `exceededMemory` and HTTP 500, including a 44 KB request. Reduce peak allocations by backing up the exact stored D1 snapshot reference, comparing existing key strings without serializing the entire state twice, and encoding large R2 snapshots once. Keep revision checks, immutable data and the historic backup format.

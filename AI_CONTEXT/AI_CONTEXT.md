@@ -1,6 +1,6 @@
 # PROCESS OS - AI Development Context
 
-Last verified against repository code: 2026-09-26. Current application build: `2026.09.15.7100`.
+Last verified against repository code: 2026-09-28. Current application build: `2026.09.15.7100`.
 
 Product Status renders an isolated approved snapshot and restores the editor workspace afterward; switching pages does not replace unsaved draft nodes or photos.
 
@@ -53,6 +53,7 @@ Important implementation areas:
 - `public/process/version-workflow.js`: process versions, validation, approval actions, production rendering, and dispatch readiness.
 - `public/process/permission-controls.js` and `system-upgrade.js`: role templates, complete user administration, page/line/action scope, responsive editor controls, modal editing, pointer movement, and connection mode.
 - `public/process/shared-state.js`: in-memory shared-state mirror, explicit browser-to-D1/R2 writes, revision conflict handling, and local recovery state. Automatic cross-tab polling/retry is disabled.
+- `public/process/workflow-drafts.js`, `app/api/workflow-drafts/route.ts`, and `lib/workflow-drafts.ts`: ownership-checked personal drafts, per-draft versions, overlapping-pending detection, three-way conflict analysis, submission locking, and approval-time current-version checks for the existing process editor and master-data pages.
 - `public/process/bom-search-engine.js`, `bom-search.js`, and `bom-excel.js`: BOM lookup, tree selection, and Excel exchange.
 - Dashboard BOM totals are recalculated from the effective BOM after persisted overrides or Excel import: nonempty roots and all rows (including L0). Purchased leaf components can occur in many parent BOMs while correctly having no descendants of their own.
 - `public/process/master-page-excel.js` and `line-stage-excel.js`: complete-page, versioned Excel exchange for product/category and line/stage master pages, with legacy partial-import compatibility.
@@ -86,21 +87,21 @@ Important implementation areas:
 
 ### Master-data lifecycle
 
-1. ADMIN or an authorized role creates an AB or C master-data draft from the currently approved catalog.
+1. ADMIN or an authorized role creates a personal AB, C, PROCESS, or BOM draft from the currently approved data. Draft payloads are visible only to their owner through the workflow API; closing and reopening restores the same server draft.
 2. The draft may edit products, categories, lines, ordered routes, and stages, or import/export Excel data.
    The AB/C product page exports one complete workbook containing products, empty categories, lines, stages, extra fields, and read-only version history. The line/stage page has its own single complete Excel pair for the selected AB/C scope. Reimporting a system-exported workbook replaces that draft page scope; legacy workbooks continue to merge only their included rows.
-3. Submission validates identifiers, names, and routes. Deletions are recorded as warnings and require deletion permission.
-4. A permitted reviewer approves the exact snapshot. Only approval replaces `masterDataControl.active`.
+3. Submission validates identifiers, names, routes, ownership, expected draft version, submit permission, deletion permission, pending overlap, and unresolved conflicts. Another employee's overlapping pending case pauses the whole submission but does not block saving.
+4. A permitted reviewer approves the exact pending case. The server rechecks approval permission and that every submitted base value still matches the current approved value; mismatch stops approval without writing old data. Only approval replaces active master/BOM data.
 5. Approved master data updates the product catalog, routing, editor workspaces, stage templates, BOM slots, status, dispatch, and player inputs.
 
 ### Process-version lifecycle
 
 1. An editor selects a category and line, then creates or modifies nodes for only the stages used by products in that category/line.
-2. Saving creates or updates a `draft`; submission changes it to `pending` only after validation.
+2. Saving creates or updates the signed-in employee's personal `draft`; an expected per-draft version prevents an older tab/device from replacing a newer save. Submission locks only that draft and creates a shared `pending` review case after validation.
 3. Reviewers compare versions and may approve, reject with a reason, request a revision, revoke approval when a safe fallback exists, or let the author withdraw a pending version.
 4. Approval supersedes the previous approved version. Dispatch and production screens consume the current approved version.
 
-Save, submission, review and withdrawal wait for verified server persistence. Status transitions keep the confirmed status visible while saving, block concurrent actions, and restore the previous status on failure so the same action can be retried. Revision conflicts remain blocked; no other account's update is overwritten. Reopening a newer draft workspace refreshes its version controls, including Submit. Login refreshes shared data before opening the workspace; logout waits for pending writes and stays on the page if saving fails.
+Save, submission, review and withdrawal wait for verified server persistence. Different employees may save separate drafts for the same scope. If one draft overlaps another employee's pending case, its conflict panel appears directly below the draft controls and lists the affected data while submission is paused. After that case is reviewed, the panel recomputes base/current/mine values; every conflict must adopt current or explicitly retain mine before the whole draft can submit. “前往修改” navigates to the real process/master/BOM location without silently changing data. Status transitions keep the confirmed status visible while saving, block concurrent actions, and preserve in-page content on failure. Login loads only the current employee's drafts; logout clears the personal-draft cache.
 
 ### Dispatch and playback
 
@@ -124,7 +125,7 @@ Save, submission, review and withdrawal wait for verified server persistence. St
 - Full-page Excel v3 includes all template/equipment fields and portable photos as described under Process equipment catalog. Import is permission-controlled, draft-only, validates associations and photo content, restores required presets, and still requires approval before the editor changes.
 - Submission issues start collapsed, grouped by type and product. Only participating products are checked across their required route stages; unselected catalog products do not create missing-stage or BOM errors. Every product group exposes a direct correction action even while its details remain collapsed. Content and BOM actions open the exact operation editor; missing-stage actions show a temporary non-persisted node, while connection actions highlight source/target nodes and draw a non-persisted example drag line. BOM validation normalizes unique item codes, accepts legacy single-product fields, and unions selections only from operations on the product's formal route. For C-line semi-finished products without their own root BOM (for example `3100101`), the direct child requirements from their occurrence in a parent BOM are treated as the selectable root requirements. A root item may be assigned in any applicable stage/block and only needs to appear once in that union; missing-item details list the exact code and name. Selecting all BOM immediately recalculates the visible issue list. Each selected product group in every operation always lists its complete root BOM. The same product/item combination can be assigned to only one operation: rows assigned elsewhere stay visible, identify the owning operation, and are locked until the editor first clears the item in that original operation. The current operation's assignment remains editable and is marked as the current block. Within one operation, selecting or clearing an available BOM item mirrors that state only to enabled rows of other selected products that expose the same normalized item code; different, unavailable, or externally assigned rows remain untouched. Legacy duplicate assignments are not deleted automatically and remain removable from their owning operations. BOM issue product rows show the real number of missing root item codes rather than the number of error records. Full renders preserve page and canvas scrollbar positions during add-menu, creation, connection and movement actions.
 - Master-data tab state is shared by content/active styling and URL history. User creation has a standalone heading, responsive fields and inline API errors; successful creation clears its password and updates the list.
-- Approved, superseded, and rejected versions are read-only in the editor; RD review access is also locked against editing.
+- Approved, superseded, and rejected versions are read-only in the editor; RD review access is also locked against editing. Another employee's pending version remains visible in history but does not lock this employee's separate personal draft; overlapping edits instead activate the whole-draft waiting rule.
 
 ## SOP / Work Instruction
 
@@ -152,7 +153,7 @@ Save, submission, review and withdrawal wait for verified server persistence. St
 
 ## Authentication / Permissions
 
-- Backend write authorization is enforced in `app/api/shared-state/route.ts`; frontend hiding alone is not the security boundary.
+- Backend write authorization is enforced in `app/api/shared-state/route.ts` and the ownership-checking `/api/workflow-drafts` route; frontend hiding alone is not the security boundary.
 - `/api/users` provides ADMIN-only create, update, password reset, enable/disable, and deletion. IDs are normalized case-insensitively; historical users are archived with deletedAt/deletedBy and disabled; unreferenced users are removed. Self-deletion and final enabled ADMIN removal/demotion are blocked. Roles and users are written only through this API, not bulk shared-state updates.
 - Permission families include approval actions, status visibility/media, master delete/import/export, and view access.
 - The shared-state API allows only an explicit key allowlist and uses optimistic `revision` checks. Same-origin checks protect writes.

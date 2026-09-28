@@ -177,6 +177,9 @@ export async function can(request: Request, state: State, key: string) {
 }
 export function publicState(state: State) {
   const values = { ...state.values };
+  // Per-user draft payloads are returned only through the ownership-checking
+  // workflow API. Never expose another employee's draft in shared-state reads.
+  delete values.workflowDraftsV1;
   values.platformUsers = JSON.stringify(
     parse(values.platformUsers, []).map(({ password, ...u }: any) => ({
       ...u,

@@ -103,9 +103,24 @@
   }
   ensureProcessMasterVersionScope();
   function versions(scope = state.masterScope) {
-    return control.versions
-      .filter((item) => item.scope === scope)
-      .sort((a, b) => (b.number || 0) - (a.number || 0));
+    const personal = window.WorkflowDrafts?.version?.('master', scope),
+      shared = control.versions.filter(
+        (item) => item.scope === scope && item.status !== 'draft',
+      ),
+      legacy = !personal
+        ? control.versions.filter(
+            (item) =>
+              item.scope === scope &&
+              item.status === 'draft' &&
+              (item.creatorId === currentUser?.id ||
+                (!item.creatorId && currentUser?.role === 'admin')),
+          )
+        : [];
+    return [...(personal ? [personal] : legacy), ...shared].sort((a, b) =>
+      String(b.number || 0).localeCompare(String(a.number || 0), undefined, {
+        numeric: true,
+      }),
+    );
   }
   function draft(scope = state.masterScope) {
     return versions(scope).find((item) => item.status === 'draft');
@@ -144,40 +159,44 @@
     });
     version.updatedAt = now();
   }
-  function beginDraft() {
-    if (draft() || pending()) {
-      toast('此資料已有草稿或正在主管審核中');
+  async function beginDraft() {
+    if (draft()) {
+      toast('目前帳號已有這份資料的個人草稿');
       return;
     }
-    const previous = versions()[0],
-      version = {
-        id: `MD-${state.masterScope}-${Date.now()}`,
-        scope: state.masterScope,
-        number: Math.max(0, ...versions().map((item) => item.number || 0)) + 1,
-        status: 'draft',
-        snapshot: clone(control.active[state.masterScope]),
-        creatorId: currentUser?.id || 'local',
-        creatorName: currentUser?.name || '本機使用者',
-        createdAt: now(),
-        updatedAt: now(),
-        parentVersionId: previous?.id || null,
-        warnings: [],
-        history: [],
-      };
-    record(version, '建立主資料草稿');
-    control.versions.push(version);
-    persist();
-    toast('已建立可修改的主資料草稿');
-    render();
+    try {
+      await window.WorkflowDrafts.save(
+        'master',
+        state.masterScope,
+        clone(control.active[state.masterScope]),
+      );
+      toast('已建立只屬於目前帳號的主資料草稿');
+      render();
+    } catch (error) {
+      toast(error.message || '主資料草稿建立失敗');
+    }
   }
-  function saveDraft() {
+  async function saveDraft() {
     const version = draft();
     if (!version) return;
     syncRows();
-    record(version, '儲存主資料草稿');
-    persist();
-    toast('主資料草稿已儲存');
-    render();
+    if (!window.WorkflowDrafts) {
+      record(version, '儲存主資料草稿');
+      persist();
+      toast('主資料草稿已儲存');
+      return;
+    }
+    try {
+      await window.WorkflowDrafts.save(
+        'master',
+        state.masterScope,
+        clone(version.snapshot),
+      );
+      toast('個人主資料草稿已由伺服器確認儲存');
+      render();
+    } catch (error) {
+      toast(error.message || '草稿未完成伺服器儲存，畫面內容已保留');
+    }
   }
   function validateCatalog(catalog) {
     const errors = [],
@@ -209,7 +228,7 @@
     });
     return errors;
   }
-  function submitDraft() {
+  async function submitDraft() {
     const version = draft();
     if (!version) return;
     syncRows();
@@ -220,13 +239,34 @@
       render();
       return;
     }
-    version.status = 'pending';
-    state.masterReviewId = version.id;
-    record(version, '送出主資料確認');
-    persist();
-    state.masterValidationErrors = [];
-    toast('主資料已送主管確認');
-    render();
+    if (!window.WorkflowDrafts) {
+      version.status = 'pending';
+      state.masterReviewId = version.id;
+      record(version, '送出主資料確認');
+      persist();
+      state.masterValidationErrors = [];
+      toast('主資料已送主管確認');
+      render();
+      return;
+    }
+    try {
+      await window.WorkflowDrafts.save(
+        'master',
+        state.masterScope,
+        clone(version.snapshot),
+      );
+      const result = await window.WorkflowDrafts.submit(
+        'master',
+        state.masterScope,
+      );
+      state.masterReviewId = result.case?.id || null;
+      state.masterValidationErrors = [];
+      toast('整份主資料草稿已送主管確認並鎖定');
+      render();
+    } catch (error) {
+      toast(error.message || '主資料送審失敗');
+      render();
+    }
   }
   function syncRows() {
     const version = draft();
@@ -301,7 +341,7 @@
   function versionBar() {
     const item = draft() || pending() || versions()[0],
       errors = state.masterValidationErrors || [];
-    return `<section class="master-version-bar"><div><small>MASTER DATA VERSION</small><h3>${safe(current().name)} · V${item?.number || 1} <span class="master-status ${item?.status || 'approved'}">${statusText(item?.status || 'approved')}</span></h3><p>${item?.status === 'draft' ? '可反覆儲存，確認內容後再送主管審核。' : item?.status === 'pending' ? '送審期間資料鎖定；可解除送審後繼續修改。' : '已核准版本正在供平台使用，可建立新草稿修改。'}</p></div><div class="master-version-actions">${!draft() && !pending() ? `<button class="button signal" id="master-new-draft">建立新版本草稿</button>` : ''}${draft() ? `<button class="button ghost" id="master-save-draft">儲存草稿</button><button class="button signal" id="master-submit">送出主管審核</button>` : ''}${pending() && (pending().creatorId === currentUser?.id || currentUser?.role === 'admin') ? `<button class="button ghost" id="master-withdraw">解除送審，繼續修改</button>` : ''}</div></section>${
+    return `<section class="master-version-bar"><div><small>MASTER DATA VERSION</small><h3>${safe(current().name)} · V${item?.number || 1} <span class="master-status ${item?.status || 'approved'}">${statusText(item?.status || 'approved')}</span></h3><p>${item?.status === 'draft' ? '可反覆儲存，確認內容後再送主管審核。' : item?.status === 'pending' ? '送審期間資料鎖定；可解除送審後繼續修改。' : '已核准版本正在供平台使用，可建立新草稿修改。'}</p></div><div class="master-version-actions">${!draft() ? `<button class="button signal" id="master-new-draft">建立新版本草稿</button>` : ''}${draft() ? `<button class="button ghost" id="master-save-draft">儲存草稿</button><button class="button signal" id="master-submit">送出主管審核</button>` : ''}${pending() && (pending().creatorId === currentUser?.id || currentUser?.role === 'admin') ? `<button class="button ghost" id="master-withdraw">解除送審，繼續修改</button>` : ''}</div></section>${window.WorkflowDrafts?.panel?.('master',state.masterScope)||''}${
       errors.length
         ? `<div class="master-danger-list"><b>送審前需修正 ${errors.length} 項問題</b>${errors
             .slice(0, 20)
@@ -386,6 +426,7 @@
     bindMaster();
   }
   function bindMaster() {
+    window.WorkflowDrafts?.bindPanel?.(document, 'master', state.masterScope);
     document.querySelectorAll('[data-master-scope]').forEach(
       (button) =>
         (button.onclick = () => {
@@ -406,9 +447,19 @@
       ?.addEventListener('click', submitDraft);
     document
       .querySelector('#master-withdraw')
-      ?.addEventListener('click', () => {
+      ?.addEventListener('click', async () => {
         const item = pending();
         if (!item) return;
+        if (item.workflowCaseId) {
+          try {
+            await window.WorkflowDrafts.review(item, 'withdraw');
+            toast('已解除送審，可繼續修改個人草稿');
+            render();
+          } catch (error) {
+            toast(error.message || '解除送審失敗');
+          }
+          return;
+        }
         item.status = 'draft';
         record(item, '解除送審，繼續修改');
         persist();
@@ -1177,6 +1228,9 @@
   }
   window.MasterDataWorkflow = {
     control: () => control,
+    versions,
+    draft,
+    pending,
     persist,
     record,
     applyActive,

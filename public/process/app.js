@@ -882,6 +882,23 @@ function applyDemoMedia(editorData) {
 function ensureCategoryEditor() {
   const key = editorKey();
   if (state.editorByCategory[key]) return state.editorByCategory[key];
+  const personal = window.WorkflowDrafts?.payload?.(
+    'process',
+    `${state.category}|${state.editorLine}`,
+  );
+  if (personal && typeof personal === 'object') {
+    state.editorByCategory[key] = applyDemoMedia(
+      normalizeEditorData(JSON.parse(JSON.stringify(personal))),
+    );
+    state.selectedOperation =
+      Object.values(state.editorByCategory[key]).flat()[0]?.id || null;
+    const personalVersion = window.WorkflowDrafts?.version?.(
+      'process',
+      `${state.category}|${state.editorLine}`,
+    );
+    if (personalVersion) state.editorVersionId = personalVersion.id;
+    return state.editorByCategory[key];
+  }
   try {
     const saved = JSON.parse(
       localStorage.getItem(`processEditor:${key}`) || 'null',
@@ -1660,11 +1677,19 @@ function productRows(rows) {
     .join('');
 }
 function bomTable() {
-  const bomProducts = Object.keys(data.bom);
-  const selected = data.bom[state.productCode]
+  const draftPayload = window.WorkflowDrafts?.payload?.('bom', 'BOM'),
+    bom = draftPayload
+      ? draftPayload.replaceAll && draftPayload.data
+        ? draftPayload.data
+        : { ...data.bom, ...(draftPayload.data || draftPayload) }
+      : data.bom,
+    draft = window.WorkflowDrafts?.version?.('bom', 'BOM'),
+    bomProducts = Object.keys(bom).filter((code) => !code.startsWith('__')),
+    selected = bom[state.productCode]
     ? state.productCode
     : bomProducts[0];
-  return `<div class="import-drop"><strong>✓ BOM 表已匯入</strong><p>${data.meta.bomSource} · ${data.meta.bomProductCount} 個成品 · ${data.meta.bomRowCount.toLocaleString()} 筆組成</p></div><div class="toolbar"><div class="field"><label>成品編號</label><select id="bom-product-select">${bomProducts.map((code) => `<option ${code === selected ? 'selected' : ''}>${code}</option>`).join('')}</select></div></div><div class="table-wrap"><table><thead><tr><th>層級</th><th>料號</th><th>品名</th><th>規格</th><th>單位</th><th>定額</th><th>損耗</th></tr></thead><tbody>${(data.bom[selected] || []).map((r) => `<tr><td>${r.levelLabel}</td><td><code>${escapeHtml(r.itemCode || '成品')}</code></td><td>${escapeHtml(r.itemName)}</td><td>${escapeHtml(r.specification)}</td><td>${escapeHtml(r.unit)}</td><td>${escapeHtml(r.quantity)}</td><td>${escapeHtml(r.waste)}</td></tr>`).join('')}</tbody></table></div>`;
+  const count = bomProducts.reduce((total, code) => total + (bom[code]?.length || 0), 0);
+  return `<section class="master-version-bar"><div><small>BOM PERSONAL DRAFT</small><h3>${draft ? `我的 BOM 草稿 · ${draft.number}` : 'BOM 目前生效資料'} ${draft ? `<span class="master-status ${draft.status}">${draft.status === 'pending' ? '主管審核中 · 已鎖定' : '草稿 · 未送審'}</span>` : ''}</h3><p>${draft ? '匯入會先儲存至目前帳號的個人草稿，核准前不會影響其他人。' : '先建立個人草稿，再匯入 Excel 修改 BOM。'}</p></div><div class="master-version-actions">${!draft ? '<button class="button signal" id="bom-new-draft">建立 BOM 草稿</button>' : ''}${draft?.status === 'draft' ? '<button class="button signal" id="bom-submit-draft">整份送出主管審核</button>' : ''}</div></section>${window.WorkflowDrafts?.panel?.('bom', 'BOM') || ''}<div class="import-drop"><strong>✓ ${draft ? '顯示我的 BOM 草稿' : 'BOM 表已匯入'}</strong><p>${data.meta.bomSource} · ${bomProducts.length} 個成品 · ${count.toLocaleString()} 筆組成</p></div><div class="toolbar"><div class="field"><label>成品編號</label><select id="bom-product-select">${bomProducts.map((code) => `<option ${code === selected ? 'selected' : ''}>${code}</option>`).join('')}</select></div></div><div class="table-wrap"><table><thead><tr><th>層級</th><th>料號</th><th>品名</th><th>規格</th><th>單位</th><th>定額</th><th>損耗</th></tr></thead><tbody>${(bom[selected] || []).map((r) => `<tr><td>${r.levelLabel}</td><td><code>${escapeHtml(r.itemCode || '成品')}</code></td><td>${escapeHtml(r.itemName)}</td><td>${escapeHtml(r.specification)}</td><td>${escapeHtml(r.unit)}</td><td>${escapeHtml(r.quantity)}</td><td>${escapeHtml(r.waste)}</td></tr>`).join('')}</tbody></table></div>`;
 }
 function lineData() {
   return `<div class="grid stats"><article class="stat"><label>成品製程</label><strong>${routing.meta.finishedCount}</strong><small>${routing.meta.matchedCategoryCount} 筆對應 PDF 類別</small></article><article class="stat"><label>半成品製程</label><strong>${routing.meta.semiFinishedCount}</strong><small>來自 SKU BTP</small></article><article class="stat"><label>生產線</label><strong>${routing.lines.length}</strong><small>A／B／C 線</small></article><article class="stat"><label>待確認分類</label><strong>${routing.meta.unmatchedCount}</strong><small>Excel 有資料、PDF 無產品碼</small></article></div><div class="panel"><div class="panel-head"><h3>線別與製程工段</h3><span class="tag">MASTER SKU</span></div>${routing.lines.map((line) => `<section class="route-section"><div class="route-title"><span class="line-badge">${line.code}</span><div><b>${escapeHtml(line.name)}</b><small>${line.stages.length} 個製程工段</small></div></div><div class="grid machine-grid">${line.stages.map((stage) => `<article class="machine"><b>${stage.code}　${escapeHtml(stage.name)}</b><small>設備：${escapeHtml(stage.machine)}</small><small>固定資產：${escapeHtml(stage.assetNumber)} · 人數：${stage.operators || '待設定'}</small></article>`).join('')}</div></section>`).join('')}</div>`;
@@ -1687,9 +1712,16 @@ function processMasterControl() {
   return window.MasterDataWorkflow?.control?.() || null;
 }
 function processMasterVersions() {
-  return (processMasterControl()?.versions || [])
-    .filter((item) => item.scope === 'PROCESS')
-    .sort((a, b) => (b.number || 0) - (a.number || 0));
+  return (
+    window.MasterDataWorkflow?.versions?.('PROCESS') ||
+    (processMasterControl()?.versions || []).filter(
+      (item) => item.scope === 'PROCESS',
+    )
+  ).sort((a, b) =>
+    String(b.number || 0).localeCompare(String(a.number || 0), undefined, {
+      numeric: true,
+    }),
+  );
 }
 function processMasterDraft() {
   return processMasterVersions().find((item) => item.status === 'draft');
@@ -1754,38 +1786,28 @@ window.ProcessMasterVersioning = {
     render();
   },
 };
-function beginProcessMasterDraft() {
+async function beginProcessMasterDraft() {
   const control = processMasterControl();
   if (!control) return;
-  if (processMasterDraft() || processMasterPending()) {
-    toast('流程資料已有草稿或正在主管審核中');
+  if (processMasterDraft()) {
+    toast('目前帳號已有這份資料的個人草稿');
     return;
   }
-  const versions = processMasterVersions(),
-    createdAt = new Date().toISOString(),
-    version = {
-      id: `MD-PROCESS-${Date.now()}`,
-      scope: 'PROCESS',
-      number: Math.max(0, ...versions.map((item) => item.number || 0)) + 1,
-      status: 'draft',
-      snapshot: normalizeProcessMasterPresetCatalog(
+  try {
+    const result = await window.WorkflowDrafts.save(
+      'master',
+      'PROCESS',
+      normalizeProcessMasterPresetCatalog(
         control.active.PROCESS || processMaster || {},
       ),
-      creatorId: currentUser?.id || 'local',
-      creatorName: currentUser?.name || '本機使用者',
-      createdAt,
-      updatedAt: createdAt,
-      parentVersionId: versions[0]?.id || null,
-      warnings: [],
-      history: [],
-    };
-  recordProcessMasterVersion(version, '建立流程資料草稿');
-  control.versions.push(version);
-  state.processMasterVersionId = version.id;
-  persistProcessMasterControl();
-  document.querySelector('#data-content').innerHTML = processMasterView();
-  bindDataInner('process-master');
-  toast('已建立可修改的流程資料草稿');
+    );
+    state.processMasterVersionId = result.draft.id;
+    document.querySelector('#data-content').innerHTML = processMasterView();
+    bindDataInner('process-master');
+    toast('已建立只屬於目前帳號的流程資料草稿');
+  } catch (error) {
+    toast(error.message || '流程資料草稿建立失敗');
+  }
 }
 function saveProcessMasterNames() {
   const editable = editableProcessMasterData();
@@ -1798,7 +1820,7 @@ function saveProcessMasterNames() {
   });
   return true;
 }
-function saveProcessMasterDraft() {
+async function saveProcessMasterDraft() {
   const version = processMasterDraft();
   if (!version) return;
   saveProcessMasterNames();
@@ -1807,11 +1829,20 @@ function saveProcessMasterDraft() {
     toast(errors[0]);
     return;
   }
-  recordProcessMasterVersion(version, '儲存流程資料草稿');
-  persistProcessMasterControl();
-  toast('流程資料草稿已儲存');
+  try {
+    await window.WorkflowDrafts.save(
+      'master',
+      'PROCESS',
+      JSON.parse(JSON.stringify(version.snapshot)),
+    );
+    toast('流程資料個人草稿已由伺服器確認儲存');
+    document.querySelector('#data-content').innerHTML = processMasterView();
+    bindDataInner('process-master');
+  } catch (error) {
+    toast(error.message || '草稿儲存失敗');
+  }
 }
-function submitProcessMasterDraft() {
+async function submitProcessMasterDraft() {
   const version = processMasterDraft();
   if (!version) return;
   saveProcessMasterNames();
@@ -1820,16 +1851,25 @@ function submitProcessMasterDraft() {
     toast(`送審前需修正 ${errors.length} 項流程資料問題`);
     return;
   }
-  version.status = 'pending';
-  state.masterReviewId = version.id;
-  state.processMasterVersionId = version.id;
-  recordProcessMasterVersion(version, '送出流程資料確認');
-  persistProcessMasterControl();
-  document.querySelector('#data-content').innerHTML = processMasterView();
-  bindDataInner('process-master');
-  toast('流程資料已送主管確認');
+  try {
+    await window.WorkflowDrafts.save(
+      'master',
+      'PROCESS',
+      JSON.parse(JSON.stringify(version.snapshot)),
+    );
+    const result = await window.WorkflowDrafts.submit('master', 'PROCESS');
+    state.masterReviewId = result.case?.id || version.id;
+    state.processMasterVersionId = result.draft.id;
+    document.querySelector('#data-content').innerHTML = processMasterView();
+    bindDataInner('process-master');
+    toast('整份流程資料草稿已送主管確認並鎖定');
+  } catch (error) {
+    toast(error.message || '流程資料送審失敗');
+    document.querySelector('#data-content').innerHTML = processMasterView();
+    bindDataInner('process-master');
+  }
 }
-function withdrawProcessMasterDraft() {
+async function withdrawProcessMasterDraft() {
   const version = processMasterPending();
   if (
     !version ||
@@ -1838,20 +1878,21 @@ function withdrawProcessMasterDraft() {
       !canExchangeProcessMaster('approval.withdraw'))
   )
     return;
-  version.status = 'draft';
-  state.processMasterVersionId = version.id;
-  recordProcessMasterVersion(version, '解除送審，繼續修改');
-  persistProcessMasterControl();
-  document.querySelector('#data-content').innerHTML = processMasterView();
-  bindDataInner('process-master');
-  toast('已解除送審，可繼續修改流程資料');
+  try {
+    await window.WorkflowDrafts.review(version, 'withdraw');
+    state.processMasterVersionId = version.id;
+    document.querySelector('#data-content').innerHTML = processMasterView();
+    bindDataInner('process-master');
+    toast('已解除送審，可繼續修改流程資料');
+  } catch (error) {
+    toast(error.message || '解除送審失敗');
+  }
 }
 function processMasterVersionBar() {
   const versions = processMasterVersions(),
     selected = selectedProcessMasterVersion(),
     active = versions.find((item) => item.status === 'approved'),
     draft = processMasterDraft(),
-    pending = processMasterPending(),
     status = {
       draft: '草稿 · 未送審',
       pending: '主管審核中',
@@ -1859,7 +1900,7 @@ function processMasterVersionBar() {
       superseded: '歷史核准',
     };
   if (!selected) return '';
-  return `<section class="master-version-bar process-master-version"><div><small>PROCESS MASTER VERSION</small><h3>流程資料 · V${selected.number} <span class="master-status ${selected.status}">${status[selected.status] || selected.status}</span></h3><p>${selected.status === 'draft' ? '先儲存草稿，再送主管審核；核准前不會影響製程編輯台。' : '唯讀查閱；製程編輯台目前使用已核准版本。'} 目前生效：V${active?.number || 1}</p></div><label class="master-version-select">選擇版本／草稿<select id="process-master-version-choice">${versions.map((item) => `<option value="${escapeHtml(item.id)}" ${item.id === selected.id ? 'selected' : ''}>V${item.number} · ${status[item.status] || item.status} · ${new Date(item.updatedAt).toLocaleString('zh-TW')}</option>`).join('')}</select></label><div class="master-version-actions">${!draft && !pending ? '<button class="button signal" id="process-master-new-draft">建立新版本草稿</button>' : ''}${selected.status === 'draft' ? '<button class="button ghost" id="save-master-data">儲存草稿</button><button class="button signal" id="process-master-submit">送出主管審核</button>' : ''}${selected.status === 'pending' && (selected.creatorId === currentUser?.id || currentUser?.role === 'admin' || canExchangeProcessMaster('approval.withdraw')) ? '<button class="button ghost" id="process-master-withdraw">解除送審，繼續修改</button>' : ''}${selected.status === 'pending' ? '<button class="button ghost" id="process-master-review">查看送審案件</button>' : ''}</div></section><details class="master-history process-master-history"><summary>版本紀錄與操作歷程 · ${versions.length}</summary><div>${versions.map((item) => `<button type="button" data-process-master-history="${escapeHtml(item.id)}"><b>V${item.number} · ${status[item.status] || item.status}</b><small>${escapeHtml(item.creatorName)} · ${new Date(item.updatedAt).toLocaleString('zh-TW')}</small></button>`).join('')}</div></details>`;
+  return `<section class="master-version-bar process-master-version"><div><small>PROCESS MASTER VERSION</small><h3>流程資料 · V${selected.number} <span class="master-status ${selected.status}">${status[selected.status] || selected.status}</span></h3><p>${selected.status === 'draft' ? '先儲存草稿，再送主管審核；核准前不會影響製程編輯台。' : '唯讀查閱；製程編輯台目前使用已核准版本。'} 目前生效：V${active?.number || 1}</p></div><label class="master-version-select">選擇版本／草稿<select id="process-master-version-choice">${versions.map((item) => `<option value="${escapeHtml(item.id)}" ${item.id === selected.id ? 'selected' : ''}>V${item.number} · ${status[item.status] || item.status} · ${new Date(item.updatedAt).toLocaleString('zh-TW')}</option>`).join('')}</select></label><div class="master-version-actions">${!draft ? '<button class="button signal" id="process-master-new-draft">建立新版本草稿</button>' : ''}${selected.status === 'draft' ? '<button class="button ghost" id="save-master-data">儲存草稿</button><button class="button signal" id="process-master-submit">送出主管審核</button>' : ''}${selected.status === 'pending' && (selected.creatorId === currentUser?.id || currentUser?.role === 'admin' || canExchangeProcessMaster('approval.withdraw')) ? '<button class="button ghost" id="process-master-withdraw">解除送審，繼續修改</button>' : ''}${selected.status === 'pending' ? '<button class="button ghost" id="process-master-review">查看送審案件</button>' : ''}</div></section>${window.WorkflowDrafts?.panel?.('master', 'PROCESS') || ''}<details class="master-history process-master-history"><summary>版本紀錄與操作歷程 · ${versions.length}</summary><div>${versions.map((item) => `<button type="button" data-process-master-history="${escapeHtml(item.id)}"><b>V${item.number} · ${status[item.status] || item.status}</b><small>${escapeHtml(item.creatorName)} · ${new Date(item.updatedAt).toLocaleString('zh-TW')}</small></button>`).join('')}</div></details>`;
 }
 function processMasterExcelRows(source) {
   const templates = [],
@@ -3188,6 +3229,40 @@ function bindDataInner(tab) {
       toast('匯入入口已就緒；正式版可上傳 PDF / Excel');
   }
   if (tab === 'bom') {
+    window.WorkflowDrafts?.bindPanel?.(
+      document.querySelector('#data-content'),
+      'bom',
+      'BOM',
+    );
+    document.querySelector('#bom-new-draft')?.addEventListener(
+      'click',
+      async () => {
+        try {
+          const approved = readStore('bomOverrides', {});
+          await window.WorkflowDrafts.save('bom', 'BOM', approved);
+          document.querySelector('#data-content').innerHTML = bomTable();
+          bindDataInner('bom');
+          toast('已建立只屬於目前帳號的 BOM 草稿');
+        } catch (error) {
+          toast(error.message || 'BOM 草稿建立失敗');
+        }
+      },
+    );
+    document.querySelector('#bom-submit-draft')?.addEventListener(
+      'click',
+      async () => {
+        try {
+          await window.WorkflowDrafts.submit('bom', 'BOM');
+          document.querySelector('#data-content').innerHTML = bomTable();
+          bindDataInner('bom');
+          toast('整份 BOM 草稿已送主管確認並鎖定');
+        } catch (error) {
+          toast(error.message || 'BOM 送審失敗');
+          document.querySelector('#data-content').innerHTML = bomTable();
+          bindDataInner('bom');
+        }
+      },
+    );
     document.querySelector('#bom-product-select').onchange = (e) => {
       state.productCode = e.target.value;
       document.querySelector('#data-content').innerHTML = bomTable();
@@ -3195,6 +3270,11 @@ function bindDataInner(tab) {
     };
   }
   if (tab === 'process-master') {
+    window.WorkflowDrafts?.bindPanel?.(
+      document.querySelector('#data-content'),
+      'master',
+      'PROCESS',
+    );
     const addMasterTemplate = document.querySelector('#add-master-template');
     if (addMasterTemplate) addMasterTemplate.onclick = () => {
       const editable = editableProcessMasterData();
@@ -3272,7 +3352,7 @@ function bindDataInner(tab) {
     const importButton = document.querySelector('#import-process-master'),
       importFile = document.querySelector('#process-master-import-file');
     if (importButton)
-      importButton.onclick = () => {
+      importButton.onclick = async () => {
         if (processMasterDraft()) {
           importFile?.click();
           return;
@@ -3281,7 +3361,7 @@ function bindDataInner(tab) {
           toast('流程資料正在主管審核中，請先解除送審再匯入');
           return;
         }
-        beginProcessMasterDraft();
+        await beginProcessMasterDraft();
         requestAnimationFrame(() =>
           document.querySelector('#process-master-import-file')?.click(),
         );
@@ -3430,7 +3510,7 @@ function applyPlatformIdentity() {
   if (role)
     role.textContent = `${roleLabels[currentUser?.role] || ''}${currentUser?.lines?.length ? ` · ${currentUser.lines.join('/')} 線` : ''}`;
 }
-function enterPlatform(user) {
+async function enterPlatform(user) {
   sessionStorage.removeItem('process-platform-signed-out');
   const stored = platformUsers.find((item) => item.id === user.id),
     source = stored ? { ...stored, ...user } : user;
@@ -3445,6 +3525,15 @@ function enterPlatform(user) {
   document.querySelector('#login-root').innerHTML = '';
   document.querySelector('.app-shell').classList.remove('platform-locked');
   applyPlatformIdentity();
+  document.querySelector('.app-shell').classList.add('workflow-draft-loading');
+  try {
+    await window.WorkflowDrafts?.refresh?.();
+  } catch (error) {
+    console.warn('Personal drafts could not be loaded', error);
+    toast('個人草稿暫時無法讀取；重新整理前請勿開始修改');
+  } finally {
+    document.querySelector('.app-shell').classList.remove('workflow-draft-loading');
+  }
   const first = canView('dashboard')
     ? 'dashboard'
     : canView('player')
@@ -3546,6 +3635,7 @@ document.querySelector('#logout-button').onclick = async () => {
   }
   await fetch('/api/platform-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout'})});
   window.ProcessSync?.clearIdentity?.();
+  window.WorkflowDrafts?.clear?.();
   sessionStorage.setItem('process-platform-signed-out', '1');
   currentUser = null;
   persistPlatform();
