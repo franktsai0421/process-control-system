@@ -69,12 +69,15 @@ export const parse = (s: string | undefined, fallback: any) => {
 };
 export async function encodeValues(values:Record<string,string>) {
   const raw=JSON.stringify(values);
-  if(new TextEncoder().encode(raw).length<512*1024)return raw;
+  // ASCII JSON length is a lower bound on UTF-8 bytes. Small snapshots keep
+  // the original inline representation; large ones are encoded only once.
+  if(raw.length<512*1024 && new TextEncoder().encode(raw).length<512*1024)return raw;
   const bucket=(env as any).STATE_ARCHIVE;
   if(!bucket)throw Error('Large snapshot requires STATE_ARCHIVE storage');
-  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw))),b=>b.toString(16).padStart(2,'0')).join('');
+  const bytes=new TextEncoder().encode(raw);
+  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
   const key=`snapshots/${digest}.json`;
-  await bucket.put(key,raw,{httpMetadata:{contentType:'application/json'}});
+  await bucket.put(key,bytes,{httpMetadata:{contentType:'application/json'}});
   return JSON.stringify({__processR2:{key,sha256:digest},platformUsers:values.platformUsers,...(values.maintenanceMode!==undefined?{maintenanceMode:values.maintenanceMode}:{})});
 }
 export async function decodeValues(raw:string):Promise<Record<string,string>> {
@@ -84,10 +87,10 @@ export async function decodeValues(raw:string):Promise<Record<string,string>> {
   if(!/^snapshots\/[a-f0-9]{64}\.json$/.test(ref.key))throw Error('Invalid snapshot reference');
   const object=await (env as any).STATE_ARCHIVE?.get(ref.key);
   if(!object)throw Error('Snapshot unavailable; database was not modified');
-  const data=await object.text();
-  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(data))),b=>b.toString(16).padStart(2,'0')).join('');
+  const bytes=await object.arrayBuffer();
+  const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
   if(digest!==ref.sha256)throw Error('Snapshot integrity check failed');
-  const values=JSON.parse(data);
+  const values=JSON.parse(new TextDecoder().decode(bytes));
   if(stored.maintenanceMode!==undefined)values.maintenanceMode=stored.maintenanceMode;
   return values;
 }
@@ -248,6 +251,27 @@ export async function backup(
       new Date().toISOString(),
     )
     .run();
+  await env.DB.prepare(
+    'DELETE FROM state_backups WHERE id NOT IN (SELECT id FROM state_backups ORDER BY created_at DESC LIMIT 100)',
+  ).run();
+  return id;
+}
+// A normal shared-state write backs up the exact stored D1 value. Re-encoding
+// the decoded state here builds a second full R2 snapshot in Worker memory
+// before the new snapshot is encoded, which can exceed the Worker limit.
+export async function backupStoredState(
+  revision: number,
+  reason: string,
+  actor: string,
+) {
+  const id = crypto.randomUUID();
+  const result = await env.DB.prepare(
+    'INSERT INTO state_backups(id,revision,"values",reason,actor,created_at) SELECT ?,revision,"values",?,?,? FROM shared_state WHERE id=1 AND revision=?',
+  )
+    .bind(id, reason, actor, new Date().toISOString(), revision)
+    .run();
+  if (result.meta.changes !== 1)
+    throw Error('Shared state changed before backup; save was not applied');
   await env.DB.prepare(
     'DELETE FROM state_backups WHERE id NOT IN (SELECT id FROM state_backups ORDER BY created_at DESC LIMIT 100)',
   ).run();
