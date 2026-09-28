@@ -1,5 +1,10 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-28 — Follow-up fix for live shared-state memory errors
+
+- Live Sites Worker errors still showed `POST /api/shared-state` exceeding memory after PR #10, including a 44 KB save. Reuse byte-identical media already present in the decoded snapshot during deferred-media writes; avoid reading and base64-encoding unchanged R2 images on each edit. New media continue to be read from immutable R2 objects and digest-checked.
+- Data-preserving Staging acceptance used a 4,569,912-byte snapshot with 13 media values and four deferred images. Draft Save, reload/photo decode, logout/re-login, Submit, separate RD Approve/re-login and iPhone read-only checks passed; shared-state writes up to 184,478 bytes returned HTTP 200. The Worker tail reported `outcome: ok`, no exception and no `exceededMemory` for the representative approval write. The complete D1 export passed an isolated SQLite restore and integrity check; after testing, Time Travel restored revision 394 and exact hashes for the singleton state row and all 100 backup rows. All three demo identities remained available, and the PR #11 Staging Worker version was restored. No schema, migration, Production data or Production Site changed.
+
 ## 2026-09-28 — Sites draft-save memory and revision recovery
 
 - Live Sites logs confirmed `POST /api/shared-state` failed with `exceededMemory` and HTTP 500, including a 44 KB request. Reduce peak allocations by backing up the exact stored D1 snapshot reference, comparing existing key strings without serializing the entire state twice, and encoding large R2 snapshots once. Keep revision checks, immutable data and the historic backup format.
