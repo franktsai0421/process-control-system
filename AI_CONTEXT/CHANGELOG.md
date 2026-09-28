@@ -1,5 +1,9 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-28 — Follow-up candidate for live shared-state memory errors
+
+- Live Sites Worker errors still show `POST /api/shared-state` exceeding memory after PR #10, including a 44 KB save. Reuse byte-identical media already present in the decoded snapshot during deferred-media writes; avoid reading and base64-encoding unchanged R2 images on each edit. New media continue to be read from immutable R2 objects and digest-checked. Local isolated tests pass. Staging reproduction, target backup/restore and live validation are still required before merge or publication.
+
 ## 2026-09-28 — Sites draft-save memory and revision recovery
 
 - Live Sites logs confirmed `POST /api/shared-state` failed with `exceededMemory` and HTTP 500, including a 44 KB request. Reduce peak allocations by backing up the exact stored D1 snapshot reference, comparing existing key strings without serializing the entire state twice, and encoding large R2 snapshots once. Keep revision checks, immutable data and the historic backup format.
