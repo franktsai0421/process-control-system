@@ -28,6 +28,8 @@ Last verified: 2026-09-18. This document describes only the current repository i
 | `actor` | text | Platform user ID or `system`. |
 | `created_at` | text | ISO creation timestamp. |
 
+The normal shared-state POST saves its pre-write backup by copying the exact stored D1 `values` field at the expected revision. For large states this preserves the existing immutable R2 snapshot reference without decoding and re-encoding a second full snapshot. The new state still uses the existing SHA-256-checked R2 serializer and D1 revision compare-and-swap. Other explicit or scheduled backup paths retain their established behavior.
+
 The database does **not** currently have normalized tables for products, BOM rows, process nodes, users, roles, SOPs, QC results, dispatch records, or media.
 
 ### Browser and sync layer
