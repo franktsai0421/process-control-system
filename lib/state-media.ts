@@ -84,15 +84,24 @@ export async function writeReceipt(
 // continue to see the original data URIs and byte-identical version snapshots.
 export async function restoreMediaUpdates(
   updates: Record<string, string | null>,
+  previousValues: Record<string, string> = {},
 ) {
   const media = new Map<string, string>();
-  async function visit(value: unknown): Promise<unknown> {
+  async function visit(value: unknown, previous: unknown): Promise<unknown> {
     if (
       typeof value === 'string' &&
       /^\/api\/state-media\?id=[a-f0-9]{64}$/.test(value)
     ) {
       if (media.has(value)) return media.get(value);
       const id = value.slice(value.indexOf('=') + 1);
+      // Most saves submit the same images that were delivered on GET. Reuse
+      // the already decoded snapshot rather than fetching, decoding and
+      // base64-encoding every R2 image again on each small text edit.
+      if (typeof previous === 'string' && mediaPattern.test(previous) &&
+          (await digest(previous)) === id) {
+        media.set(value, previous);
+        return previous;
+      }
       const object = await env.STATE_ARCHIVE.get(`delivery/media/${id}`);
       if (!object) throw Error('Media unavailable; content was not saved');
       const bytes = new Uint8Array(await object.arrayBuffer());
@@ -109,13 +118,15 @@ export async function restoreMediaUpdates(
     }
     if (Array.isArray(value)) {
       const result = [];
-      for (const item of value) result.push(await visit(item));
+      for (let index = 0; index < value.length; index++)
+        result.push(await visit(value[index], Array.isArray(previous) ? previous[index] : undefined));
       return result;
     }
     if (value && typeof value === 'object') {
       const result: Record<string, unknown> = {};
       for (const [key, item] of Object.entries(value))
-        result[key] = await visit(item);
+        result[key] = await visit(item, previous && typeof previous === 'object' && !Array.isArray(previous)
+          ? (previous as Record<string, unknown>)[key] : undefined);
       return result;
     }
     return value;
@@ -123,7 +134,7 @@ export async function restoreMediaUpdates(
   const result: Record<string, string | null> = {};
   for (const [key, raw] of Object.entries(updates))
     result[key] = raw?.includes('/api/state-media?id=')
-      ? JSON.stringify(await visit(JSON.parse(raw)))
+      ? JSON.stringify(await visit(JSON.parse(raw), previousValues[key] ? JSON.parse(previousValues[key]) : undefined))
       : raw;
   return result;
 }
