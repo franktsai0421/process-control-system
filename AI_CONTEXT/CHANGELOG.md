@@ -1,5 +1,9 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-28 — Candidate fix for Sites save memory limit (branch, not released)
+
+- Live Sites logs confirm `POST /api/shared-state` fails with `exceededMemory` and HTTP 500, including a 44 KB request. Reduce peak allocations by backing up the exact stored D1 snapshot reference, comparing existing key strings without serializing the entire state twice, and encoding large R2 snapshots once. Keep revision checks, immutable data and historic backup format. This is a tested local candidate; live Staging and the original Site still require validation before release.
+
 ## 2026-09-26 — Draft-save revision recovery (branch, not released)
 
 - A save from an editor with a stale whole-site revision now retries when the server's copies of all written keys are unchanged. Different-key updates are preserved; an update to the same draft key still blocks rather than replacing another person's work. Limit the rebase to two attempts and keep unsaved content in the page.
