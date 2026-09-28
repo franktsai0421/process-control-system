@@ -191,7 +191,9 @@
     });
     container.querySelectorAll('[data-workflow-resolve]').forEach((button) => {
       button.onclick = async () => {
-        button.disabled = true;
+        container.querySelectorAll('[data-workflow-resolve]').forEach((action) => {
+          action.disabled = true;
+        });
         try {
           const result = await resolve(kind, scope, button.dataset.changeId, button.dataset.workflowResolve);
           if (kind === 'process') state.editorByCategory[scope.replace('|', ':')] = copy(result.draft.payload);

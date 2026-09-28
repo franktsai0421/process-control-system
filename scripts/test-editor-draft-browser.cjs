@@ -1,4 +1,4 @@
-/* oxlint-disable typescript/no-require-imports -- CommonJS is required by the existing fixture loader and browser runtime. */
+/* oxlint-disable typescript/no-require-imports, typescript/no-floating-promises, eslint/no-unused-vars -- CommonJS and browser-evaluated callbacks are required by this fixture. */
 // Isolated browser integration: real API handlers, SQLite and private-R2 fixture.
 // No existing Local database, employee accounts, media or Production bindings are used.
 const assert = require('node:assert/strict');
@@ -222,11 +222,12 @@ const server=http.createServer(async(req,res)=>{try{
       await bPage.setViewportSize({width:390,height:844});
       assert.ok(await bPage.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2),'iPhone draft conflict has no document overflow');
       const go=panel.getByText('前往修改',{exact:true}).first(),goBox=await go.boundingBox();assert.ok(goBox.width>=44&&goBox.height>=40,'mobile go-to-edit is a reachable touch target');
-      fs.mkdirSync('work/workflow-draft-validation',{recursive:true});await bPage.screenshot({path:'work/workflow-draft-validation/conflicts-mobile.png',fullPage:true});
-      await bPage.setViewportSize({width:1366,height:900});await bPage.screenshot({path:'work/workflow-draft-validation/conflicts-desktop.png',fullPage:true});
+      fs.mkdirSync('work/workflow-draft-validation',{recursive:true});await bPage.screenshot({path:'work/workflow-draft-validation/conflicts-mobile-latest.png',fullPage:true});
+      await bPage.setViewportSize({width:1366,height:900});await bPage.screenshot({path:'work/workflow-draft-validation/conflicts-desktop-latest.png',fullPage:true});
       while(await bPage.locator('[data-workflow-resolve=mine]:not([disabled])').count()){
+        const before=await bPage.evaluate(()=>WorkflowDrafts.get('process','DTLN|A').draft.version);
         await bPage.locator('[data-workflow-resolve=mine]:not([disabled])').first().click();
-        await bPage.waitForTimeout(50);
+        await bPage.waitForFunction(version=>WorkflowDrafts.get('process','DTLN|A').draft.version>version,before);
       }
       await bPage.locator('#submit-version').click();await bPage.waitForFunction(()=>approvalVersions.some(v=>v.status==='pending'&&v.creatorId==='staff-b'));
       const caseB=await bPage.evaluate(()=>approvalVersions.find(v=>v.status==='pending'&&v.creatorId==='staff-b').id);
