@@ -178,7 +178,7 @@ export async function POST(request: Request) {
   }
   if (Object.values(body.updates).some(value=>typeof value==='string'&&value.includes('/api/state-media?id='))) {
     try {
-      for (const [key,value] of Object.entries(await restoreMediaUpdates(body.updates))) if(value!==null)values[key]=value;
+      for (const [key,value] of Object.entries(await restoreMediaUpdates(body.updates, state.values))) if(value!==null)values[key]=value;
     } catch {
       return Response.json({error:'媒體讀取失敗，未儲存；請重試。'}, {status:503,headers});
     }
