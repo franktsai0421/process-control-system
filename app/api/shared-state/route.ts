@@ -8,7 +8,7 @@ import {
   publicState,
   sameOrigin,
   allowedKey,
-  backup,
+  backupStoredState,
   scheduledBackup,
   parse,
   publicUntil,
@@ -428,9 +428,10 @@ export async function POST(request: Request) {
   // Multiple open browser tabs can repeat an already-applied localStorage write.
   // Treat an identical snapshot as a successful no-op so it does not create a
   // backup or consume a revision number on every polling cycle.
-  if (JSON.stringify(values) === JSON.stringify(state.values))
+  if (Object.keys(values).length === Object.keys(state.values).length &&
+      Object.entries(values).every(([key, value]) => state.values[key] === value))
     return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(state, request, body.updates) : publicState(state), { headers });
-  await backup(state, '整站資料異動前保護備份', user.id, true);
+  await backupStoredState(state.revision, '整站資料異動前保護備份', user.id);
   const next = { revision: state.revision + 1, values };
   const result = await env.DB.prepare(
     'UPDATE shared_state SET revision=?,"values"=?,updated_at=? WHERE id=1 AND revision=?',
