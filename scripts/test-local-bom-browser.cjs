@@ -18,7 +18,7 @@ const env = {PROCESS_SESSION_SECRET:randomUUID(), DEMO_LOGIN_ENABLED:'true',
     async first(){return db.prepare(sql).get(...args)||null;},
     async all(){return {results:db.prepare(sql).all(...args)};}};},
     async batch(statements){db.exec('BEGIN');try{const result=[];for(const statement of statements)result.push(await statement.run());db.exec('COMMIT');return result;}catch(error){db.exec('ROLLBACK');throw error;}}},
-  STATE_ARCHIVE:{async put(key,value){objects.set(key,value);},async get(key){return objects.has(key)?{text:async()=>objects.get(key)}:null;}}};
+  STATE_ARCHIVE:{async put(key,value){objects.set(key,value);},async get(key){return objects.has(key)?{text:async()=>Buffer.from(objects.get(key)).toString(),arrayBuffer:async()=>Uint8Array.from(Buffer.from(objects.get(key))).buffer}:null;}}};
 const views=['dashboard','player','dispatch','productStatus','approval','editor','data'];
 const seed={revision:1,values:{platformUsers:JSON.stringify(['admin','rd','staff'].map(role=>({id:`demo-${role}`,name:`Demo ${role}`,role,authMode:'demo',enabled:true,views,lines:['A','B','C']})))}};
 if(process.argv[2]){
