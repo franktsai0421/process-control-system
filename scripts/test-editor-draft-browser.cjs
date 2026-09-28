@@ -228,9 +228,12 @@ const server=http.createServer(async(req,res)=>{try{
       }
       // Stale editor cannot replace another account's revision.
       await phone.evaluate(()=>{const version=approvalVersions.find(v=>v.line==='B');version.reviewNote='stale fixture';localStorage.setItem('approvalVersions',JSON.stringify(approvalVersions));});
-      db.prepare('UPDATE shared_state SET revision=revision+1 WHERE id=1').run();
+      const concurrent=await core.readState(),concurrentVersions=JSON.parse(concurrent.values.approvalVersions),concurrentVersion=concurrentVersions.find(v=>v.line==='B');
+      concurrentVersion.reviewNote='other writer fixture';
+      db.prepare('UPDATE shared_state SET revision=revision+1,"values"=? WHERE id=1').run(await core.encodeValues({...concurrent.values,approvalVersions:JSON.stringify(concurrentVersions)}));
       assert.equal(await phone.evaluate(()=>window.ProcessSync.flush()),false);assert.equal(await phone.evaluate(()=>window.ProcessSync.status),'conflict');
-      assert.ok(!JSON.parse((await core.readState()).values.approvalVersions).some(v=>v.reviewNote==='stale fixture'));
+      const durableVersions=JSON.parse((await core.readState()).values.approvalVersions);
+      assert.ok(!durableVersions.some(v=>v.reviewNote==='stale fixture'));assert.equal(durableVersions.find(v=>v.line==='B').reviewNote,'other writer fixture');
       await reopened.close();
       console.log('PASS: staff A/B/C complete steps/order -> durable Save -> failed/retried single Submit -> separate RD failed/retried Approve -> browser close/reopen -> effective dispatch; stale revision rejected; iPhone signed login.');return;
     }
