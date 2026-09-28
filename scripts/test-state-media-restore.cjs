@@ -5,7 +5,7 @@ const { stripTypeScriptTypes } = require('node:module');
 const { webcrypto } = require('node:crypto');
 
 let source = fs.readFileSync('lib/state-media.ts', 'utf8');
-source = source.replace(/^import .*;\n/gm, '').replace(/^export /gm, '');
+source = source.replace(/^import .*;\r?\n/gm, '').replace(/^export /gm, '');
 source = stripTypeScriptTypes(source);
 source += '\nglobalThis.restore = restoreMediaUpdates; globalThis.digestMedia = digest;';
 
