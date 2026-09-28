@@ -1,5 +1,16 @@
 # PROCESS OS - Meaningful Change History
 
+## 2026-09-28 — Sites draft-save memory and revision recovery
+
+- Live Sites logs confirmed `POST /api/shared-state` failed with `exceededMemory` and HTTP 500, including a 44 KB request. Reduce peak allocations by backing up the exact stored D1 snapshot reference, comparing existing key strings without serializing the entire state twice, and encoding large R2 snapshots once. Keep revision checks, immutable data and the historic backup format.
+- A save from an editor with a stale whole-site revision retries only when the server copies of all written keys are unchanged. Different-key updates are preserved; an update to the same draft key still blocks rather than replacing another person's work. Limit the rebase to two attempts, keep unsaved content in the page, and distinguish revision conflicts, expired login/permissions and temporary connectivity.
+- Data-preserving Staging acceptance restored a complete D1 export in isolated SQLite, verified the referenced 4,569,912-byte R2 snapshot and all three demo identities, then exercised a 3,727,111-byte public state response (larger than the original Site's 2,218,263-byte response). Live draft Save, reload/photo read, Submit, separate-account Approve and iPhone read all passed with HTTP 200 in 1.257–1.444 seconds; no `exceededMemory` occurred. The test state and all 100 backup rows were restored exactly to revision 394, while immutable R2 objects were retained. No schema or migration changed.
+
+## 2026-09-21 — Sites demo-login release guard
+
+- Add a fixed Sites/Staging acceptance check for all three passwordless demo logins, signed cookies, effective role scopes, refresh/logout/re-login, and reviewed live asset hashes.
+- Document that the existing ChatGPT Sites project has an independent D1: when public demo mode is enabled, a data-preserving Sites release must restore-test the complete state and append only missing `createDemoUsers(roleDefaults)` identities with revision conflict checks and verified before/after backups. Existing accounts, credentials, drafts, versions, business data and media remain untouched; conflicts stop the release.
+
 ## 2026-09-19 — Durable review actions and startup media delivery
 
 - Reuse the merged draft-persistence fixes; the employee video uses the older Sites publication, not the separate Workers production URL. Its Save still reports success before server confirmation; logs show rejected writes. Fix the remaining submit/review/withdraw actions to wait for persistence, preserve content and original status on failure, and prevent concurrent transitions. Reopening a newer draft now refreshes Submit controls. Login reloads current shared data; logout refuses to abandon failed writes.
@@ -72,11 +83,6 @@
 - Add isolated authentication regression checks and fresh-clone startup documentation. 測試階段快捷入口預設開放；正式營運前必須由Frank明確確認關閉。
 
 This file records verified, meaningful changes only. `AI_CONTEXT.md` describes the current system state.
-
-## 2026-09-21 — Sites demo-login release guard
-
-- Add a fixed Sites/Staging acceptance check for all three passwordless demo logins, signed cookies, effective role scopes, refresh/logout/re-login, and reviewed live asset hashes.
-- Document that the existing ChatGPT Sites project has an independent D1: when public demo mode is enabled, a data-preserving Sites release must restore-test the complete state and append only missing `createDemoUsers(roleDefaults)` identities with revision conflict checks and verified before/after backups. Existing accounts, credentials, drafts, versions, business data and media remain untouched; conflicts stop the release.
 
 ## [Build 2026.09.15.7100] - 2026-09-15 — large-photo saves bypass browser quota
 

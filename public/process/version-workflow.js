@@ -241,9 +241,9 @@
       const stages=deepCopy(ensureCategoryEditor()),now=new Date().toISOString(),selected=group().find(item=>item.id===state.editorVersionId),isRevision=String(state.editorVersionId||"").startsWith("revision:"),parentId=isRevision?String(state.editorVersionId).split(":")[1]:null;
       localStorage.setItem(`processEditor:${editorKey()}`,JSON.stringify({category:state.category,line:state.editorLine,stages,savedAt:now}));if(selected?.status==="draft"){selected.stages=stages;selected.updatedAt=now;history(selected,"draft_saved","草稿已儲存");state.approvalVersionId=selected.id}else{const versions=group(),version={id:`PV-${crypto.randomUUID()}`,number:Math.max(0,...versions.map(item=>item.number||0))+1,category:state.category,line:state.editorLine,stages,createdAt:now,updatedAt:now,creatorId:currentUser?.id||"local",creatorName:currentUser?.name||"本機使用者",status:"draft",parentVersionId:parentId,history:[]};history(version,"draft_created",parentId?"新修訂草稿建立":"版本草稿建立");approvalVersions.unshift(version);state.editorVersionId=version.id;state.approvalVersionId=version.id}persistPlatform();
       const saved=await window.ProcessSync?.flush?.();
-      if(saved!==true)toast("草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。修訂衝突或登入失效需先處理。");
+      if(saved!==true)toast(window.ProcessSync?.saveFailureMessage?.() || "草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。");
       else toast("草稿已儲存，可檢查後再送審");
-    }catch(error){console.warn('Process draft save failed',error);toast("草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。修訂衝突或登入失效需先處理。");}
+    }catch(error){console.warn('Process draft save failed',error);toast(window.ProcessSync?.saveFailureMessage?.() || "草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。");}
     finally{savingEditorVersion=false;if(save)save.disabled=false;render();}
   }
 
@@ -295,7 +295,6 @@
   // Seed only absent examples; never rewrite persisted version graphs during startup.
   seedSamples();if(!(dispatchBoard.A||[]).length)dispatchBoard.A=data.products.filter(product=>product.category==="BORUAXE1021").slice(0,3).map(product=>product.code);persistPlatform();if(currentUser)render();
 })();
-
 
 
 

@@ -83,6 +83,7 @@ const window = {
 };
 const context = vm.createContext({
   window,
+  document: { documentElement: { lang: 'zh-Hant' } },
   Storage: QuotaStorage,
   localStorage,
   sessionStorage,
@@ -109,6 +110,8 @@ const context = vm.createContext({
     if (!options.body) return {status:200,json:async()=>({revision,values,identity:{id:'operator',role:'staff'},serverProtected:true})};
     lastPost = JSON.parse(options.body);
     if (holdWrite) await holdWrite;
+    if (lastPost.baseRevision !== revision)
+      return { ok:false, status:409, text:async()=>JSON.stringify({revision,values}) };
     if (failWrites)
       return {
         ok: false,
@@ -205,6 +208,25 @@ vm.runInContext(
   let warned = false;
   window.dispatchEvent({type:'beforeunload',preventDefault(){ warned = true; }});
   assert.equal(warned, false, 'successful Save leaves no pending update');
+
+  // A different shared-state key may advance the global revision while the
+  // editor is open. Its draft must still save without reverting that change.
+  values = {...values, dispatchBoard:'{"A":["externally-updated"]}'};
+  revision++;
+  const disjointDraft = JSON.stringify({category:'quota-test',line:'A',stages:{'A-CUT':[{id:'disjoint'}]}});
+  localStorage.setItem(key, disjointDraft);
+  assert.equal(await window.ProcessSync.flush(), true, 'disjoint revision change is safely retried');
+  assert.equal(values[key], disjointDraft);
+  assert.equal(values.dispatchBoard, '{"A":["externally-updated"]}', 'other writer is preserved');
+
+  values = {...values, [key]:JSON.stringify({category:'quota-test',line:'A',stages:{'A-CUT':[{id:'other-writer'}]}})};
+  revision++;
+  localStorage.setItem(key, JSON.stringify({category:'quota-test',line:'A',stages:{'A-CUT':[{id:'my-unsaved-work'}]}}));
+  assert.equal(await window.ProcessSync.flush(), false, 'same workspace is never overwritten');
+  assert.equal(window.ProcessSync.status, 'conflict');
+  assert.match(window.ProcessSync.saveFailureMessage(), /資料已在其他位置更新/);
+  assert.match(values[key], /other-writer/, 'server version survives the conflict');
+  assert.match(localStorage.getItem(key), /my-unsaved-work/, 'unsaved editor content stays in memory');
 
   const safetySource = fs.readFileSync(
     path.resolve('public/process/data-safety-ui.js'),
