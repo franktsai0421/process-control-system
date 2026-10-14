@@ -1,3 +1,4 @@
+const isolatedTestTarget_20261010=require('./require-isolated-test-target.cjs')();
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
 const { chromium } = require(
@@ -52,7 +53,7 @@ async function readDownload(download) {
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto(
-      'http://localhost:3000/process/?build=20260911-5900&manage=1&dataTab=process-master',
+      (isolatedTestTarget_20261010+"/process/?build=20260911-5900&manage=1&dataTab=process-master"),
     );
     await page.locator('[data-view=data]').click();
     await page.locator('[data-tab=process-master]').click();

@@ -13,7 +13,7 @@ try {
     path.resolve('scripts/local-server.mjs'),
     ...process.argv.slice(2)], { stdio: 'inherit', env: process.env });
   const marker=path.resolve('.wrangler/local-only/dev-server.json');
-  fs.writeFileSync(marker,JSON.stringify({pid:child.pid,host:'127.0.0.1',startedAt:new Date().toISOString()}));
+  fs.writeFileSync(marker,JSON.stringify({pid:child.pid,host:'127.0.0.1',root:fs.realpathSync(process.cwd()),entry:'scripts/local-server.mjs',startedAt:new Date().toISOString()}));
   for (const signal of ['SIGINT', 'SIGTERM']) process.on(signal, () => child.kill(signal));
   child.on('exit', code => { if(fs.existsSync(marker))fs.unlinkSync(marker);process.exitCode = code ?? 1; });
 } catch (error) {

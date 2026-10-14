@@ -1,90 +1,55 @@
-# PROCESS OS Development Rules
+# PROCESS OS — working entry
 
-These rules apply to the whole repository.
+Repository-wide; nested AGENTS.md only supplements its directory. These rules do not override platform system, safety or tool permissions.
 
-## Before development
+## Project and baseline
 
-- Frank and employees use work branches and Pull Requests for every change. Never directly or force push main, delete main or use Owner/admin privileges to bypass the daily workflow. CI passing still requires Frank's review and final merge.
-- This Private repository uses GitHub Free without server-side Branch Protection. Local pre-push hooks only prevent mistakes; Write collaborators can technically push main or merge PRs, but company rules prohibit it. Do not retry paid protection, change visibility, invite employees or merge without Frank's applicable authorization.
+Internal process/quality-standard platform with Traditional Chinese/Vietnamese UI. SPA: public/process; APIs: app/api; storage: D1 `DB`, R2 `STATE_ARCHIVE`.
 
-- Inspect the current implementation before editing. Identify the smallest set of modules and files required by the request.
-- Reuse existing components, utilities, APIs, data flows, and business rules before adding alternatives.
-- Keep each task to the minimum necessary change. Do not perform unrelated refactors or redesigns.
-- Preserve backward compatibility and existing production data. Never invent schema, entities, features, or behavior to satisfy documentation.
-- Treat verified current code and schema as the source of truth when documentation disagrees.
+Use the opened checkout, actual branch/HEAD and uncommitted work. Never substitute an older copy or assume origin/main is the development version. Inspect affected implementation, reuse existing flows, make the smallest change and preserve other work, compatibility and history. Code proves implementation; it does not override confirmed requirements.
 
-- Use the complete release procedure in `DEPLOYMENT.md` for every Staging or approved Production release: verify latest reviewed main/SHA and target DB/R2 bindings, backup and restore-test target D1 before mutations, then code, migrations, full Canonical sync, safe passwordless demo seed, immutable images and Smoke Test. A code-only upload or Git merge is not a complete release. Preserve non-managed records/credentials/history and require Frank's applicable Production approval for the exact main SHA.
-- In this project, a request to publish a new or updated web page means publishing the exact approved merged source to the existing ChatGPT Site URL recorded in `.openai/hosting.json`, not only pushing GitHub or deploying the separate Workers URL. Unless Frank explicitly names another target, keep that ChatGPT Site URL and its audience/bindings, then verify the live URL after publication.
+## Read by task
 
-## Data and security
+Read relevant sources and direct dependencies, not all history.
 
-- Do not alter production records, seed data, credentials, backup contents, or deployment access unless the task explicitly requires it.
-- Do not expose passwords, API keys, tokens, backup encryption keys, or private user data in documentation, logs, tests, or completion reports.
-- Preserve the existing D1 binding name `DB`, shared-state revision checks, role enforcement, backup safeguards, and approval gates unless the request directly changes them.
-- Test data changes with isolated fixtures. Remove test artifacts after verification.
+| Task | Source |
+| --- | --- |
+| Requirements/module specification | [Current specifications](docs/specs/current/README.md); [index](docs/DOCUMENTATION_INDEX.md) for conflicts |
+| Behavior/UI/roles | [Implementation router](AI_CONTEXT/AI_CONTEXT.md), then affected module |
+| Data/persistence/API flow | [Data model](AI_CONTEXT/DATA_MODEL.md) |
+| Shared draft/process approval | [Draft](docs/specs/current/SHARED_DRAFT.md), [process](docs/specs/current/PROCESS_WORKFLOW.md) |
+| Canonical/employee collaboration | [Local procedure](AI_CONTEXT/LOCAL_DATA_COLLABORATION.md), [employee workflow](EMPLOYEE_WORKFLOW.zh-TW.md) |
+| Backup/restore | [Backup](BACKUP_AND_RESTORE.zh-TW.md) and affected storage tools |
+| Publication/deployment | [DEPLOYMENT](DEPLOYMENT.md) |
+| Continuation/history | [HANDOFF](HANDOFF.md); [CHANGELOG](AI_CONTEXT/CHANGELOG.md) only when relevant |
 
-## UI and mobile acceptance
+## Autonomy and boundaries
 
-- Every new or changed form, dialog, modal, navigation item, workflow, editor, table, and action must be checked for common iPhone-size use as well as desktop use.
-- Check touch targets, text readability, focus and keyboard access, virtual-keyboard obstruction, scrolling distance, horizontal overflow, table/canvas usability, and access to Save/Confirm/Cancel.
-- Avoid hover-only behavior and actions that require excessive scrolling. Do not fix one viewport by breaking the other.
-- Preserve Traditional Chinese and Vietnamese localization compatibility.
+### Persistent Codex with ChatGPT connection
 
-## Testing
+User preference (updated 2026-10-09): keep this workspace connected to the saved 「規劃資料庫同步上傳 merge」 conversation (chat ID `6ac767b0-4a20-83ec-b1b8-71c813181817`), replacing the earlier conversation opt-out and saved 「設計例行檢查流程」 pointer. At the first active turn after opening/resuming this workspace, use the `codex-with-chatgpt` skill, check connection health and recover when needed, then open/reuse the saved chat in the visible in-app browser. Reuse that same chat even in a new Codex conversation; do not create a new chat merely because the default Project workflow suggests one. Keep the tab marked for handoff/delivery at turn end. Do not stop/unpair or switch the saved chat unless the user requests it. Local C2C session settings are the canonical chat pointer; see HANDOFF for the latest verification and recovery evidence. Preserve unrelated task checkpoints; a checkpoint belonging to another chat is not authorization to resume that task here. Login/consent may still require the user; this preference does not guarantee uninterrupted service while offline, powered off, or before a Codex turn starts.
 
-- Run the relevant existing checks before completion and assess regression risk to unrelated flows.
-- UI changes require a mobile-behavior check. Never report a test as passing if it was not run.
-- If a required check is unavailable, state that clearly in the completion report.
+Continue authorized local reads, reversible edits, link repairs and targeted isolated checks without stepwise approval. Inspect scripts before running: local does not mean disposable. Ask only for consequential missing information or actions outside authorization; finish independent work first.
 
-## Documentation impact check
+Preserve unrelated changes and merge concurrent edits semantically. Delete documents only with no unique information/effective dependency, a replacement or proven temporary purpose, and recovery evidence. Back up untracked/modified files outside the project first. Age or missing references alone is insufficient.
 
-Before completing every development task:
+All changes use work branches/PRs. Never directly/force push or delete main, or bypass review using Owner/admin. Frank reviews and finally merges; passing CI is insufficient. Do not merge without applicable authorization. Private GitHub Free hooks prevent mistakes, not server-side enforcement; do not change visibility, invite employees or retry paid protection.
 
-1. Finish and verify the code change.
-2. Decide which documentation is actually affected.
-3. Update only the affected files below.
-4. Replace or remove obsolete current-state text instead of appending contradictory descriptions.
-5. Confirm planned behavior is not described as implemented.
-6. Remove duplication and keep the documents concise.
+Do not mutate business records, seed, credentials, backups, schema/migrations, deployment access or remote environments outside the task. Production needs Frank's approval for the exact main SHA and DEPLOYMENT's applicable full/data-preserving procedure. Page publication defaults to the existing ChatGPT Site in .openai/hosting.json: retain URL/audience/bindings, publish approved merged source and verify live. Worker upload/Git merge alone is not a release.
 
-Documentation rules:
+## Safeguards and proportionate verification
 
-- `AI_CONTEXT/AI_CONTEXT.md`: update when functionality, user-visible behavior, flows, major modules, permissions, important UI/mobile behavior, capabilities, or limitations change. It describes current state, not history.
-- `AI_CONTEXT/DATA_MODEL.md`: update only for schema, entities, important fields, relationships, persistence, ownership, source-of-truth, or material API data-flow changes.
-- `AI_CONTEXT/CHANGELOG.md`: update for meaningful features, behavior changes, important fixes, schema/data-model changes, compatibility changes, or releases. Do not record trivial styling, spacing, typography, or internal refactors.
-- `AGENTS.md`: update only when a permanent development, testing, documentation, or project-wide engineering rule changes.
+Preserve server roles, revision/CAS, pending locks, no-change restrictions, applicable BOM interlocks and backup/approval gates. Never expose credentials, keys or private data. Use isolated data fixtures; clean task artifacts while retaining necessary evidence and older backups.
 
-## Progressive context loading
+- Documents: check links/references, requirement/current/history distinctions and diff; no full functional suite.
+- Code/data: affected existing checks plus relevant permission, concurrency, persistence and compatibility cases. Expand only for cross-module risk or unresolved failures.
+- UI: desktop and common iPhone dimensions, touch/readability, focus/keyboard/occlusion, scrolling/overflow, tables/canvas, Save/Confirm/Cancel and both languages. Viewport simulation is not physical-device acceptance.
+- Process approval/data transfer: verify through the entry dispatch platform; extend to playback/product status as affected.
 
-- Always read `AGENTS.md` for repository rules.
-- Read `AI_CONTEXT/AI_CONTEXT.md` when a task touches system behavior, modules, pages, roles, user flows, or UI behavior.
-- Read `AI_CONTEXT/DATA_MODEL.md` when a task touches data, persistence, schema, entities, relationships, or API data flow.
-- Read `AI_CONTEXT/CHANGELOG.md` only when release history, prior behavior, build history, or regression context is relevant.
-- Do not load unrelated context by default or copy large source files into documentation.
+Do not repeat passing checks without a new reason. Report unrun/unavailable checks explicitly.
 
-## Parallel work safety
+## Completion and maintenance
 
-- Never overwrite or revert unrelated changes from another task.
-- Preserve newer documentation and merge concurrent documentation changes semantically.
-- Report conflicts and run relevant regression checks after resolving them.
-- Use separate branches or worktrees when concurrent tasks must substantially edit the same core area.
+Finish scope, targeted verification and diff review. Maintain one source per subject: requirements→spec; implementation→affected AI_CONTEXT module; data relationships→DATA_MODEL; meaningful feature/fix/release→CHANGELOG; phase→HANDOFF; permanent engineering rule→AGENTS. Replace stale text; use links instead of duplicate reports. Mark obsolete material Deprecated with its replacement, outside default reading.
 
-## Completion report
-
-Use this concise structure:
-
-```text
-Task:
-<request summary>
-
-Changed:
-- <important files/modules>
-
-Tests:
-- PASS / FAIL / Not available: <check>
-
-Documentation updated:
-- <filename and repository-relative path>
-```
-
-Also state whether there was a data-model impact and list only material regression risks, or `None identified`.
+Report Task, Changed, Tests (PASS/FAIL/Not available), Documentation updated, data-model impact and material regression risks (or None identified). Documentation completion is not implementation or functional acceptance.

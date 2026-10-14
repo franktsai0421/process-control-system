@@ -3,7 +3,7 @@
   state.flowZoom=state.flowZoom||{};
   state.flowZoomManual=state.flowZoomManual||{};
   const safe=value=>String(value||"").replace(/[^a-zA-Z0-9-]/g,"-");
-  const approvedVersion=(category,line)=>approvalVersions.filter(item=>item.category===category&&item.line===line&&["approved","superseded"].includes(item.status)).sort((a,b)=>{
+  const approvedVersion=(category,line)=>window.ProcessAuthoringV3?.enabled()?window.ProcessAuthoringV3.approved(category,line):approvalVersions.filter(item=>item.category===category&&item.line===line&&["approved","superseded"].includes(item.status)).sort((a,b)=>{
     if(a.status!==b.status)return a.status==="approved"?-1:1;
     return (b.number||0)-(a.number||0)
   })[0];
@@ -41,7 +41,7 @@
     if(canvas.dataset.zoomReady)return;canvas.dataset.zoomReady="true";canvas.dataset.flowZoomKey=key;
     const inner=document.createElement("div");inner.className="flow-zoom-content";const svg=canvas.querySelector(":scope > svg"),baseWidth=Math.max(canvas.scrollWidth,Number(svg?.getAttribute("width"))||0,canvas.clientWidth),baseHeight=Math.max(canvas.scrollHeight,Number(svg?.getAttribute("height"))||0,parseFloat(canvas.style.height)||0);while(canvas.firstChild)inner.appendChild(canvas.firstChild);inner.style.width=`${baseWidth}px`;inner.style.height=`${baseHeight}px`;canvas.appendChild(inner);
     const isLive=canvas.classList.contains("live-flow-canvas"),minScale=.5,autoFitEnabled=isLive||canvas.classList.contains("status-product-canvas")||canvas.classList.contains("flow-canvas"),fitScale=()=>Math.min(1,Math.max(minScale,Math.min((canvas.clientWidth-20)/baseWidth,(Math.max(500,window.innerHeight-250)-20)/baseHeight))),initialScale=autoFitEnabled&&!state.flowZoomManual[key]?fitScale():zoomValue(key,minScale);
-    const owner=canvas.closest(".stage-editor,.status-stage,.live-product-flow"),header=owner?.querySelector(":scope > header");let bar=controlBar(key,initialScale);if(header)header.appendChild(bar);else{bar.classList.add("standalone");canvas.before(bar)}
+    const owner=canvas.closest(".stage-editor,.status-stage,.live-product-flow"),header=owner?.querySelector(":scope > header"),bar=controlBar(key,initialScale);if(header)header.appendChild(bar);else{bar.classList.add("standalone");canvas.before(bar)}
     const apply=scale=>{scale=Math.min(2,Math.max(minScale,scale));state.flowZoom[key]=scale;canvas.dataset.flowScale=String(scale);inner.style.zoom=String(scale);if(isLive)canvas.style.height=`${Math.max(500,Math.min(Math.ceil(baseHeight*scale)+12,window.innerHeight-210))}px`;bar.querySelector("output").textContent=`${Math.round(scale*100)}%`;bar.querySelector('[data-zoom-action="out"]').disabled=scale<=minScale;bar.querySelector('[data-zoom-action="in"]').disabled=scale>=2};
     const autoFit=()=>{delete state.flowZoomManual[key];apply(fitScale())};canvas.autoFitFlow=autoFit;
     bar.onclick=event=>{const action=event.target.closest("[data-zoom-action]")?.dataset.zoomAction;if(!action)return;if(action==="reset"&&autoFitEnabled){autoFit();return}state.flowZoomManual[key]=true;const current=zoomValue(key,minScale);apply(action==="reset"?1:nextScale(current,action==="in"?1:-1))};

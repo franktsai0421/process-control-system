@@ -1,3 +1,5 @@
+> 狀態：Historical / Deprecated as current guidance。原日期驗證或安全評估完整保留，不代表本次checkout／目前依賴／部署狀態，也不是建立新Git歷史或操作其他副本的指令。現況：[AI_CONTEXT](AI_CONTEXT.md)；資料：[DATA_MODEL](DATA_MODEL.md)；接续：[HANDOFF](../HANDOFF.md)。
+
 # Local candidate security scope — 2026-09-17
 
 Current Local candidate verification is recorded in [GITHUB_DATA_READINESS.md](GITHUB_DATA_READINESS.md). Demo shortcuts use passwordless, fixed backend identities and signed eight-hour Sessions. `DEMO_LOGIN_ENABLED` unset/true permits testing; false rejects both new and existing demo Sessions. Seed has no login credentials; read APIs neither create schema nor inject administrators. Local runtime binds loopback, uses isolated bindings and the supported built-in Request.cf fixture. npm update checks are disabled. No deployed environment was queried or changed.

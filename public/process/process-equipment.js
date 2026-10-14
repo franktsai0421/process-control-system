@@ -25,13 +25,16 @@
     const list = snapshot?.[stageCode] || [];
     return list.find(template => template.presetKey === unifiedKind) || list.find(template => template.presetKey === legacyKind);
   }
-  function repaint(showDialog = false, focusSearch = false) {
+  function repaint(showDialog = false, focusSearch = false, focusField = '') {
     const top = scrollY;
     document.querySelector('#data-content').innerHTML = processMasterView();
     bindDataInner('process-master');
     requestAnimationFrame(() => {
       scrollTo(0, top);
-      if (showDialog) document.querySelector('#equipment-editor-dialog')?.showModal();
+      if (showDialog) {
+        document.querySelector('#equipment-editor-dialog')?.showModal();
+        if (focusField) document.querySelector(`[data-equipment-field="${CSS.escape(focusField)}"]`)?.focus({preventScroll:true});
+      }
       if (focusSearch) {
         const input = document.querySelector('#equipment-search');
         input?.focus({preventScroll:true});
@@ -122,27 +125,29 @@
     }).join('');
     return `<section class="equipment-panel" id="equipment-panel" data-i18n-skip="true"><header class="equipment-panel-head"><div><p class="eyebrow">EQUIPMENT MASTER</p><h3>${t('機器設定 · 設備總表','Cài đặt máy · Danh sách thiết bị')}</h3><p>${t('依線別與工段分類。流程欄只顯示已通過主管確認的製程方塊。','Phân loại theo chuyền và công đoạn. Cột quy trình chỉ hiển thị các ô đã được duyệt.')} ${rows.length} ${t('台','máy')}</p></div><div class="equipment-actions">${editable ? `<button type="button" class="button signal" id="add-equipment">${t('＋ 新增設備','＋ Thêm máy')}</button>` : ''}${sourceButton}</div></header><div class="equipment-filters"><label><span>${t('搜尋設備','Tìm thiết bị')}</span><input id="equipment-search" value="${h(search)}" placeholder="${t('機器編號、名稱或工段','Mã máy, tên hoặc công đoạn')}" type="search"></label><label><span>${t('線別','Chuyền')}</span><select id="equipment-line-filter"><option value="">${t('全部線別','Tất cả chuyền')}</option>${lines.map(line => `<option value="${h(line)}" ${line === lineFilter ? 'selected' : ''}>LINE ${h(line)}</option>`).join('')}</select></label><label><span>${t('工段','Công đoạn')}</span><select id="equipment-stage-filter"><option value="">${t('全部工段','Tất cả công đoạn')}</option>${availableStages.map(code => `<option value="${h(code)}" ${code === stageFilter ? 'selected' : ''}>${h(code)} · ${h(stageFor(code)?.name || code)}</option>`).join('')}</select></label><button type="button" class="button ghost" id="equipment-filter-clear">${t('清除篩選','Xóa bộ lọc')}</button></div><div class="equipment-summary">${groupHtml || `<div class="equipment-empty"><b>${t('沒有符合條件的設備','Không có thiết bị phù hợp')}</b><p>${t('請調整搜尋或篩選條件。','Hãy đổi điều kiện tìm kiếm hoặc bộ lọc.')}</p></div>`}</div>${editorModal(editable)}</section>`;
   }
-  function saveVersion(label) {
+  async function saveVersion(label,before,next) {
     const draft = processMasterDraft();
     if (!draft || !editableProcessMasterData()) return false;
-    const errors = validate(draft.snapshot);
+    const errors = validate(next||draft.snapshot);
     if (errors.length) { toast(errors[0]); return false; }
-    recordProcessMasterVersion(draft,label);
-    persistProcessMasterControl();
-    toast(t('設備已儲存至流程資料草稿，主管核准後生效','Đã lưu thiết bị vào bản nháp; có hiệu lực sau khi duyệt'));
+    try{if(before&&next){const delta=window.MasterDataWorkflow.shared.diff(before,next);await window.MasterDataWorkflow.shared.patch('PROCESS',delta.patches,delta.guards);}
+      else{recordProcessMasterVersion(draft,label);await persistProcessMasterControl();}
+    }catch(error){toast(error.message);return false;}
+    toast(t('設備已同步至共用草稿；尚未手動儲存','Đã đồng bộ thiết bị vào bản nháp chung; chưa lưu thủ công'));
     return true;
   }
-  function openEditor(id = '') {
+  function openEditor(id = '', focusField = '') {
     const row = uniqueEntries(currentProcessMasterData()).find(item => item.equipment.id === id),
       stageCode = row?.equipment.stageCode || routing.lines[0]?.stages[0]?.code || '';
     editing = row
       ? {record:copy(row.equipment), originalId:id, isNew:false}
       : {record:{id:`EQ-${crypto.randomUUID()}`,number:'',name:t('新設備','Máy mới'),nameVi:'',line:stageCode.split('-')[0],stageCode,kind:unifiedKind,machineType:'',mediaItems:[],purpose:'',purposeVi:'',note:''},originalId:'',isNew:true};
-    repaint(true);
+    editing.base=copy(editableProcessMasterData()||currentProcessMasterData());
+    repaint(true, false, focusField);
   }
-  function commitEditor() {
-    const snapshot = editableProcessMasterData();
-    if (!snapshot || !editing) return;
+  async function commitEditor() {
+    if (!editableProcessMasterData() || !editing) return;
+    const snapshot=copy(editing.base);
     const item = copy(editing.record), template = targetTemplate(snapshot,item.stageCode);
     item.number = String(item.number || '').trim();
     item.name = String(item.name || '').trim();
@@ -155,11 +160,12 @@
     if (!template) { toast(`${item.stageCode}：${t('找不到機器設定流程','Không tìm thấy quy trình cài đặt máy')}`); return; }
     entries(snapshot).forEach(row => { row.template.equipment = (row.template.equipment || []).filter(e => e.id !== item.id); });
     (template.equipment ||= []).push(item);
-    if (!saveVersion(editing.isNew ? t('新增設備','Thêm máy') : t('修改設備資料','Sửa dữ liệu máy'))) return;
+    if (!(await saveVersion(editing.isNew ? t('新增設備','Thêm máy') : t('修改設備資料','Sửa dữ liệu máy'),editing.base,snapshot))) return;
     editing = null;
     repaint();
   }
   async function loadSource() {
+    if(window.MasterDataWorkflow?.shared){toast(t('非 BOM 匯入入口已停用','Đã tắt nhập dữ liệu ngoài BOM'));return;}
     const draft = processMasterDraft();
     if (!draft || !editableProcessMasterData() || !canExchangeProcessMaster('master.import')) return;
     try {
@@ -188,7 +194,7 @@
       if (!confirm(t(`將以新版 Excel 的 ${source.records.length} 台設備取代 ${removed} 筆舊匯入資料；手動新增設備會保留。確定繼續？`,`Thay ${removed} mục đã nhập cũ bằng ${source.records.length} máy từ Excel mới; máy thêm thủ công được giữ lại. Tiếp tục?`))) return;
       if (draft !== processMasterDraft() || !editableProcessMasterData()) return;
       draft.snapshot = next;
-      saveVersion(t('重新匯入新版設備 Excel','Nhập lại Excel thiết bị mới'));
+      if(!(await saveVersion(t('重新匯入新版設備 Excel','Nhập lại Excel thiết bị mới'))))return;
       repaint();
     } catch (error) { toast(error.message || t('設備匯入失敗','Nhập thiết bị thất bại')); }
   }
@@ -217,12 +223,12 @@
     document.querySelector('[data-equipment-photo-replace]')?.addEventListener('change',event => updatePhotos('replace',event.target.files));
     document.querySelectorAll('[data-equipment-remove-photo]').forEach(button => button.onclick = () => { editing?.record.mediaItems.splice(Number(button.dataset.equipmentRemovePhoto),1); repaint(true); });
     document.querySelector('[data-equipment-save]')?.addEventListener('click',commitEditor);
-    document.querySelector('[data-equipment-delete]')?.addEventListener('click',() => {
-      const snapshot = editableProcessMasterData();
-      if (!snapshot || !editing || !canDeleteProcessMaster()) return;
+    document.querySelector('[data-equipment-delete]')?.addEventListener('click',async() => {
+      if (!editableProcessMasterData() || !editing || !canDeleteProcessMaster()) return;
+      const snapshot=copy(editing.base);
       if (!confirm(t(`刪除 ${editing.record.number || editing.record.name}？已核准製程的歷史快照會保留。`,`Xóa ${editing.record.number || editing.record.name}? Lịch sử quy trình đã duyệt vẫn được giữ.`))) return;
       entries(snapshot).forEach(row => { row.template.equipment = (row.template.equipment || []).filter(item => item.id !== editing.record.id); });
-      saveVersion(t('刪除設備','Xóa máy')); editing = null; repaint();
+      if(!(await saveVersion(t('刪除設備','Xóa máy'),editing.base,snapshot)))return;editing = null; repaint();
     });
     bindLightbox();
   }
@@ -341,7 +347,12 @@
     for (const template of Object.values(snapshot).flat()) { for (const photo of template.mediaItems || []) restore(photo); setProcessTemplateMedia(template,template.mediaItems || []); for (const equipment of template.equipment || []) for (const photo of equipment.mediaItems || []) restore(photo); }
   }
   function display(id,operation) { const machine = find(id,operation); return machine ? {...machine,no:machine.number || machine.no,asset:machine.asset || '—'} : undefined; }
-  host.ProcessEquipment = {cardButton,panel,bind,validate,entries,choices,selector,find,display,portable,exportSheets,readSheets,restorePhotos,loadSource,approvedUsage};
+  function locate(id, field = 'name') {
+    if (!uniqueEntries(currentProcessMasterData()).some(row => row.equipment.id === id)) return;
+    search = lineFilter = stageFilter = '';
+    openEditor(id, field);
+  }
+  host.ProcessEquipment = {cardButton,panel,bind,validate,entries,choices,selector,find,display,portable,exportSheets,readSheets,restorePhotos,loadSource,approvedUsage,locate};
   host.addEventListener('process-language-change',() => { if (document.querySelector('#equipment-panel')) repaint(Boolean(editing)); });
   const baseView = processMasterView, baseBind = bindDataInner;
   processMasterView = function () { return baseView() + panel(); };

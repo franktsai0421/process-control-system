@@ -1,3 +1,4 @@
+const isolatedTestTarget_20261010=require('./require-isolated-test-target.cjs')();
 const fs=require('node:fs');
 const assert=require('node:assert/strict');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||require('./browser-test-runtime.cjs').playwrightModule);
@@ -20,7 +21,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||require('./browser-test-
   return route.fulfill({status:403,json:{error:'Isolated test: writes blocked'}});
  });
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('http://localhost:3000/process/?build=20260909-4100&manage=1');
+ await page.goto((isolatedTestTarget_20261010+"/process/?build=20260909-4100&manage=1"));
  await page.waitForSelector('.nav-item[data-view="data"]',{state:'visible'});
  await page.locator('.nav-item[data-view="data"]').click();
  await page.getByRole('button',{name:'使用者與權限',exact:true}).click();

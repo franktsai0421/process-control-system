@@ -1,3 +1,4 @@
+const isolatedTestTarget_20261010=require('./require-isolated-test-target.cjs')();
 const fs=require('node:fs'),assert=require('node:assert/strict');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||require('./browser-test-runtime.cjs').playwrightModule);
 (async()=>{
@@ -8,7 +9,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||require('./browser-test-
  await context.route('**/api/**',async route=>{const req=route.request();if(req.url().includes('/users')){const b=req.postDataJSON(),users=JSON.parse(seed.values.platformUsers);if(users.some(u=>u.id===b.id))return route.fulfill({status:409,json:{field:'id',error:'此帳號已存在，請使用其他帳號（英文不分大小寫）'}});users.push({id:b.id,name:b.name,role:b.role,enabled:true,inheritRole:true});seed.values.platformUsers=JSON.stringify(users);seed.revision++;}else if(req.method()==='POST'){Object.assign(seed.values,req.postDataJSON().updates||{});seed.revision++;}return route.fulfill({json:seed});});
  await context.route('**/__local-backups*',route=>route.fulfill({json:{settings:{backupPath:require('./browser-test-runtime.cjs').fixtureBackupPath,enabled:false},state:{},disk:{},backups:[],audit:[],pathPickerSupported:false}}));
  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
- await page.goto('http://localhost:3000/process/?build=20260910-4700&manage=1');
+ await page.goto((isolatedTestTarget_20261010+"/process/?build=20260910-4700&manage=1"));
  await page.locator('[data-view="data"]').click();
  await page.locator('[data-tab="users"]').click();
  await page.locator('#backup-tab').click();

@@ -17,7 +17,7 @@ export async function GET(request:Request) {
   if(!await authorized(request))return Response.json({error:'Release access denied'},{status:403,headers});
   const id=new URL(request.url).searchParams.get('backup');
   if(id){const row=await env.DB.prepare('SELECT revision,"values" FROM state_backups WHERE id=?').bind(id).first<any>();return row?Response.json({revision:row.revision,values:await decodeValues(row.values)},{headers}):Response.json({error:'Not found'},{status:404,headers});}
-  return Response.json(await readState(),{headers});
+  const state=await readState();return Response.json({revision:state.revision,values:state.values},{headers});
 }
 export async function POST(request:Request) {
   if(!sameOrigin(request)||!await authorized(request))return Response.json({error:'Release access denied'},{status:403,headers});
@@ -31,13 +31,13 @@ export async function POST(request:Request) {
   if(body.action==='capture'){
     const values={...state.values,...body.values};
     for(const key of ['platformUsers','processCustomRoles','processRoleTemplateOverrides'])if(state.values[key])values[key]=state.values[key];
-    const id=await backup({revision:state.revision,values},'發布前瀏覽器未儲存草稿保全','release',true);
+    const id=await backup({...state,values},'發布前瀏覽器未儲存草稿保全','release',true);
     return Response.json({ok:true,id,keys:Object.keys(values),revision:state.revision},{headers});
   }
   if(body.baseRevision!==state.revision||body.confirm!=='REPLACE_WITH_LOCAL_SNAPSHOT')return Response.json({error:'Revision or confirmation mismatch'},{status:409,headers});
   const users=parse(body.values.platformUsers,[]);
   if(!Array.isArray(users)||!users.some((u:any)=>u.id==='admin'&&u.role==='admin'&&u.enabled!==false&&!u.deletedAt)||!body.values.masterDataControl||!body.values.approvalVersions)return Response.json({error:'Required data missing'},{status:400,headers});
-  const oldId=crypto.randomUUID(), newId=crypto.randomUUID(), now=new Date().toISOString(), next=state.revision+1, stored=await encodeValues(body.values);
+  const oldId=crypto.randomUUID(), newId=crypto.randomUUID(), now=new Date().toISOString(), next=state.revision+1, stored=await encodeValues(body.values,state);
   // All statements run in one transaction; the old snapshot is retained before replacement.
   const results=await env.DB.batch([
     env.DB.prepare('INSERT INTO state_backups(id,revision,"values",reason,actor,created_at) SELECT ?,revision,"values",?,?,? FROM shared_state WHERE id=1 AND revision=?').bind(oldId,'發布覆蓋前完整資料庫','release',now,state.revision),

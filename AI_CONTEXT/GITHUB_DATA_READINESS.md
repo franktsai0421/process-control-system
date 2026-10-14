@@ -1,3 +1,5 @@
+> 狀態：Historical / Deprecated as current guidance。原日期驗證或安全評估完整保留，不代表本次checkout／目前依賴／部署狀態，也不是建立新Git歷史或操作其他副本的指令。現況：[AI_CONTEXT](AI_CONTEXT.md)；資料：[DATA_MODEL](DATA_MODEL.md)；接续：[HANDOFF](../HANDOFF.md)。
+
 # GitHub pre-upload verification — 2026-09-17
 
 The clean candidate is `repository root`. Only this candidate may receive a new local Git history. No GitHub repository, remote, upload, Staging connection, Production connection or deployment is part of this verification.

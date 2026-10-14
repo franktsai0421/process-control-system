@@ -107,7 +107,7 @@ const context = vm.createContext({
   setTimeout,
   fetch: async (url, options) => {
     assert.equal(url, '/api/shared-state');
-    if (!options.body) return {status:200,json:async()=>({revision,values,identity:{id:'operator',role:'staff'},serverProtected:true})};
+    if (!options.body) return {ok:true,status:200,json:async()=>({revision,values,identity:{id:'operator',role:'staff'},serverProtected:true})};
     lastPost = JSON.parse(options.body);
     if (holdWrite) await holdWrite;
     if (lastPost.baseRevision !== revision)

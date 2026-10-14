@@ -15,6 +15,13 @@
       "when": 1788599912656,
       "tag": "0001_woozy_roxanne_simpson",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1791532800000,
+      "tag": "0002_local_feedback_sessions",
+      "breakpoints": true
     }
   ]
 }

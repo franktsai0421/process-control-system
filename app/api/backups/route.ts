@@ -1,4 +1,5 @@
 import { env } from 'cloudflare:workers';
+import {verifiedRecordRestore} from '@/lib/state-records-restore';
 import {
   readState,
   encodeValues,
@@ -14,7 +15,7 @@ import {
   responseHeaders as headers,
 } from '@/lib/process-state';
 export async function GET(request: Request) {
-  const state = await readState();
+  const state = await readState({deferHistory:true,deferDependencyHistory:true});
   if ((await identity(request, state))?.role !== 'admin')
     return Response.json(
       { error: '只有 ADMIN 可以查閱備份' },
@@ -38,7 +39,7 @@ export async function GET(request: Request) {
   );
 }
 export async function POST(request: Request) {
-  const state = await readState();
+  const state = await readState({deferHistory:true,deferDependencyHistory:true});
   if (!sameOrigin(request) || (await identity(request, state))?.role !== 'admin')
     return Response.json(
       { error: '只有 ADMIN 可以管理備份' },
@@ -90,7 +91,7 @@ export async function POST(request: Request) {
     )
       .bind(
         next.revision,
-        await encodeValues(values),
+        await encodeValues(values,state),
         new Date().toISOString(),
         state.revision,
       )
@@ -137,9 +138,12 @@ export async function POST(request: Request) {
     );
   const master = parse(state.values.masterDataControl, {}),
     process = parse(state.values.approvalVersions, []);
+  const controls=['qualityMasterControl','iqcMasterControl','ipqcABMasterControl','ipqcCMasterControl','routineEquipmentControl','toolingMasterControl','processAuthoringControl'].map(key=>parse(state.values[key],{}));
+  const collections=controls.flatMap(control=>control.libraries?Object.values(control.libraries):control.scopes?Object.values(control.scopes):[control]) as {workflow?:{pendingId?:string|null};versions?:{status:string}[]}[];
+  const routinePending=parse(state.values.routineFqcControl,{documents:[]}).documents.some((d:{flow?:{pendingId?:string}})=>d.flow?.pendingId);
   if (
-    (master.versions || []).some((v: any) => v.status === 'pending') ||
-    process.some((v: any) => v.status === 'pending')
+    routinePending || (master.versions || []).some((v: any) => v.status === 'pending') ||
+    process.some((v: any) => v.status === 'pending') || collections.some(control=>control.workflow?.pendingId||control.versions?.some(version=>['pending','pending-test'].includes(version.status)))
   )
     return Response.json(
       { error: '尚有送審中的版本，請先完成或解除送審再回復。' },
@@ -152,7 +156,14 @@ export async function POST(request: Request) {
     .first<{ values: string }>();
   if (!row)
     return Response.json({ error: '備份不存在' }, { status: 404, headers });
-  const values = await decodeValues(row.values);
+  let values:Record<string,string>,restoredRecords=false;
+  try{
+    const stored=JSON.parse(row.values);
+    if(stored.__processRecords){values=(await verifiedRecordRestore(env.STATE_ARCHIVE,stored)).values;restoredRecords=true;}
+    else values=await decodeValues(row.values);
+  }catch{
+    return Response.json({error:'Không thể xác minh bản sao lưu; chưa khôi phục. / 備份內容無法驗證，未回復。'},{status:503,headers});
+  }
   if (!values || typeof values !== 'object')
     return Response.json(
       { error: '備份損壞，未回復' },
@@ -164,7 +175,7 @@ export async function POST(request: Request) {
   )
     .bind(
       state.revision + 1,
-      await encodeValues(values),
+      restoredRecords?row.values:await encodeValues(values,state),
       new Date().toISOString(),
       state.revision,
     )

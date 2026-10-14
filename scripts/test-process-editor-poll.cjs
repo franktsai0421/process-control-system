@@ -1,0 +1,14 @@
+/* Exercise production polling against reads that finish during a gesture. */
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const copy=structuredClone,w={id:'["TEST","A"]',category:'TEST',line:'A',stages:{A:[{id:'a',x:80,y:80}]}};
+let server={versions:[{status:'draft'}],workflow:{generation:'g',revision:1,working:{workspaces:[w]}}},enabled=false,gesture=false,delayed=false,resolveRead,reads=0,renders=0;
+const client={read:()=>{reads++;return delayed?new Promise(resolve=>{resolveRead=()=>resolve({control:copy(server),permissions:{edit:true}});}):Promise.resolve({control:copy(server),permissions:{edit:true}});},contentIssues:async()=>({generation:'g',revision:server.workflow.revision})};
+const c={structuredClone,console,JSON,Error,setInterval(){},setTimeout,clearTimeout,localStorage:{getItem:()=>enabled?'enabled':null},state:{view:'editor',category:'TEST',editorLine:'A',editorByCategory:{}},document:{documentElement:{lang:'zh'},addEventListener(){},querySelector:()=>null,querySelectorAll:()=>[],createElement:()=>({dataset:{}})},bindView(){},renderInspector(){},render(){renders++;},toast(){},editorKey:()=> 'TEST:A',lineFor:()=>({stages:[{code:'A'}]}),createMasterSharedBridge:()=>({diff(){}}),createSharedDraftClient:()=>client,ProcessSync:{identity:{id:'admin'}},ProcessEditorV2:{interacting:()=>gesture}};c.window=c;c.ensureCategoryEditor=()=>c.state.editorByCategory['TEST:A'];vm.createContext(c);vm.runInContext(fs.readFileSync('public/process/process-authoring-v3.js','utf8'),c);
+(async()=>{const checks=[];enabled=true;await c.ProcessAuthoringV3.load();const first=renders;
+ server.workflow.revision++;await c.ProcessAuthoringV3.load();assert.equal(renders,first);checks.push('metadata-only revision does not rebuild canvas');
+ delayed=true;const pending=c.ProcessAuthoringV3.load(),n=reads;const duplicate=c.ProcessAuthoringV3.load();assert.equal(reads,n);assert.equal(duplicate,pending);assert.equal(c.ProcessAuthoringV3.canMutate(),true);checks.push('one in-flight poll; background read does not disable editing');
+ gesture=true;server.workflow.working.workspaces[0].stages.A[0].x=900;resolveRead();await pending;assert.equal(c.ensureCategoryEditor().A[0].x,80);assert.equal(renders,first);checks.push('late response cannot replace workspace during gesture');
+ gesture=false;delayed=false;await c.ProcessAuthoringV3.load();assert.equal(c.ensureCategoryEditor().A[0].x,900);assert.equal(renders,first+1);checks.push('remote update becomes visible after gesture finishes');
+ c.ensureCategoryEditor().A[0].x=950;const beforeReads=reads;await c.ProcessAuthoringV3.load();assert.equal(reads,beforeReads);assert.equal(c.ensureCategoryEditor().A[0].x,950);checks.push('local unsynchronized movement is not overwritten by polling');
+ console.log(JSON.stringify({result:'PASS',checks},null,2));
+})().catch(e=>{console.error(e);process.exitCode=1;});

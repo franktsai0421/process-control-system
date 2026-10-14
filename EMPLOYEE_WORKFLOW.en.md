@@ -2,6 +2,8 @@
 
 # Employee workflow
 
+These are instructions for authorized collaboration, not a request to switch/pull a dirty checkout. Export only changed approved data; select checks under AGENTS. Documentation-only work does not require build/type/full functional tests.
+
 ## Repository and responsibilities
 
 Frank and employees must use work branch → commit → branch push → PR → GitHub Actions → Frank review → Frank merge. Nobody may directly or force push main, delete main, merge employee PRs as an employee, or use Owner/admin privileges to bypass the daily workflow. Green CI does not replace Frank review. The Local hook blocks pushes while on main and pushes targeting main. See EMPLOYEE_WORKFLOW.en.md.
@@ -22,11 +24,7 @@ npm run dev
 
 ## Canonical image synchronization
 
-After npm install and npm run dev, a fresh clone verifies the versioned Web image package and automatically imports real images into its own Local R2. The baseline has 205 images, about 7.92 MiB, and preserves all 7,971 Canonical records.
-
-After editing and approving images, stop dev and run npm run data:export. Data, Web images, assets/manifest.json, assets/web-manifest.json and content versions export together. Image updates receive a new content asset ID. Removing the final Canonical reference creates a deletedAt tombstone; images still referenced by history remain available. After a reviewed PR merge, colleagues stop dev, run git pull --ff-only and npm run data:sync, then restart dev. Sync makes a verified backup and refuses unexported Local changes. Restart and repeated sync do not rewrite existing images or overwrite Local uploads.
-
-Git contains only metadata-stripped WebP images (maximum 1600px edge), relative paths and SHA-256 manifests. High-resolution originals, videos and Local R2 blobs stay outside Git. Limits are 2 MiB per Web image and 25 MiB per package; missing sources, oversized packages and conflicting source/Web hashes for one asset ID stop the operation without LFS or external services. Image serving requires loopback and the explicit Local runtime flag; no Staging, Production or Sites connection is used.
+Image formats/limits, tombstones, backups and synchronization are maintained in [Local collaboration](AI_CONTEXT/LOCAL_DATA_COLLABORATION.md). Historical initial counts are not current database counts.
 
 ## Update and create a work branch
 
@@ -44,11 +42,7 @@ git switch -c work/task-name
 Stop dev before data:export. Review only approved changes and exclude accounts, identity fields and operation history. Open a PR to main after pushing the branch; employees never merge. Frank reviews code and Canonical after CI passes, then merges in GitHub.
 
 ```sh
-npm run data:export
 git diff
-npm run build
-npx --no-install tsc --noEmit
-npm run test:collaboration
 npm run github:preflight
 git add <reviewed-files>
 git commit -m "Describe reviewed changes"

@@ -2,6 +2,8 @@
 
 # 員工操作流程
 
+此文件是已授權協作時的操作說明，不要求接手dirty工作區切branch/pull。只在核准資料有改動時export；提交前按AGENTS選相關驗證，純文件不跑build／型別／功能全量測試。
+
 ## Repository與責任
 
 Frank 與員工一律使用工作分支 → Commit → Push工作分支 → PR → GitHub Actions → Frank審查 → Frank Merge。所有人不得直接或 force push main、刪除 main；員工不得 Merge，日常操作不得以 Owner／管理員權限繞過流程。CI 綠燈仍須 Frank 審查。本機 hook 阻擋在 main 上的 push，以及以 main 為目標的 push。詳見 EMPLOYEE_WORKFLOW.zh-TW.md。
@@ -22,11 +24,7 @@ npm run dev
 
 ## Canonical 圖片同步
 
-Fresh clone 執行 npm install、npm run dev 後，會驗證並自動將版本化 Web 圖片匯入自己的 Local R2，直接顯示實際圖片。首次基準有 205 張圖片，Web 包約 7.92 MiB；7,971 筆 Canonical 保留。
-
-修改並核准圖片後先停止 dev，再執行 npm run data:export；資料、Web 圖片、assets/manifest.json、assets/web-manifest.json 與內容版本一併匯出。圖片更新產生新的內容 asset ID；最後一個 Canonical 關聯刪除時產生 deletedAt tombstone，歷史版本仍引用的圖片會保留。經 PR 審查 Merge 後，同仁停止 dev、git pull --ff-only、npm run data:sync，再啟動 dev。同步先備份且拒絕未匯出 Local 修改；重啟及重複同步不重複寫入、不覆蓋 Local 圖片。
-
-Git 只包含去除 EXIF／GPS 等 metadata、最長邊 1600px 的 WebP，以及相對路徑與 SHA-256 manifest。高解析原圖、影片、Local R2 blob 不進 Git；每張 Web 圖片上限 2 MiB，整包上限 25 MiB，超限或缺少來源會停止，不自動採用 LFS／外部服務。同一 asset ID 的來源或 Web hash 衝突會停止。圖片路由只接受啟用 Local 模式的 loopback 請求，未連接 Staging／Production／Sites。
+資料與圖片版本、來源限制、tombstone及備份／同步保護，以[Local資料協作](AI_CONTEXT/LOCAL_DATA_COLLABORATION.md)為正式來源。不要將歷史初始數量當目前資料量。
 
 ## 更新與建立工作分支
 
@@ -44,11 +42,7 @@ git switch -c work/task-name
 data:export 前先停止 dev。只審查核准的變更，排除帳號、身分欄位與操作歷史。Push工作分支後向 main 建立 PR；員工不得 Merge。CI 通過後由 Frank 審查程式與 Canonical，再於 GitHub Merge。
 
 ```sh
-npm run data:export
 git diff
-npm run build
-npx --no-install tsc --noEmit
-npm run test:collaboration
 npm run github:preflight
 git add <reviewed-files>
 git commit -m "Describe reviewed changes"

@@ -18,7 +18,7 @@ function copyFixture(root,canonicalSource){
   fs.mkdirSync(root,{recursive:true});
   for(const dir of ['db','drizzle','public/process/data'])fs.cpSync(path.join(source,dir),path.join(root,dir),{recursive:true});
   fs.cpSync(path.join(canonicalSource,'data/canonical'),path.join(root,'data/canonical'),{recursive:true});
-  for(const file of ['package.json','lib/user-access.ts']){fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.copyFileSync(path.join(source,file),path.join(root,file));}
+  for(const file of ['package.json','lib/user-access.ts','public/process/access-policy.mjs']){fs.mkdirSync(path.dirname(path.join(root,file)),{recursive:true});fs.copyFileSync(path.join(source,file),path.join(root,file));}
   fs.symlinkSync(fs.realpathSync(path.join(source,'node_modules')),path.join(root,'node_modules'),'junction');
 }
 async function mutateImage(root,bytes){

@@ -1,46 +1,25 @@
+/* oxlint-disable typescript/no-require-imports -- Isolated production-module test. */
 const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const vm = require('node:vm');
-const { stripTypeScriptTypes } = require('node:module');
-const { webcrypto } = require('node:crypto');
-
-let source = fs.readFileSync('lib/state-media.ts', 'utf8');
-source = source.replace(/^import .*;\r?\n/gm, '').replace(/^export /gm, '');
-source = stripTypeScriptTypes(source);
-source += '\nglobalThis.restore = restoreMediaUpdates; globalThis.digestMedia = digest;';
-
-const objects = new Map();
-let reads = 0;
-const env = { STATE_ARCHIVE: {
-  async get(key) {
-    reads++;
-    const data = objects.get(key);
-    return data ? {
-      arrayBuffer: async () => data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength),
-      httpMetadata: { contentType: 'image/png' },
-    } : null;
-  },
-} };
-const context = { env, crypto: webcrypto, TextEncoder, Uint8Array, btoa, console };
-vm.runInNewContext(source, context, { filename: 'state-media.ts' });
-
-(async () => {
-  const original = `data:image/png;base64,${Buffer.alloc(1024 * 1024, 7).toString('base64')}`;
-  const id = await context.digestMedia(original);
-  const url = `/api/state-media?id=${id}`;
-  const previous = { image: original, description: 'before' };
-  const incoming = { image: url, description: 'after' };
-  let restored = await context.restore({ editor: JSON.stringify(incoming) }, { editor: JSON.stringify(previous) });
-  assert.equal(JSON.parse(restored.editor).image, original);
-  assert.equal(JSON.parse(restored.editor).description, 'after');
-  assert.equal(reads, 0, 'unchanged image must reuse decoded snapshot');
-
-  objects.set(`delivery/media/${id}`, Buffer.alloc(1024 * 1024, 7));
-  restored = await context.restore({ editor: JSON.stringify({ image: url }) }, {});
-  assert.equal(JSON.parse(restored.editor).image, original);
-  assert.equal(reads, 1, 'new image must still be fetched and verified');
-  objects.set(`delivery/media/${id}`, Buffer.from('corrupt'));
-  await assert.rejects(context.restore({ editor: JSON.stringify({ image: url }) },
-    { editor: JSON.stringify({ image: 'data:image/png;base64,eA==' }) }), /integrity/);
-  console.log('PASS: unchanged media reused, new media verified');
-})().catch(error => { console.error(error); process.exitCode = 1; });
+const { performance } = require('node:perf_hooks');
+const objects = new Map();let gets=0;
+const load = require('./ipqc-ab-import-harness.cjs')({STATE_ARCHIVE:{async get(key){gets++;return objects.get(key)||null;}}});
+const { digest,restoreMediaUpdates } = load('lib/state-media.ts');
+(async()=>{
+  const start=performance.now();
+  const photos=Array.from({length:13},(_,i)=>'data:image/png;base64,'+Buffer.alloc(265000,i).toString('base64'));
+  const ids=await Promise.all(photos.map(digest));
+  const rows=photos.map((src,i)=>({id:'row-'+i,mediaItems:[{id:'photo-'+i,src}]}));
+  const old=JSON.stringify({rows});
+  const moved=rows.slice().reverse().map((row,i)=>({...row,mediaItems:[{...row.mediaItems[0],src:'/api/state-media?id='+ids[12-i]}]}));
+  const result=await restoreMediaUpdates({workspace:JSON.stringify({rows:moved})},{workspace:old});
+  const restored=JSON.parse(result.workspace);
+  assert.equal(gets,0);assert.equal(restored.rows[0].mediaItems[0].src,photos[12]);assert.equal(restored.rows[12].mediaItems[0].src,photos[0]);
+  const bytes=Buffer.from('brand new media');const fresh='data:image/png;base64,'+bytes.toString('base64');const id=await digest(fresh);
+  objects.set('delivery/media/'+id,{arrayBuffer:async()=>bytes,httpMetadata:{contentType:'image/png'}});
+  assert.equal(JSON.parse((await restoreMediaUpdates({workspace:JSON.stringify({src:'/api/state-media?id='+id})},{workspace:old})).workspace).src,fresh);
+  assert.equal(gets,1);
+  objects.set('delivery/media/'+id,{arrayBuffer:async()=>Buffer.from('corrupt'),httpMetadata:{contentType:'image/png'}});
+  await assert.rejects(()=>restoreMediaUpdates({workspace:JSON.stringify({src:'/api/state-media?id='+id})}),/integrity/);
+  await assert.rejects(()=>restoreMediaUpdates({workspace:JSON.stringify({src:'/api/state-media?id='+'f'.repeat(64)})}),/unavailable/);
+  console.log(JSON.stringify({result:'PASS',bytes:Buffer.byteLength(old),media:13,reusedMediaR2Reads:0,totalR2Reads:gets,elapsedMs:Math.round(performance.now()-start),cases:['unchanged','reordered stable photo IDs','new media','corrupt media','missing media']}));
+})().catch(error=>{console.error(error);process.exitCode=1;});

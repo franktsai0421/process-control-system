@@ -1,5 +1,11 @@
 import { env } from 'cloudflare:workers';
 import { mediaState, restoreMediaUpdates, writeReceipt } from '@/lib/state-media';
+import { backupStoredState } from '@/lib/process-state';
+import {DraftConflict,stableDraftJSON} from '@/lib/shared-draft';
+import {validateIPQCAssignments,legacyWorkspace} from '@/lib/process-ipqc';
+import {removedMasterStages,stageReferences} from '@/lib/master-stage-references';
+import {assertStageTemplateAvailable} from '@/lib/master-process-lock';
+import {assertProcessLinkAvailable} from '@/lib/master-stage-link';
 import {
   readState,
   encodeValues,
@@ -8,7 +14,6 @@ import {
   publicState,
   sameOrigin,
   allowedKey,
-  backupStoredState,
   scheduledBackup,
   parse,
   publicUntil,
@@ -83,7 +88,7 @@ const historicalUserReference = (values: Record<string, string>, userId: string)
 };
 
 export async function GET(request: Request) {
-  const state = await readState(),
+  const state = await readState({deferHistory:true,deferDependencyHistory:true}),
     user = await identity(request, state);
   if (!demoEnabled(request) && Date.now() >= publicUntil && user?.role !== 'admin')
     return Response.json(
@@ -96,14 +101,14 @@ export async function GET(request: Request) {
     console.error('[cloud-backup] scheduled snapshot failed', error);
   }
   return Response.json(
-    { ...(request.headers.get('X-Process-Media') === 'deferred-v1' ? await mediaState(state) : publicState(state)), identity: user, serverProtected: true, demoEnabled: demoEnabled(request) },
+    { ...(request.headers.get('X-Process-Media') === 'deferred-v1' ? await mediaState(state,user?.id) : publicState(state,user?.id)), identity: user, serverProtected: true, demoEnabled: demoEnabled(request) },
     { headers },
   );
 }
 export async function POST(request: Request) {
   if (!sameOrigin(request))
     return Response.json({ error: '來源不允許' }, { status: 403, headers });
-  const state = await readState(),
+  const state = await readState({deferHistory:true,deferDependencyHistory:true}),
     user = await identity(request, state);
   if (!user)
     return Response.json(
@@ -128,7 +133,7 @@ export async function POST(request: Request) {
   )
     return Response.json({ error: '資料格式錯誤' }, { status: 400, headers });
   if (body.baseRevision !== state.revision)
-    return Response.json(request.headers.get('X-Process-Media') === 'deferred-v1' ? await mediaState(state) : publicState(state), { status: 409, headers });
+    return Response.json(publicState(state,user.id), { status: 409, headers });
   const values = { ...state.values };
   for (const [key, value] of Object.entries(body.updates)) {
     if (!allowedKey(key) || !(value === null || typeof value === 'string'))
@@ -147,6 +152,26 @@ export async function POST(request: Request) {
       }
     }
     if (value === state.values[key]) continue;
+    if(key==='bomOverrides'&&state.values.bomMasterControl)
+      return Response.json({error:'WORKFLOW_V3_REQUIRED'},{status:409,headers});
+    if(state.values.processAuthoringControl&&(key==='approvalVersions'||key==='publishedProcess'||key.startsWith('processEditor:')))
+      return Response.json({error:'WORKFLOW_V3_REQUIRED'},{status:409,headers});
+    if(key==='qualityMasterControl'&&parse(state.values[key],null)?.libraries?.fqc?.workflow)
+      return Response.json({error:'WORKFLOW_V3_REQUIRED'},{status:409,headers});
+    const adoptedMaster=parse(state.values.masterDataControl,null);
+    if(adoptedMaster&&(key==='processMasterData'||key==='masterDataControl'&&
+      stableDraftJSON(parse(value as string,null)?.active?.PROCESS)!==stableDraftJSON(adoptedMaster.active?.PROCESS))){
+      try{assertProcessLinkAvailable(adoptedMaster);}catch(error){return Response.json({error:(error as any).code,details:(error as any).details},{status:409,headers});}
+    }
+    if(key==='masterDataControl'&&adoptedMaster?.workflowScopes){
+      const incoming=parse(value as string,null),scopes=Object.keys(adoptedMaster.workflowScopes);
+      if(!incoming||stableDraftJSON(incoming.workflowScopes)!==stableDraftJSON(adoptedMaster.workflowScopes)||scopes.some(scope=>
+        stableDraftJSON(incoming.active?.[scope])!==stableDraftJSON(adoptedMaster.active?.[scope])||
+        stableDraftJSON(incoming.versions?.filter((v:{scope:string})=>v.scope===scope))!==stableDraftJSON(adoptedMaster.versions.filter((v:{scope:string})=>v.scope===scope))))
+        return Response.json({error:'WORKFLOW_V3_REQUIRED'},{status:409,headers});
+    }
+    if(key==='processMasterData'&&adoptedMaster?.workflowScopes?.PROCESS)
+      return Response.json({error:'WORKFLOW_V3_REQUIRED'},{status:409,headers});
     if (['platformUsers','processCustomRoles','processRoleTemplateOverrides'].includes(key))
       return Response.json({error:'帳號與角色請使用管理介面的專用操作儲存'}, {status:403,headers});
     const required = [
@@ -182,6 +207,17 @@ export async function POST(request: Request) {
     } catch {
       return Response.json({error:'媒體讀取失敗，未儲存；請重試。'}, {status:503,headers});
     }
+  }
+  try {
+    for(const key of Object.keys(body.updates)) {
+      if(key.startsWith('processEditor:')&&values[key])validateIPQCAssignments([legacyWorkspace(JSON.parse(values[key]))],state.values[key]?[legacyWorkspace(JSON.parse(state.values[key]))]:[],state.values);
+      if(key==='approvalVersions'&&values[key])for(const version of JSON.parse(values[key])) {
+        const previous=JSON.parse(state.values[key]||'[]').find((v:{id:string})=>v.id===version.id);
+        validateIPQCAssignments([legacyWorkspace(version)],previous?[legacyWorkspace(previous)]:[],state.values);
+      }
+    }
+  } catch(error) {
+    return Response.json({error:error instanceof DraftConflict?error.code:error instanceof Error?error.message:'IPQC_ASSIGNMENT_INVALID'},{status:error instanceof DraftConflict?error.status:422,headers});
   }
   const master = parse(values.masterDataControl, null);
   if (
@@ -236,6 +272,20 @@ export async function POST(request: Request) {
     );
   const prior = parse(state.values.masterDataControl, null);
   if (prior && master && JSON.stringify(prior) !== JSON.stringify(master)) {
+    const removedStages=new Set<string>();
+    for(const scope of ['AB','C'])removedMasterStages(prior.active?.[scope],master.active?.[scope]).forEach(code=>removedStages.add(code));
+    for(const version of master.versions||[]){if(!['AB','C'].includes(version.scope)||!['draft','pending','approved'].includes(version.status))continue;
+      const old=prior.versions?.find((v:{id:string})=>v.id===version.id);
+      removedMasterStages(old?.snapshot||prior.active?.[version.scope],version.snapshot).forEach(code=>removedStages.add(code));}
+    const impact=stageReferences(state.values,[...removedStages]);
+    if(impact.total)return Response.json({error:'STAGE_IN_USE',details:impact},{status:409,headers});
+    try{
+      for(const scope of ['AB','C'])assertStageTemplateAvailable(prior,prior.active?.[scope],master.active?.[scope]);
+      for(const version of master.versions||[]){if(!['AB','C'].includes(version.scope)||!['draft','pending','approved'].includes(version.status))continue;
+        const old=prior.versions?.find((v:{id:string})=>v.id===version.id);
+        assertStageTemplateAvailable(prior,old?.snapshot||prior.active?.[version.scope],version.snapshot);
+      }
+    }catch(error){if(error instanceof Error&&error.message==='PROCESS_TEMPLATE_SCOPE_BUSY')return Response.json({error:error.message,details:(error as {details?:unknown}).details},{status:409,headers});throw error;}
     const processScopeInitialization = Boolean(
       !prior.active?.PROCESS &&
         master.active?.PROCESS &&
@@ -429,26 +479,25 @@ export async function POST(request: Request) {
   // Treat an identical snapshot as a successful no-op so it does not create a
   // backup or consume a revision number on every polling cycle.
   if (Object.keys(values).length === Object.keys(state.values).length &&
-      Object.entries(values).every(([key, value]) => state.values[key] === value))
-    return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(state, request, body.updates) : publicState(state), { headers });
-  await backupStoredState(state.revision, '整站資料異動前保護備份', user.id);
+      Object.entries(values).every(([key, value]) => value === state.values[key]))
+    return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(state, request, body.updates) : publicState(state,user.id), { headers });
+  if (!await backupStoredState(state, '整站資料異動前保護備份', user.id))
+    return Response.json(publicState(await readState(),user.id), { status: 409, headers });
   const next = { revision: state.revision + 1, values };
   const result = await env.DB.prepare(
     'UPDATE shared_state SET revision=?,"values"=?,updated_at=? WHERE id=1 AND revision=?',
   )
     .bind(
       next.revision,
-      await encodeValues(values),
+      await encodeValues(values,state),
       new Date().toISOString(),
       state.revision,
     )
     .run();
-  if (!result.meta.changes) {
-    const current = await readState();
-    return Response.json(request.headers.get('X-Process-Media') === 'deferred-v1' ? await mediaState(current) : publicState(current), {
+  if (!result.meta.changes)
+    return Response.json(publicState(await readState(),user.id), {
       status: 409,
       headers,
     });
-  }
-  return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(next, request, body.updates) : publicState(next), { headers });
+  return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(next, request, body.updates) : publicState(next,user.id), { headers });
 }

@@ -33,6 +33,7 @@
   }
 
   function enhanceEditorVersions(){
+    if(localStorage.getItem('processAuthoringControl'))return;
     if(state.view!=="editor")return;if(autoOpenCurrentVersion())return;
     const versions=versionsForRoute(),current=selectedVersion(),revision=String(state.editorVersionId||"").startsWith("revision:");
     const panel=document.querySelector(".editor-version-panel");if(!panel)return;

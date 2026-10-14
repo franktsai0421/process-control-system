@@ -1,3 +1,4 @@
+const isolatedTestTarget_20261010=require('./require-isolated-test-target.cjs')();
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
 const { chromium } = require(
@@ -44,7 +45,7 @@ const { chromium } = require(
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     await page.goto(
-      'http://localhost:3000/process/?build=20260910-5500&manage=1',
+      (isolatedTestTarget_20261010+"/process/?build=20260910-5500&manage=1"),
     );
     await page.locator('[data-view=data]').click();
     await page.locator('[data-tab=process-master]').click();

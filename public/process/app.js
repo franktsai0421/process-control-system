@@ -52,13 +52,16 @@ const defaultUsers = [
 function readStore(key, fallback) {
   try {
     return JSON.parse(localStorage.getItem(key) || 'null') ?? fallback;
-  } catch (error) {
+  } catch {
     return fallback;
   }
 }
+// oxlint-disable-next-line prefer-const -- Other classic scripts replace this shared global; keep its mutable binding.
 let platformUsers = readStore('platformUsers', defaultUsers),
   currentUser = readStore('currentPlatformUser', null),
+// oxlint-disable-next-line prefer-const -- Other classic scripts replace this shared global; keep its mutable binding.
   approvalVersions = readStore('approvalVersions', []),
+// oxlint-disable-next-line prefer-const -- Other classic scripts replace this shared global; keep its mutable binding.
   dispatchBoard = readStore('dispatchBoard', { A: [], B: [], C: [] });
 platformUsers.forEach((user) => {
   if (user.role === 'rd' && !user.views.includes('editor'))
@@ -274,6 +277,7 @@ function mergeRequiredProcessPresets(stage, templates, preserveLegacyCustoms) {
     );
   return [...required, ...custom];
 }
+// oxlint-disable-next-line no-unused-vars -- Called by process-equipment.js in the shared classic-script scope.
 function normalizeProcessMasterPresetCatalog(snapshot) {
   const next = JSON.parse(JSON.stringify(snapshot || {}));
   routing.lines
@@ -314,7 +318,7 @@ try {
   processMaster =
     JSON.parse(localStorage.getItem('processMasterData') || 'null') ||
     defaultProcessMaster;
-} catch (error) {
+} catch {
   processMaster = defaultProcessMaster;
 }
 function ensureProcessMasterStages() {
@@ -355,7 +359,12 @@ function ensureProcessMasterStages() {
     localStorage.setItem('processMasterData', JSON.stringify(processMaster));
   return changed;
 }
-ensureProcessMasterStages();
+// Adopted master/process catalogs belong to their revision-checked workflows.
+// Opening a page must not reseed templates or delete stored stage entries.
+if (!['masterDataControl', 'processAuthoringControl'].some((key) => {
+  const stored = localStorage.getItem(key);
+  return stored && stored !== 'null';
+})) ensureProcessMasterStages();
 
 const titles = {
   dashboard: ['CONTROL CENTER', '生產總覽'],
@@ -393,6 +402,8 @@ const bomRowsFor = (code) => {
   return key ? data.bom[key] || [] : [];
 };
 function rootBom(code) {
+  const occurrenceRows = Object.values(data.bom).some(rows=>rows.some(row=>row.id?.startsWith('bom:')));
+  if (occurrenceRows) return bomRowsFor(code).filter(row=>row.level===1).map(row=>({...row,bomConsumerLine:routing.productRoutes[code]?.line||''}));
   const ownRows = bomRowsFor(code).filter((row) => Number(row.level) === 1);
   if (ownRows.length) return ownRows;
   const engine = window.BomSearchEngine?.create?.(
@@ -429,6 +440,7 @@ function rootBom(code) {
     })
     .map((row) => ({...row, level: 1}));
 }
+const bomReferenceKey = row => row.id?.startsWith('bom:') ? row.id : row.itemCode;
 const routeFor = (code) => routing.productRoutes[code] || null;
 const lineFor = (code) =>
   lines.find((line) => line.code === code) ||
@@ -439,7 +451,7 @@ const stageFor = (code) =>
     .find((stage) => stage.code === code);
 const processesForProduct = (code) => {
   const route = routeFor(code);
-  return (route?.stages || []).map((stageCode, index) => {
+  return (route?.stages || []).map((stageCode, _index) => {
     const stage = stageFor(stageCode) || {};
     return {
       id: `${code}-${stageCode}`,
@@ -460,46 +472,14 @@ function syncProductRoute() {
   state.processes = processesForProduct(state.productCode);
 }
 function categoryStageCodes(category = state.category) {
-  const seen = new Set(),
-    result = [];
-  data.products
-    .filter((product) => product.category === category)
-    .forEach((product) => {
-      (routeFor(product.code)?.stages || []).forEach((stageCode) => {
-        if (!seen.has(stageCode)) {
-          seen.add(stageCode);
-          result.push(stageCode);
-        }
-      });
-    });
-  return result;
+  const products = data.products
+    .filter(product => product.category === category && routeFor(product.code)?.line === state.editorLine)
+    .map(product => ({code:product.code,stages:routeFor(product.code)?.stages || []}));
+  // Visibility only: retain the complete workspace when a route hides a stage.
+  return window.MasterAdminUI.maximumRoute({lines:routing.lines},state.editorLine,products).stages;
 }
-function categoryLines(category = state.category) {
-  const result = [
-    ...new Set(
-      data.products
-        .filter((product) => product.category === category)
-        .map((product) => routeFor(product.code)?.line)
-        .filter(Boolean),
-    ),
-  ];
-  if (result.length) return result;
-  const registered = [
-    ...new Set(
-      (window.ACTIVE_MASTER_CATEGORIES || [])
-        .filter((item) => item.name === category)
-        .map((item) => item.line)
-        .filter(Boolean),
-    ),
-  ];
-  return registered.length ? registered : lines.map((line) => line.code);
-}
-function editableCategoryLines(category = state.category) {
-  const available = categoryLines(category);
-  if (currentUser?.role === 'admin') return available;
-  const allowed = currentUser?.lines || [];
-  return available.filter((code) => allowed.includes(code));
-}
+
+
 function editorKey() {
   return `${state.category}:${state.editorLine}`;
 }
@@ -561,51 +541,22 @@ function bomUsageMarkup(productCode, itemCode, currentOperationId) {
 }
 function bomSelectionRowMarkup(productCode, row, operation, currentSelection) {
   const selected = currentSelection.some(
-      (code) => bomItemCodeKey(code) === bomItemCodeKey(row.itemCode),
+      (code) => bomItemCodeKey(code) === bomItemCodeKey(bomReferenceKey(row)),
     ),
-    usedElsewhere = bomUsageOperations(productCode, row.itemCode).filter(
+    usedElsewhere = bomUsageOperations(productCode, bomReferenceKey(row)).filter(
       (used) => used.id !== operation.id,
     ),
     locked = usedElsewhere.length > 0 && !selected,
     lockTitle = locked
       ? `此料號已由 ${usedElsewhere.map((used) => used.number || used.id).join('、')} 使用；請先到原方塊取消勾選。`
       : '';
-  return `<label class="${locked ? 'bom-assigned-elsewhere' : ''}" ${lockTitle ? `title="${escapeHtml(lockTitle)}"` : ''}><input type="checkbox" data-bom-product="${escapeHtml(productCode)}" data-bom-code="${escapeHtml(row.itemCode)}" ${selected ? 'checked' : ''} ${locked ? 'disabled data-bom-locked="true"' : ''}><span class="bom-item-main"><code>${escapeHtml(row.itemCode)}</code>${escapeHtml(row.itemName)} <small>${escapeHtml(row.quantity)} ${escapeHtml(row.unit)}</small></span>${bomUsageMarkup(productCode,row.itemCode,operation.id)}</label>`;
+  return `<label class="${locked ? 'bom-assigned-elsewhere' : ''}" ${lockTitle ? `title="${escapeHtml(lockTitle)}"` : ''}><input type="checkbox" data-bom-product="${escapeHtml(productCode)}" data-bom-code="${escapeHtml(bomReferenceKey(row))}" ${selected ? 'checked' : ''} ${locked ? 'disabled data-bom-locked="true"' : ''}><span class="bom-item-main"><code>${escapeHtml(row.itemCode)}</code>${escapeHtml(row.itemName)} <small>${escapeHtml(row.quantity)} ${escapeHtml(row.unit)}</small></span>${bomUsageMarkup(productCode,bomReferenceKey(row),operation.id)}</label>`;
 }
-function synchronizeOperationBomSelections(operation) {
-  operation.bomSelections = operation.bomSelections || {};
-  const selectedKeys = new Set(
-    Object.entries(operation.bomSelections)
-      .filter(([productCode]) => operation.productCodes?.includes(productCode))
-      .flatMap(([, itemCodes]) => itemCodes || [])
-      .map(bomItemCodeKey)
-      .filter(Boolean),
-  );
-  if (!selectedKeys.size) {
-    operation.bomItems = Object.values(operation.bomSelections).flat();
-    return;
-  }
-  (operation.productCodes || []).forEach((productCode) => {
-    const ownCodesByKey = new Map(
-        rootBom(productCode).map((row) => [
-          bomItemCodeKey(row.itemCode),
-          row.itemCode,
-        ]),
-      ),
-      existing = operation.bomSelections[productCode] || [];
-    operation.bomSelections[productCode] = [
-      ...new Set([
-        ...existing,
-        ...[...selectedKeys]
-          .map((key) => ownCodesByKey.get(key))
-          .filter(Boolean),
-      ]),
-    ];
-  });
-  operation.bomItems = Object.values(operation.bomSelections).flat();
+function synchronizeOperationBomSelections(_operation) {
+  // Selection is explicit and per product. Rendering never allocates BOM items.
 }
 function synchronizeWorkspaceBomSelections(workspace) {
-  Object.values(workspace || {})
+  categoryStageCodes().map(code => workspace?.[code] || [])
     .flat()
     .forEach(synchronizeOperationBomSelections);
 }
@@ -621,7 +572,7 @@ function synchronizeWorkspaceProducts(operation, previousCodes = []) {
   const ordered = productsForCategory()
     .filter((product) => active.has(product.code) && routeFor(product.code)?.line === state.editorLine)
     .map((product) => product.code);
-  Object.values(workspace).flat().forEach((item) => {
+  categoryStageCodes().flatMap(code => workspace[code] || []).forEach((item) => {
     const routeStagesByProduct = new Set(
       ordered.filter((code) => (routeFor(code)?.stages || []).includes(item.stageCode)),
     );
@@ -882,6 +833,13 @@ function applyDemoMedia(editorData) {
 function ensureCategoryEditor() {
   const key = editorKey();
   if (state.editorByCategory[key]) return state.editorByCategory[key];
+  if(localStorage.getItem('processAuthoringControl')){
+    const stages=window.ProcessAuthoringV3?.workspace(state.category,state.editorLine)?.stages||{};
+    state.editorByCategory[key]=structuredClone(stages);
+    const allowed = new Set(lineFor(state.editorLine).stages.map(stage=>stage.code));
+    categoryStageCodes(state.category).filter(code=>allowed.has(code)).forEach(code=>state.editorByCategory[key][code]||=[]);
+    return state.editorByCategory[key];
+  }
   try {
     const saved = JSON.parse(
       localStorage.getItem(`processEditor:${key}`) || 'null',
@@ -938,8 +896,7 @@ function ensureCategoryEditor() {
 function selectedEditorOperation() {
   const editorData = ensureCategoryEditor();
   return (
-    Object.values(editorData)
-      .flat()
+    categoryStageCodes().flatMap(code => editorData[code] || [])
       .find((operation) => operation.id === state.selectedOperation) || null
   );
 }
@@ -1183,13 +1140,7 @@ const escapeHtml = (value) =>
         char
       ],
   );
-const options = (items, value, label = (item) => item) =>
-  items
-    .map(
-      (item) =>
-        `<option value="${escapeHtml(value(item))}" ${value(item) === label.selected ? 'selected' : ''}>${escapeHtml(label(item))}</option>`,
-    )
-    .join('');
+
 function toast(message) {
   const el = document.querySelector('#toast');
   el.textContent = message;
@@ -1286,14 +1237,6 @@ function bindCommon() {
     .forEach((el) => (el.onclick = () => navigate(el.dataset.go)));
   bindLightbox();
 }
-function productSelects() {
-  return `<div class="field"><label>產品類別</label><select id="category-select">${data.categories.map((c) => `<option ${c === state.category ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('')}</select></div><div class="field"><label>產品編號 / 名稱</label><select id="product-select">${productsForCategory()
-    .map(
-      (p) =>
-        `<option value="${p.code}" ${p.code === state.productCode ? 'selected' : ''}>${p.code} · ${escapeHtml(p.name)}</option>`,
-    )
-    .join('')}</select></div>`;
-}
 function bindProductSelects(callback = render) {
   const cat = document.querySelector('#category-select'),
     product = document.querySelector('#product-select');
@@ -1311,12 +1254,39 @@ function bindProductSelects(callback = render) {
       callback();
     };
 }
-function processCards(editable = false, processes = state.processes) {
-  return `<div class="flow-stage">${processes.map((p, i) => `<article class="flow-card"><span class="num">STEP ${String(i + 1).padStart(2, '0')} · ${p.code}</span><h3>${escapeHtml(p.name)}</h3><p>${escapeHtml(p.description)}</p><div class="flow-info"><span><b>BOM</b><code>${escapeHtml(p.bom || '待設定')}</code></span><span><b>設備</b><em>${escapeHtml(p.machine || '待設定')}</em></span><span><b>人數</b><em>${p.people ? `${p.people} 人` : '待設定'}</em></span></div>${editable ? `<div class="card-actions"><button data-move="${i}" data-dir="-1">←</button><button data-edit="${i}">編輯</button><button data-move="${i}" data-dir="1">→</button></div>` : ''}</article>`).join('')}</div>`;
+function statusLines() {
+  return lines.filter(line => currentUser?.role === 'admin' || !Array.isArray(currentUser?.lines) || currentUser.lines.includes(line.code));
+}
+function statusProducts(line = state.statusLine, category = state.statusCategory) {
+  return data.products.filter(product => (routeFor(product.code)?.line || product.line) === line && (!category || product.category === category));
+}
+function selectedStatusProduct() {
+  const choices=statusLines(), current=currentProduct();
+  if (!choices.some(line=>line.code===state.statusLine)) state.statusLine=choices.find(line=>line.code===(routeFor(current.code)?.line || current.line))?.code || choices[0]?.code || '';
+  const products=statusProducts(state.statusLine,''), categories=[...new Set(products.map(product=>product.category))];
+  if (!categories.includes(state.statusCategory)) state.statusCategory=categories.includes(current.category)?current.category:categories[0] || '';
+  const matched=statusProducts();
+  const selected=matched.find(product=>product.code===state.statusProductCode) || matched.find(product=>product.code===current.code) || matched[0];
+  state.statusProductCode=selected?.code || '';
+  return selected;
+}
+function productStatusSelects() {
+  const categories=[...new Set(statusProducts(state.statusLine,'').map(product=>product.category))];
+  const select=(id,label,options)=>`<div class="field"><label for="${id}">${label}</label><select id="${id}" ${options?'':'disabled'}>${options || '<option value="">—</option>'}</select></div>`;
+  return select('status-line-select','線別',statusLines().map(line=>`<option value="${escapeHtml(line.code)}" ${line.code===state.statusLine?'selected':''}>${escapeHtml(line.code)} · ${escapeHtml(line.name)}</option>`).join(''))+
+    select('status-category-select','產品類別',categories.map(category=>`<option value="${escapeHtml(category)}" ${category===state.statusCategory?'selected':''}>${escapeHtml(category)}</option>`).join(''))+
+    select('status-product-select','產品編號／名稱／規格',statusProducts().map(product=>`<option value="${escapeHtml(product.code)}" ${product.code===state.statusProductCode?'selected':''}>${escapeHtml(product.code)} · ${escapeHtml(product.name)}${product.specification?` · ${escapeHtml(product.specification)}`:''}</option>`).join(''));
+}
+function bindStatusSelects() {
+  for (const [id,key] of [['status-line-select','statusLine'],['status-category-select','statusCategory'],['status-product-select','statusProductCode']]) {
+    const select=document.getElementById(id);
+    if (select) select.onchange=()=>{state[key]=select.value;if(key==='statusLine'){state.statusCategory='';state.statusProductCode='';}else if(key==='statusCategory')state.statusProductCode='';render();};
+  }
 }
 
+
 function dashboard() {
-  return `<section class="page"><div class="hero"><div><p class="eyebrow">TODAY · FACTORY STATUS</p><h2>早安，生產管理中心</h2><p>${lines.length} 條產線已建立，產品會依 Master SKU 自動帶出線別與製程。</p></div><div class="hero-meta"><strong>${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false })}</strong><span>${new Date().toLocaleDateString('zh-TW')}</span></div></div><div class="grid stats"><article class="stat"><label>PDF 產品分類</label><strong>${data.meta.productCount}</strong><small>${data.meta.categoryCount} 個產品類別</small></article><article class="stat"><label>BOM 對應產品</label><strong>${data.meta.bomProductCount}</strong><small>${data.meta.bomRowCount.toLocaleString()} 筆組成資料</small></article><article class="stat"><label>成品製程路線</label><strong>${routing.meta.finishedCount}</strong><small>${routing.meta.matchedCategoryCount} 筆已連結 PDF 類別</small></article><article class="stat"><label>半成品製程</label><strong>${routing.meta.semiFinishedCount}</strong><small>來自 SKU BTP</small></article></div><div class="grid two-col"><section class="panel"><div class="panel-head"><h3>產線即時狀態</h3><span class="tag">LIVE</span></div><div class="line-list">${lines.map((line, i) => `<div class="line-row"><span class="line-badge">${line.code}</span><div><b>${line.name}</b><span>${escapeHtml((dispatchBoard[line.code] || []).map((code) => data.products.find((p) => p.code === code)?.name || code).join('、') || '尚未發送產品')}</span></div><div class="progress"><i style="width:${Math.min(100, ((dispatchBoard[line.code] || []).length / 3) * 100)}%"></i></div><b>${line.load}%</b></div>`).join('')}</div></section><section class="panel"><div class="panel-head"><h3>快速操作</h3></div><div class="quick-list"><button class="quick" data-go="dispatch">發送新製程 <span>↗</span></button><button class="quick" data-go="editor">編輯 BORUAXE 流程 <span>→</span></button><button class="quick" data-go="data">查看匯入資料 <span>→</span></button><button class="quick" data-go="player">開啟產線電視畫面 <span>↗</span></button></div></section></div></section>`;
+  return `<section class="page"><div class="hero"><div><p class="eyebrow">今日工廠狀態</p><h2>生產管理中心</h2></div><div class="hero-meta"><strong>${new Date().toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false })}</strong><span>${new Date().toLocaleDateString('zh-TW')}</span></div></div><div class="grid stats"><article class="stat"><label>PDF 產品分類</label><strong>${data.meta.productCount}</strong><small>${data.meta.categoryCount} 個產品類別</small></article><article class="stat"><label>BOM 對應產品</label><strong>${data.meta.bomProductCount}</strong><small>${data.meta.bomRowCount.toLocaleString()} 筆組成資料</small></article><article class="stat"><label>成品製程路線</label><strong>${routing.meta.finishedCount}</strong><small>${routing.meta.matchedCategoryCount} 筆已連結 PDF 類別</small></article><article class="stat"><label>半成品製程</label><strong>${routing.meta.semiFinishedCount}</strong><small>來自 SKU BTP</small></article></div><div class="grid two-col"><section class="panel"><div class="panel-head"><h3>產線即時狀態</h3><span class="tag">即時</span></div><div class="line-list">${lines.map((line, _i) => `<div class="line-row"><span class="line-badge">${line.code}</span><div><b>${line.name}</b><span>${escapeHtml((dispatchBoard[line.code] || []).map((code) => data.products.find((p) => p.code === code)?.name || code).join('、') || '尚未發送產品')}</span></div><div class="progress"><i style="width:${Math.min(100, ((dispatchBoard[line.code] || []).length / 3) * 100)}%"></i></div><b>${line.load}%</b></div>`).join('')}</div></section><section class="panel"><div class="panel-head"><h3>快速操作</h3></div><div class="quick-list"><button class="quick" data-go="dispatch">發送新製程 <span>↗</span></button><button class="quick" data-go="editor">編輯 BORUAXE 流程 <span>→</span></button><button class="quick" data-go="data">查看匯入資料 <span>→</span></button><button class="quick" data-go="player">開啟產線電視畫面 <span>↗</span></button></div></section></div></section>`;
 }
 function editorDataForProduct(product, lineCode) {
   const key = `${product.category}:${lineCode}`;
@@ -1326,7 +1296,7 @@ function editorDataForProduct(product, lineCode) {
 }
 function compactBomMarkup(rows, label = 'BOM 零件', open = false) {
   if (!rows.length) return `<p class="status-muted">未分配 BOM</p>`;
-  const content = `<div class="status-compact-list">${rows.map((row) => `<div><code>${escapeHtml(row.itemCode)}</code><b>${escapeHtml(row.itemName)}</b><span>${escapeHtml(row.quantity || '—')} ${escapeHtml(row.unit || '—')} · 損耗 ${escapeHtml(row.waste || 0)}</span></div>`).join('')}</div>`;
+  const content = `<div class="status-compact-list">${rows.map((row) => `<div><code>${escapeHtml(row.itemCode)}</code><b>${escapeHtml(row.itemName)}</b><span>${escapeHtml(row.specification || '')} · ${escapeHtml(row.unit || '')}${row.bomConsumerLine==='C'?'':` · 用量 ${escapeHtml(row.quantity ?? '')} · 分母 ${escapeHtml(row.denominator ?? '')} · 損耗 ${escapeHtml(row.waste ?? '')}`}</span></div>`).join('')}</div>`;
   return rows.length > 4
     ? `<details class="status-bom-details" ${open ? 'open' : ''}><summary>${label} · ${rows.length} 項 <span>點擊展開</span></summary>${content}</details>`
     : content;
@@ -1380,7 +1350,7 @@ function productionOperationHeaderMarkup(operation, type, machineCount, photoCou
 }
 function operationNodeBody(operation, product) {
   const code = product?.code || '', bomItems = operation.bomSelections?.[code] || (operation.productCodes?.includes(code) ? operation.bomItems || [] : []),
-    allBomRows = code ? rootBom(code) : [], bomRows = allBomRows.filter((row) => bomItems.includes(row.itemCode)), machinesForOperation = operationMachineRows(operation);
+    allBomRows = code ? rootBom(code) : [], bomRows = allBomRows.filter((row) => bomItems.includes(bomReferenceKey(row))), machinesForOperation = operationMachineRows(operation);
   const productTitle = `${code || '未指定產品'} ${product?.name || ''}`.trim(),
     language = document.documentElement.lang === 'vi' ? 'vi' : 'zh',
     machineName = (machine) => language === 'vi' ? machine.nameVi || machine.name : machine.name || machine.nameVi;
@@ -1390,7 +1360,7 @@ window.ProcessOperationPresentation = {operationTypeMeta,operationMachineRows,op
 function playerOperationCard(operation, product) {
   const bomItems = operation.bomSelections?.[product.code] || [],
     bomRows = rootBom(product.code).filter((row) =>
-      bomItems.includes(row.itemCode),
+      bomItems.includes(bomReferenceKey(row)),
     ),
     machineIds = operation.machineIds || [],
     commonMediaItems = operationWorkMediaItems(operation),
@@ -1398,12 +1368,12 @@ function playerOperationCard(operation, product) {
     note =
       operationProductInstruction(operation, product.code) ||
       operation.instructions ||
-      '依標準書內容操作';
+      (window.ProcessAuthoringV3?.enabled()? (document.documentElement.lang==='vi'?'Cần bổ sung hướng dẫn thao tác':'操作說明待補'):'依標準書內容操作');
   return `<article class="device-operation"><header><code>${escapeHtml(operation.number)}</code><b>${escapeHtml(operation.name)}</b></header>${commonMediaItems.length ? `<h5>共用操作照片</h5>${mediaGalleryMarkup(operation, commonMediaItems)}` : ''}${productMediaItems.length ? `<h5>${escapeHtml(product.code)} 專用照片</h5>${mediaGalleryMarkup(operation, productMediaItems, product.code)}` : ''}${!commonMediaItems.length && !productMediaItems.length ? mediaGalleryMarkup(operation, []) : ''}<div><span>BOM ${bomItems.length} 項</span><span>設備 ${machineIds.length} 台</span><span>照片 ${commonMediaItems.length + productMediaItems.length} 張</span></div>${compactBomMarkup(bomRows, 'BOM')}<p>${escapeHtml(note)}</p><small>IPQC：${escapeHtml(operation.ipqc || '依核准標準檢查')}</small></article>`;
 }
 function player() {
   const line = lineFor(state.deviceLine),
-    stageCodes = line.stages.map((stage) => stage.code);
+    stageCodes = (line?.stages||[]).map((stage) => stage.code);
   if (!stageCodes.includes(state.deviceStage))
     state.deviceStage = stageCodes[0];
   const activeCodes = dispatchBoard[state.deviceLine] || [],
@@ -1411,7 +1381,7 @@ function player() {
       .map((code) => data.products.find((product) => product.code === code))
       .filter(Boolean),
     stage = stageFor(state.deviceStage) || { name: state.deviceStage };
-  return `<section class="page device-page"><button class="fullscreen-exit" id="fullscreen-exit" type="button" aria-label="退出全螢幕">退出全螢幕</button><div class="device-toolbar"><div><p class="eyebrow">LINE DEVICE MONITOR</p><h2>${state.deviceLine} 線 · ${escapeHtml(stage.name)}</h2><p>只播放目前選擇工段收到的產品與操作標準。</p></div><div class="toolbar"><div class="field"><label>線別</label><select id="device-line">${lines.map((item) => `<option value="${item.code}" ${item.code === state.deviceLine ? 'selected' : ''}>${item.code} 線 · ${escapeHtml(item.name)}</option>`).join('')}</select></div><div class="field"><label>公段</label><select id="device-stage">${stageCodes.map((code) => `<option value="${code}" ${code === state.deviceStage ? 'selected' : ''}>${code} · ${escapeHtml(stageFor(code)?.name || code)}</option>`).join('')}</select></div><button class="button ghost" id="fullscreen">全螢幕</button></div></div><div class="device-live-strip"><span>● LIVE</span><b>${activeProducts.length} 項產品正在此線發送</b><small id="board-clock">--:--</small></div>${
+  return `<section class="page device-page"><button class="fullscreen-exit" id="fullscreen-exit" type="button" aria-label="退出全螢幕">退出全螢幕</button><div class="device-toolbar"><div><p class="eyebrow">LINE DEVICE MONITOR</p><h2>${state.deviceLine} 線 · ${escapeHtml(stage.name)}</h2><p>只播放目前選擇工段收到的產品與操作標準。</p></div><div class="toolbar"><div class="field"><label>線別</label><select id="device-line">${lines.map((item) => `<option value="${item.code}" ${item.code === state.deviceLine ? 'selected' : ''}>${item.code} 線 · ${escapeHtml(item.name)}</option>`).join('')}</select></div><div class="field"><label>工段</label><select id="device-stage">${stageCodes.map((code) => `<option value="${code}" ${code === state.deviceStage ? 'selected' : ''}>${code} · ${escapeHtml(stageFor(code)?.name || code)}</option>`).join('')}</select></div><button class="button ghost" id="fullscreen">全螢幕</button></div></div><div class="device-live-strip"><span>● LIVE</span><b>${activeProducts.length} 項產品正在此線發送</b><small id="board-clock">--:--</small></div>${
     activeProducts.length
       ? `<div class="device-products">${activeProducts
           .map((product) => {
@@ -1518,7 +1488,6 @@ function editor() {
   if (!editorSelectionReady())
     return `<section class="page editor-page"><div class="editor-toolbar"><h2>工段流程編輯</h2></div>${editorSelectionPath()}<p class="editor-no-category" data-i18n-skip="true">${editorEmptyMessage()}</p></section>`;
   const editorData = ensureCategoryEditor(),
-    products = productsForCategory(),
     selectedLine = lineFor(state.editorLine),
     allowedStages = new Set(selectedLine.stages.map((stage) => stage.code)),
     stageCodes = categoryStageCodes(state.category).filter((code) =>
@@ -1529,7 +1498,9 @@ function editor() {
   );
   if (!selectedVersion || selectedVersion.status === 'draft')
     synchronizeWorkspaceBomSelections(editorData);
-  return `<section class="page editor-page"><div class="editor-toolbar"><div><p class="eyebrow">LINE → CATEGORY → STAGE → OPERATION</p><h2>工段流程編輯</h2><p>黑色標題代表工段；在畫布新增、拖曳及排列流程方塊，箭頭代表下一個流程。</p></div><button class="button signal" id="save-process">儲存製程版本</button></div>${editorSelectionPath(stageCodes.length, Object.values(editorData).flat().length)}<div class="editor-workspace" style="--inspector-width:${state.inspectorWidth}px"><section class="process-canvas">${stageCodes
+  const header = `<section class="page editor-page"><div class="editor-toolbar"><div><p class="eyebrow">LINE → CATEGORY → STAGE → OPERATION</p><h2>工段流程編輯</h2><p>黑色標題代表工段；在畫布新增、拖曳及排列流程方塊，箭頭代表下一個流程。</p></div><button class="button signal" id="save-process">儲存製程版本</button></div>${editorSelectionPath(stageCodes.length, stageCodes.reduce((total,code)=>total+(editorData[code]||[]).length,0))}`;
+  if(window.ProcessAuthoringV3?.enabled() && window.ProcessEditorV2?.workspace) return header + window.ProcessEditorV2.workspace() + '</section>';
+  return `${header}<div class="editor-workspace" style="--inspector-width:${state.inspectorWidth}px"><section class="process-canvas">${stageCodes
     .map((stageCode) => {
       const stage = stageFor(stageCode) || { name: stageCode },
         operations = editorData[stageCode] || [],
@@ -1562,16 +1533,9 @@ function editor() {
       '',
     )}</section><dialog class="inspector inspector-v2 editor-modal" id="process-operation-dialog"><div class="inspector-head"><h3>流程設定</h3></div><div id="inspector-form"></div></dialog></div></section>`;
 }
-function statusMediaGallery(operation, productCode = '') {
-  const common = operationWorkMediaItems(operation),
-    specific = productCode
-      ? operationProductMediaItems(operation, productCode)
-      : [];
-  if (!common.length && !specific.length) return mediaGalleryMarkup(operation, []);
-  return `<div class="status-media-sections">${common.length ? `<section><b>共用操作照片</b>${mediaGalleryMarkup(operation, common)}</section>` : ''}${specific.length ? `<section><b>${escapeHtml(productCode)} 專用照片</b>${mediaGalleryMarkup(operation, specific)}</section>` : ''}</div>`;
-}
+
 function productStatus() {
-  const product = currentProduct(),
+  const product = selectedStatusProduct() || currentProduct(),
     route = routeFor(product.code);
   if (route?.line) state.editorLine = route.line;
   const editorData = ensureCategoryEditor(),
@@ -1606,7 +1570,7 @@ function productStatus() {
       return `<section class="status-stage"><header><div><code>${stageCode}</code><h3>${escapeHtml(stage.name)}</h3></div><span>${operations.length} 個流程 · 顯示目前產品的核准版本</span></header><div class="status-product-canvas" style="height:${canvasHeight}px"><svg class="flow-links" width="${canvasWidth}" height="${canvasHeight}"><defs><marker id="status-arrow-${stageCode}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M 0 0 L 10 5 L 0 10 z"></path></marker></defs>${connectionMarkup(operations, stageCode, positions, 390, 68, 'status-arrow')}</svg>${blocks}</div></section>`;
     })
     .join('');
-  return `<section class="page status-page"><div class="status-hero"><div><p class="eyebrow">SINGLE PRODUCT PROCESS</p><h2>產品製程結果</h2><p>依編輯台連線呈現單一產品的流程分支、匯流、BOM、設備、照片、備註與 IPQC。</p></div><div class="status-product-meta"><code>${product.code}</code><b>${escapeHtml(product.name)}</b><span>${escapeHtml(product.specification || '')} · ${state.editorLine} 線</span></div></div><div class="toolbar status-filters">${productSelects()}</div><div class="status-route">${stageCodes.map((stageCode) => `<span>${stageCode}</span>`).join('<i>→</i>')}</div>${statusStages}</section>`;
+  return `<section class="page status-page"><div class="toolbar status-filters">${productStatusSelects()}</div><div class="status-hero"><div><p class="eyebrow">SINGLE PRODUCT PROCESS</p><h2>產品製程結果</h2><p>依編輯台連線呈現單一產品的流程分支、匯流、BOM、設備、照片、備註與 IPQC。</p></div><div class="status-product-meta"><code>${escapeHtml(product.code)}</code><b>${escapeHtml(product.name)}</b><span>${escapeHtml(product.specification || '')} · ${state.editorLine} 線</span></div></div><div class="status-route">${stageCodes.map((stageCode) => `<span>${stageCode}</span>`).join('<i>→</i>')}</div>${statusStages}</section>`;
 }
 function approval() {
   const selected =
@@ -1675,8 +1639,7 @@ function canDeleteProcessMaster() {
       ? window.hasPermission('master.delete')
       : currentUser?.role === 'admin';
   if (!allowed) return false;
-  const control = readStore('masterDataControl', null);
-  return !control?.versions?.some((version) => version.status === 'pending');
+  return !processMasterPending();
 }
 function canExchangeProcessMaster(permission) {
   return typeof window.hasPermission === 'function'
@@ -1711,10 +1674,36 @@ function currentProcessMasterData() {
 }
 function editableProcessMasterData() {
   const selected = selectedProcessMasterVersion();
-  return selected?.status === 'draft' ? selected.snapshot : null;
+  return selected?.status === 'draft'&&window.MasterDataWorkflow?.shared.permissions('PROCESS')?.edit!==false ? selected.snapshot : null;
 }
 function persistProcessMasterControl() {
-  window.MasterDataWorkflow?.persist?.();
+  return window.MasterDataWorkflow?.persist?.('PROCESS');
+}
+async function applyProcessMasterSnapshot(before,next) {
+  const shared=window.MasterDataWorkflow.shared,{patches,guards}=shared.diff(before,next);
+  if(patches.length)await shared.patch('PROCESS',patches,guards);
+}
+function updateProcessSharedStatus() {
+  const shared=window.MasterDataWorkflow?.shared,flow=shared?.flow('PROCESS');
+  const bar=document.querySelector('.process-master-version')||(state.dataTab==='process-master'?document.querySelector('#data-content .vd-card'):null);if(!bar||!flow)return;
+  const t=(zh,vi)=>document.documentElement.lang==='vi'?vi:zh;
+  let panel=document.querySelector('#process-shared-status');
+  if(!panel){panel=document.createElement('section');panel.id='process-shared-status';panel.className='master-edit-note';panel.setAttribute('role','status');bar.before(panel);}
+  const dirty=JSON.stringify(flow.working)!==JSON.stringify(flow.saved?.content);
+  panel.innerHTML=`<p>${t('共用草稿範圍','Phạm vi bản nháp chung')}: PROCESS · ${flow.pendingId?t('待審鎖定','Đang chờ duyệt · đã khóa'):dirty?t('尚未儲存','Chưa lưu'):t('已儲存','Đã lưu')} · ${t('儲存者','Người lưu')}: ${escapeHtml(flow.saved?.actor.name||'—')}</p><div class="master-version-actions"><button type="button" class="button ghost" data-process-history>${t('固定案件／歷史還原','Hồ sơ cố định / Khôi phục')}</button><button type="button" class="button ghost" data-process-recover>${t('查詢未知操作結果','Kiểm tra kết quả chưa rõ')}</button></div>`;
+  shared.renderValidation('PROCESS',{after:panel,label:issue=>issue.path?.[0]+' / '+(issue.path?.[1]?.id||''),onLocate:issue=>{
+    if(shared.permissions('PROCESS')?.edit===false)return;
+    state.processMasterVersionId=processMasterDraft()?.id;render();
+    const template=shared.flow('PROCESS')?.working[issue.path?.[0]]?.find(row=>row.id===issue.path?.[1]?.id);
+    const key=processMasterTemplateKey(template),card=[...document.querySelectorAll('[data-template-key]')].find(row=>row.dataset.templateKey===key);
+    if(issue.path?.[2]==='equipment'){
+      window.ProcessEquipment?.locate(issue.path?.[3]?.id, 'name');
+    }else{const target=card?.querySelector('[data-master-name]');target?.scrollIntoView({block:'center'});target?.focus({preventScroll:true});}
+  }});
+  panel.querySelector('[data-process-history]').onclick=()=>shared.history('PROCESS').catch(error=>toast(error.message));
+  panel.querySelector('[data-process-recover]').onclick=()=>shared.recover('PROCESS').catch(error=>toast(error.message));
+  window.VersionDraftUI?.updateSaved(document.querySelector('#data-content .vd-card'),flow);
+  if(bar.classList.contains('vd-card'))panel.replaceChildren();
 }
 function recordProcessMasterVersion(version, label, note = '') {
   window.MasterDataWorkflow?.record?.(version, label, note);
@@ -1754,97 +1743,32 @@ window.ProcessMasterVersioning = {
     render();
   },
 };
-function beginProcessMasterDraft() {
-  const control = processMasterControl();
-  if (!control) return;
-  if (processMasterDraft() || processMasterPending()) {
-    toast('流程資料已有草稿或正在主管審核中');
-    return;
-  }
-  const versions = processMasterVersions(),
-    createdAt = new Date().toISOString(),
-    version = {
-      id: `MD-PROCESS-${Date.now()}`,
-      scope: 'PROCESS',
-      number: Math.max(0, ...versions.map((item) => item.number || 0)) + 1,
-      status: 'draft',
-      snapshot: normalizeProcessMasterPresetCatalog(
-        control.active.PROCESS || processMaster || {},
-      ),
-      creatorId: currentUser?.id || 'local',
-      creatorName: currentUser?.name || '本機使用者',
-      createdAt,
-      updatedAt: createdAt,
-      parentVersionId: versions[0]?.id || null,
-      warnings: [],
-      history: [],
-    };
-  recordProcessMasterVersion(version, '建立流程資料草稿');
-  control.versions.push(version);
-  state.processMasterVersionId = version.id;
-  persistProcessMasterControl();
-  document.querySelector('#data-content').innerHTML = processMasterView();
-  bindDataInner('process-master');
-  toast('已建立可修改的流程資料草稿');
+async function beginProcessMasterDraft() {
+  const actorId=currentUser?.id;
+  try{await window.MasterDataWorkflow.shared.execute('PROCESS','begin');
+    const draft=processMasterDraft();
+    if(currentUser?.id!==actorId||!draft||processMasterPending()||window.MasterDataWorkflow.shared.permissions('PROCESS')?.edit===false)return false;
+    state.processMasterVersionId=draft.id;render();return true;
+  }catch(error){toast(error.message);return false;}
 }
-function saveProcessMasterNames() {
-  const editable = editableProcessMasterData();
-  if (!editable) return false;
-  document.querySelectorAll('[data-master-name]').forEach((input) => {
-    const key = input.closest('.master-template')?.dataset.templateKey;
-    processMasterCatalogMatches(editable, key).forEach(
-      (template) => (template.name = input.value.trim()),
-    );
-  });
-  return true;
+
+async function saveProcessMasterDraft() {
+  try{await window.MasterDataWorkflow.shared.execute('PROCESS','save');
+    toast(document.documentElement.lang==='vi'?'Đã lưu nội dung đã đồng bộ.':'已儲存全員已同步內容。');
+    if(!document.querySelector('#equipment-editor-dialog[open]'))render();
+  }catch(error){toast(error.message);}
 }
-function saveProcessMasterDraft() {
-  const version = processMasterDraft();
-  if (!version) return;
-  saveProcessMasterNames();
-  const errors = validateProcessMasterSnapshot(version.snapshot);
-  if (errors.length) {
-    toast(errors[0]);
-    return;
-  }
-  recordProcessMasterVersion(version, '儲存流程資料草稿');
-  persistProcessMasterControl();
-  toast('流程資料草稿已儲存');
+async function submitProcessMasterDraft() {
+  try{const result=await window.MasterDataWorkflow.shared.submit('PROCESS');if(!result)return;
+    state.masterReviewId=result.receipt.caseId;state.processMasterVersionId=result.receipt.caseId;render();
+  }catch(error){updateProcessSharedStatus();toast(error.message);}
 }
-function submitProcessMasterDraft() {
-  const version = processMasterDraft();
-  if (!version) return;
-  saveProcessMasterNames();
-  const errors = validateProcessMasterSnapshot(version.snapshot);
-  if (errors.length) {
-    toast(`送審前需修正 ${errors.length} 項流程資料問題`);
-    return;
-  }
-  version.status = 'pending';
-  state.masterReviewId = version.id;
-  state.processMasterVersionId = version.id;
-  recordProcessMasterVersion(version, '送出流程資料確認');
-  persistProcessMasterControl();
-  document.querySelector('#data-content').innerHTML = processMasterView();
-  bindDataInner('process-master');
-  toast('流程資料已送主管確認');
-}
-function withdrawProcessMasterDraft() {
+async function withdrawProcessMasterDraft() {
   const version = processMasterPending();
-  if (
-    !version ||
-    (version.creatorId !== currentUser?.id &&
-      currentUser?.role !== 'admin' &&
-      !canExchangeProcessMaster('approval.withdraw'))
-  )
-    return;
-  version.status = 'draft';
-  state.processMasterVersionId = version.id;
-  recordProcessMasterVersion(version, '解除送審，繼續修改');
-  persistProcessMasterControl();
-  document.querySelector('#data-content').innerHTML = processMasterView();
-  bindDataInner('process-master');
-  toast('已解除送審，可繼續修改流程資料');
+  if(!version)return;
+  try{const result=await window.MasterDataWorkflow.shared.review('PROCESS','withdraw',version.id);if(!result)return;
+    state.processMasterVersionId=processMasterDraft()?.id;render();
+  }catch(error){toast(error.message);}
 }
 function processMasterVersionBar() {
   const versions = processMasterVersions(),
@@ -1915,6 +1839,7 @@ function processMasterExcelRows(source) {
   return { templates, photos };
 }
 async function exportProcessMasterData() {
+  if(window.MasterDataWorkflow?.shared){toast('NON_BOM_EXCHANGE_DISABLED');return;}
   if (!canExchangeProcessMaster('master.export')) {
     toast('此帳號沒有匯出權限。');
     return;
@@ -2103,6 +2028,7 @@ async function readProcessMasterExcel(file) {
   return normalizeImportedProcessMaster(imported);
 }
 async function importProcessMasterData(file) {
+  if(window.MasterDataWorkflow?.shared){toast('NON_BOM_EXCHANGE_DISABLED');return;}
   if (!file || !canExchangeProcessMaster('master.import')) {
     if (file) toast('此帳號沒有匯入權限。');
     return;
@@ -2152,12 +2078,13 @@ function processTemplateImpact(templateIds) {
     ).length;
   return { drafts, versions };
 }
-function deleteProcessTemplate(stageCode, templateKey) {
-  const editable = editableProcessMasterData();
-  if (!editable) {
+async function deleteProcessTemplate(stageCode, templateKey) {
+  const before = editableProcessMasterData();
+  if (!before) {
     toast('請先建立或切回流程資料草稿');
     return;
   }
+  const editable=JSON.parse(JSON.stringify(before));
   if (!canDeleteProcessMaster()) {
     toast(
       typeof window.hasPermission === 'function' &&
@@ -2181,9 +2108,7 @@ function deleteProcessTemplate(stageCode, templateKey) {
       (item) => processMasterTemplateKey(item) !== templateKey,
     );
   });
-  const version = processMasterDraft();
-  recordProcessMasterVersion(version, '刪除流程資料', template?.name || templateKey);
-  persistProcessMasterControl();
+  try{await applyProcessMasterSnapshot(before,editable);}catch(error){toast(error.message);return;}
   document.querySelector('#data-content').innerHTML = processMasterView();
   bindDataInner('process-master');
   toast('流程已從草稿移除；既有製程方塊與歷史版本不受影響');
@@ -2191,16 +2116,15 @@ function deleteProcessTemplate(stageCode, templateKey) {
 function processMasterView() {
   const pageMaster = currentProcessMasterData(),
     templates = processMasterCatalogTemplates(pageMaster),
-    editable = Boolean(editableProcessMasterData()),
-    canImport = canExchangeProcessMaster('master.import'),
-    canExport = canExchangeProcessMaster('master.export');
-  return `${processMasterVersionBar()}<div class="master-toolbar process-photo-master"><div><p class="eyebrow">OPERATION MASTER</p><h2>製程編輯台可用流程</h2><p>此處統一管理所有工段可新增的流程。五個標準流程會保留；草稿送主管核准後才套用到製程編輯台。</p></div><div class="process-master-toolbar"><div class="process-master-actions">${editable ? '<button class="button signal" type="button" id="add-master-template">＋ 新增流程</button>' : ''}${canExport ? '<button class="button ghost" type="button" id="export-process-master">匯出 Excel</button>' : ''}${canImport ? `<button class="button ghost" type="button" id="import-process-master">匯入 Excel</button><input class="process-master-file" id="process-master-import-file" type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">` : ''}</div>${!canImport && !canExport ? '<small class="master-permission-note">此帳號沒有匯入或匯出權限。</small>' : ''}</div></div><div class="process-master-format-note"><b>流程資料 Excel 格式 v${PROCESS_MASTER_EXCEL_FORMAT_VERSION}</b><span>包含全部工段、流程、設備與照片；設備流程位置依已核准的製程版本自動顯示。</span></div><div class="master-template-grid flow-photo-presets">${templates
+    editable = Boolean(editableProcessMasterData());
+
+  return `${processMasterVersionBar()}<div class="master-toolbar process-photo-master"><div><p class="eyebrow">OPERATION MASTER</p><h2>製程編輯台可用流程</h2><p>流程核准後可供製程編輯台使用。</p></div><div class="process-master-toolbar"><div class="process-master-actions">${editable ? '<button class="button signal" type="button" id="add-master-template">＋ 新增流程</button>' : ''}</div></div></div><div class="master-template-grid flow-photo-presets">${templates
     .map(
       (template, index) => {
         const mediaItems = processTemplateMediaItems(template),
           key = processMasterTemplateKey(template),
           equipmentButton = window.ProcessEquipment?.cardButton(template) || '';
-        return `<article class="master-template photo-template" data-template-id="${escapeHtml(template.id)}" data-template-key="${escapeHtml(key)}"><div class="template-head"><span class="template-order">${index + 1}</span><div><label class="template-name-field"><span>流程名稱</span><input data-master-name value="${escapeHtml(template.name)}" maxlength="80" ${editable ? '' : 'disabled'}></label></div><div class="template-head-actions"><span class="template-auto-tag">${template.presetKey ? '標準流程 · 自動帶入方塊' : '自訂流程 · 自動帶入方塊'}</span>${equipmentButton}${editable && !template.presetKey && canDeleteProcessMaster() ? `<button class="button danger compact" type="button" data-delete-template="${escapeHtml(key)}">刪除流程</button>` : ''}</div></div>${mediaItems.length ? `<div class="master-template-media-grid">${mediaItems.map((item, mediaIndex) => `<figure><img src="${escapeHtml(item.src)}" alt="${escapeHtml(template.name)} 流程照片">${editable ? `<button type="button" data-remove-template-media="${mediaIndex}" aria-label="移除照片">×</button>` : ''}</figure>`).join('')}</div>` : `<div class="master-template-empty">此流程尚未設定照片</div>`}${editable ? '<label class="media-upload master-template-upload"><input data-master-media type="file" accept="image/*" multiple><span>＋ 上傳或加入更多照片</span><small>照片會自動壓縮並套用到所有工段的新方塊。</small></label>' : ''}</article>`;
+        return `<article class="master-template photo-template" data-template-id="${escapeHtml(template.id)}" data-template-key="${escapeHtml(key)}"><div class="template-head"><span class="template-order">${index + 1}</span><div><label class="template-name-field"><span>流程名稱</span><input data-master-name value="${escapeHtml(template.name)}" maxlength="80" ${editable ? '' : 'disabled'}></label></div><div class="template-head-actions"><span class="template-auto-tag">${template.presetKey ? '標準流程 · 自動帶入方塊' : '自訂流程 · 自動帶入方塊'}</span>${equipmentButton}${editable && !template.presetKey && canDeleteProcessMaster() ? `<button class="button danger compact" type="button" data-delete-template="${escapeHtml(key)}">刪除流程</button>` : ''}</div></div>${mediaItems.length ? `<div class="master-template-media-grid">${mediaItems.map((item, mediaIndex) => `<figure><img src="${escapeHtml(item.src)}" alt="${escapeHtml(template.name)}">${editable ? `<button type="button" data-remove-template-media="${mediaIndex}" aria-label="移除照片">×</button>` : ''}</figure>`).join('')}</div>` : `<div class="master-template-empty">此流程尚未設定照片</div>`}${editable ? '<label class="media-upload master-template-upload"><input data-master-media type="file" accept="image/*" multiple><span>＋ 上傳或加入更多照片</span><small>照片會自動壓縮並套用到所有工段的新方塊。</small></label>' : ''}</article>`;
       },
     )
     .join(
@@ -2211,6 +2135,7 @@ function processMasterView() {
 function bindView() {
   bindCommon();
   bindProductSelects();
+  if (state.view === 'productStatus') bindStatusSelects();
   if (state.view === 'player') {
     const lineSelect = document.querySelector('#device-line'),
       stageSelect = document.querySelector('#device-stage');
@@ -2316,6 +2241,7 @@ function bindEditor() {
     changeEditorSelection(event.target.value, state.category);
   if (!editorSelectionReady()) return;
   document.querySelector('#save-process').onclick = async () => {
+    if(window.ProcessAuthoringV3?.enabled())return window.ProcessAuthoringV3.save();
     const editorData = ensureCategoryEditor(),
       savedAt = new Date().toISOString(),
       version = {
@@ -2356,6 +2282,7 @@ function bindEditor() {
       toast(error?.message || '雲端儲存失敗，請確認連線後再試一次');
     }
   };
+  if (window.ProcessEditorV2?.active()) { window.ProcessEditorV2.bind(); return; }
   const editorToolbar = document.querySelector('.editor-toolbar');
   if (editorToolbar) {
     const arrangeAll = document.createElement('button');
@@ -2534,7 +2461,7 @@ function bindEditor() {
       gallery.innerHTML =
         items
           .slice(0, 4)
-          .map((item, index) =>
+          .map((item, _index) =>
             item.type?.startsWith('video/')
               ? `<span>VIDEO</span>`
               : `<img src="${item.src}" alt="${escapeHtml(item.name || operation.name)}">`,
@@ -2708,7 +2635,7 @@ function renderInspector(operation) {
     bomRows = allBomRows.filter(
       (row) =>
         !usedBomItems.has(row.itemCode) ||
-        operation.bomItems.includes(row.itemCode),
+        operation.bomItems.includes(bomReferenceKey(row)),
     ),
     selectedTemplate = templates.find(
       (template) => template.id === operation.templateId,
@@ -2721,7 +2648,7 @@ function renderInspector(operation) {
     selectedMachine = machines.find(
       (machine) => machine.no === operation.machineId,
     );
-  form.innerHTML = `<div class="inspector-form"><div class="field"><label>流程編號（自動產生）</label><input value="${operation.number}" readonly></div><div class="field"><label>後台流程資料</label><select id="operation-template"><option value="">自訂流程</option>${templates.map((template) => `<option value="${template.id}" ${template.id === operation.templateId ? 'selected' : ''}>${escapeHtml(template.name)}${processTemplateMediaItems(template).length ? ' · 含預設照片' : ''}</option>`).join('')}</select></div><div class="field"><label>流程名稱</label><input id="operation-name" value="${escapeHtml(operation.name)}" placeholder="例如：裁切、封口、人工組裝"></div><div class="two-field"><div class="field"><label>作業方式</label><select id="operation-mode"><option value="human" ${operation.mode === 'human' ? 'selected' : ''}>人工流程</option><option value="machine" ${operation.mode === 'machine' ? 'selected' : ''}>機器流程</option></select></div><div class="field"><label>建議操作人數</label><input id="operation-people" type="number" min="1" value="${operation.people}"></div></div><div class="machine-fields ${operation.mode === 'machine' ? '' : 'hidden'}"><div class="field"><label>後台設備</label><select id="operation-machine"><option value="">請選擇機器</option>${allowedMachines.map((machine) => `<option value="${machine.no}" ${machine.no === operation.machineId ? 'selected' : ''}>${machine.no} · ${escapeHtml(machine.name)}</option>`).join('')}</select></div><div class="machine-info">${selectedMachine ? `<b>${escapeHtml(selectedMachine.name)}</b><span>機器編號 ${selectedMachine.no}</span><span>固定資產 ${selectedMachine.asset}</span><span>設備建議 ${selectedMachine.people} 人操作</span>` : '選擇機器後自動帶出設備資訊'}</div></div><div class="field"><label>適用產品（${escapeHtml(state.category)}）</label><select id="operation-product"><option value="">稍後設定產品</option>${products.map((product) => `<option value="${product.code}" ${product.code === operation.productCodes[0] ? 'selected' : ''}>${product.code} · ${escapeHtml(product.name)}</option>`).join('')}</select></div><details class="bom-details"><summary>${selectedProduct ? `選擇 ${selectedProduct.code} 的 BOM 零件（${bomRows.length}）` : `BOM 零件（先選產品後使用）`}</summary>${selectedProduct ? `<div class="check-list bom-check-list">${bomRows.length ? bomRows.map((row) => `<label><input type="checkbox" data-bom-code="${escapeHtml(row.itemCode)}" ${operation.bomItems.includes(row.itemCode) ? 'checked' : ''}><span><code>${escapeHtml(row.itemCode)}</code>${escapeHtml(row.itemName)} <small>${escapeHtml(row.quantity)} ${escapeHtml(row.unit)}</small></span></label>`).join('') : `<p>此產品沒有第一層 BOM 資料。</p>`}</div>` : `<p>產品選定後才會載入 BOM，不占用主要畫面。</p>`}</details><div class="field"><label>操作照片或影片</label><label class="media-upload"><input id="operation-media" type="file" accept="image/*,video/*"><span>＋ 上傳照片／影片</span><small>${escapeHtml(operation.mediaName || '支援 JPG、PNG、MP4')}</small></label>${operation.media ? `<div class="media-preview">${operation.mediaType.startsWith('image/') ? `<img src="${operation.media}" alt="操作照片預覽">` : `<video src="${operation.media}" controls></video>`}<button type="button" id="remove-media">移除</button></div>` : ''}</div><div class="field"><label>操作流程</label><textarea id="operation-instructions" placeholder="逐步鍵入操作方式、注意事項與品質重點">${escapeHtml(operation.instructions)}</textarea></div><div class="field"><label>IPQC 標準</label><textarea id="operation-ipqc" placeholder="例如：裁切長度 148cm ± 1cm；不可歪斜">${escapeHtml(operation.ipqc)}</textarea></div><div class="inspector-actions"><button class="button ghost" id="delete-operation">刪除流程</button><button class="button signal" id="apply-operation">套用流程內容</button></div></div>`;
+  form.innerHTML = `<div class="inspector-form"><div class="field"><label>流程編號（自動產生）</label><input value="${operation.number}" readonly></div><div class="field"><label>後台流程資料</label><select id="operation-template"><option value="">自訂流程</option>${templates.map((template) => `<option value="${template.id}" ${template.id === operation.templateId ? 'selected' : ''}>${escapeHtml(template.name)}</option>`).join('')}</select></div><div class="field"><label>流程名稱</label><input id="operation-name" value="${escapeHtml(operation.name)}" placeholder="例如：裁切、封口、人工組裝"></div><div class="two-field"><div class="field"><label>作業方式</label><select id="operation-mode"><option value="human" ${operation.mode === 'human' ? 'selected' : ''}>人工流程</option><option value="machine" ${operation.mode === 'machine' ? 'selected' : ''}>機器流程</option></select></div><div class="field"><label>建議操作人數</label><input id="operation-people" type="number" min="1" value="${operation.people}"></div></div><div class="machine-fields ${operation.mode === 'machine' ? '' : 'hidden'}"><div class="field"><label>後台設備</label><select id="operation-machine"><option value="">請選擇機器</option>${allowedMachines.map((machine) => `<option value="${machine.no}" ${machine.no === operation.machineId ? 'selected' : ''}>${machine.no} · ${escapeHtml(machine.name)}</option>`).join('')}</select></div><div class="machine-info">${selectedMachine ? `<b>${escapeHtml(selectedMachine.name)}</b><span>機器編號 ${selectedMachine.no}</span><span>固定資產 ${selectedMachine.asset}</span><span>設備建議 ${selectedMachine.people} 人操作</span>` : '選擇機器後自動帶出設備資訊'}</div></div><div class="field"><label>適用產品（${escapeHtml(state.category)}）</label><select id="operation-product"><option value="">稍後設定產品</option>${products.map((product) => `<option value="${product.code}" ${product.code === operation.productCodes[0] ? 'selected' : ''}>${product.code} · ${escapeHtml(product.name)}</option>`).join('')}</select></div><details class="bom-details"><summary>${selectedProduct ? `選擇 ${selectedProduct.code} 的 BOM 零件（${bomRows.length}）` : `BOM 零件（先選產品後使用）`}</summary>${selectedProduct ? `<div class="check-list bom-check-list">${bomRows.length ? bomRows.map((row) => `<label><input type="checkbox" data-bom-code="${escapeHtml(bomReferenceKey(row))}" ${operation.bomItems.includes(bomReferenceKey(row)) ? 'checked' : ''}><span><code>${escapeHtml(row.itemCode)}</code>${escapeHtml(row.itemName)} <small>${escapeHtml(row.quantity)} ${escapeHtml(row.unit)}</small></span></label>`).join('') : `<p>此產品沒有第一層 BOM 資料。</p>`}</div>` : `<p>產品選定後才會載入 BOM，不占用主要畫面。</p>`}</details><div class="field"><label>操作照片或影片</label><label class="media-upload"><input id="operation-media" type="file" accept="image/*,video/*"><span>＋ 上傳照片／影片</span><small>${escapeHtml(operation.mediaName || '支援 JPG、PNG、MP4')}</small></label>${operation.media ? `<div class="media-preview">${operation.mediaType.startsWith('image/') ? `<img src="${operation.media}" alt="操作照片預覽">` : `<video src="${operation.media}" controls></video>`}<button type="button" id="remove-media">移除</button></div>` : ''}</div><div class="field"><label>操作流程</label><textarea id="operation-instructions" placeholder="逐步鍵入操作方式、注意事項與品質重點">${escapeHtml(operation.instructions)}</textarea></div><div class="inspector-actions"><button class="button ghost" id="delete-operation">刪除流程</button><button class="button signal" id="apply-operation">套用流程內容</button></div></div>`;
   operation.machineIds = Array.isArray(operation.machineIds)
     ? operation.machineIds
     : operation.machineId
@@ -2775,7 +2702,7 @@ function renderInspector(operation) {
     .querySelector('#operation-media')
     ?.closest('.field');
   if (mediaField)
-    mediaField.outerHTML = `<div class="field common-operation-media"><label>作業說明照片或影片 · 可多選</label><label class="media-upload"><input id="operation-media" type="file" accept="image/*,video/*" multiple><span>＋ 上傳照片／影片</span><small>只保存作業說明媒體；流程資料照片會顯示在上方基本資料。</small></label><div class="inspector-media-grid media-count-${Math.min(workMediaRecords.length, 4)}">${workMediaRecords.map(({item,index}, displayIndex) => `<figure><button type="button" class="inspector-media-preview" data-lightbox-src="${escapeHtml(item.src)}" data-lightbox-type="${escapeHtml(item.type || 'image/jpeg')}" data-lightbox-title="${escapeHtml(item.name || operation.name)}" data-lightbox-group="operation-${escapeHtml(operation.id || operation.number)}">${item.type?.startsWith('video/') ? '<span class="media-video-mark">▶ 影片</span>' : `<img src="${escapeHtml(item.src)}" alt="${escapeHtml(item.name || operation.name)}">`}</button><button type="button" data-remove-media-index="${index}">×</button><figcaption>${escapeHtml(item.name || `照片 ${displayIndex + 1}`)}</figcaption></figure>`).join('')}</div></div>`;
+    mediaField.outerHTML = `<div class="field common-operation-media"><label>作業說明照片或影片 · 可多選</label><label class="media-upload"><input id="operation-media" type="file" accept="image/*,video/*" multiple><span>＋ 上傳照片／影片</span><small>保存此流程的作業說明照片與影片。</small></label><div class="inspector-media-grid media-count-${Math.min(workMediaRecords.length, 4)}">${workMediaRecords.map(({item,index}, displayIndex) => `<figure><button type="button" class="inspector-media-preview" data-lightbox-src="${escapeHtml(item.src)}" data-lightbox-type="${escapeHtml(item.type || 'image/jpeg')}" data-lightbox-title="${escapeHtml(item.name || operation.name)}" data-lightbox-group="operation-${escapeHtml(operation.id || operation.number)}">${item.type?.startsWith('video/') ? '<span class="media-video-mark">▶ 影片</span>' : `<img src="${escapeHtml(item.src)}" alt="${escapeHtml(item.name || operation.name)}">`}</button><button type="button" data-remove-media-index="${index}">×</button><figcaption>${escapeHtml(item.name || `照片 ${displayIndex + 1}`)}</figcaption></figure>`).join('')}</div></div>`;
   operation.bomSelections = operation.bomSelections || {};
   if (
     operation.bomProductCode &&
@@ -2811,15 +2738,15 @@ function renderInspector(operation) {
                   operation.bomSelections[product.code] || [],
                 available = rootBom(product.code),
                 selectedCount = available.filter((row) =>
-                  currentSelection.includes(row.itemCode),
+                  currentSelection.includes(bomReferenceKey(row)),
                 ).length,
                 selectable = available.filter(
                   (row) =>
                     currentSelection.some(
                       (code) =>
-                        bomItemCodeKey(code) === bomItemCodeKey(row.itemCode),
+                        bomItemCodeKey(code) === bomItemCodeKey(bomReferenceKey(row)),
                     ) ||
-                    !bomUsageOperations(product.code, row.itemCode).some(
+                    !bomUsageOperations(product.code, bomReferenceKey(row)).some(
                       (used) => used.id !== operation.id,
                     ),
                 ),
@@ -2828,7 +2755,7 @@ function renderInspector(operation) {
                   selectable.every((row) =>
                     currentSelection.some(
                       (code) =>
-                        bomItemCodeKey(code) === bomItemCodeKey(row.itemCode),
+                        bomItemCodeKey(code) === bomItemCodeKey(bomReferenceKey(row)),
                     ),
                   );
               return `<article class="bom-product-group" data-bom-group="${product.code}"><header><div><code>${product.code}</code><b>${escapeHtml(product.name)}</b></div><div class="bom-group-actions"><span class="bom-count">${selectedCount} 已選／${available.length} 個料號</span><button type="button" data-bom-select-all="${product.code}">${allSelected ? '清除' : '全選'}</button><i>⌄</i></div></header><div class="check-list bom-check-list">${available.length ? available.map((row) => bomSelectionRowMarkup(product.code,row,operation,currentSelection)).join('') : `<p>此產品沒有根層 BOM 零件。</p>`}</div></article>`;
@@ -2838,7 +2765,7 @@ function renderInspector(operation) {
     }</section>`;
   document.querySelectorAll('[data-bom-product]').forEach((input) => {
     const row = rootBom(input.dataset.bomProduct).find(
-        (item) => item.itemCode === input.dataset.bomCode,
+        (item) => bomReferenceKey(item) === input.dataset.bomCode,
       ),
       meta = input.closest('label')?.querySelector('small');
     if (row && meta)
@@ -2866,7 +2793,7 @@ function renderInspector(operation) {
     operation.instructions = document.querySelector(
       '#operation-instructions',
     ).value;
-    operation.ipqc = document.querySelector('#operation-ipqc').value;
+    // Legacy IPQC text stays intact; assignments use their own stable IDs.
     const productInstructions = document.querySelector(
       '#operation-product-instructions',
     );
@@ -3127,18 +3054,21 @@ function renderInspector(operation) {
   };
   document.querySelector('#apply-operation').onclick = () => {
     syncText();
-    synchronizeWorkspaceProducts(
-      operation,
-      state.editingOperationProductCodes || operation.productCodes,
-    );
+    const previousProducts = state.editingOperationProductCodes || operation.productCodes;
+    // V3 field edits must not normalize other operations and create unrelated
+    // BOM patches/guards. Explicit applicability edits retain workspace sync.
+    if (!window.ProcessAuthoringV3?.enabled() ||
+      JSON.stringify(previousProducts) !== JSON.stringify(operation.productCodes)) {
+      synchronizeWorkspaceProducts(operation, previousProducts);
+    }
     state.editingOperationProductCodes = [...operation.productCodes];
     state.appliedOperationId = operation.id;
-    toast(`${operation.number} 儲存成功`);
+    if(!window.ProcessAuthoringV3?.enabled())toast(`${operation.number} 儲存成功`);
     render();
     const button = document.querySelector('#apply-operation');
     if (button && state.appliedOperationId === operation.id) {
-      button.textContent = '✓ 儲存成功';
-      button.classList.add('saved-success');
+      button.textContent = window.ProcessAuthoringV3?.enabled()?'Đang đồng bộ / 同步中':'✓ 儲存成功';
+      if(!window.ProcessAuthoringV3?.enabled())button.classList.add('saved-success');
       setTimeout(() => {
         if (button.isConnected) {
           button.textContent = '套用流程內容';
@@ -3195,10 +3125,15 @@ function bindDataInner(tab) {
     };
   }
   if (tab === 'process-master') {
+    updateProcessSharedStatus();
+    const permissions=window.MasterDataWorkflow?.shared.permissions('PROCESS');
+    for(const [id,permission]of[['#process-master-new-draft','edit'],['#save-master-data','save'],['#process-master-submit','submit'],['#process-master-withdraw','withdraw']]){const button=document.querySelector(id);if(button&&permissions?.[permission]===false)button.disabled=true;}
     const addMasterTemplate = document.querySelector('#add-master-template');
-    if (addMasterTemplate) addMasterTemplate.onclick = () => {
-      const editable = editableProcessMasterData();
-      if (!editable) return;
+    if (addMasterTemplate) addMasterTemplate.onclick = async () => {
+      const before = editableProcessMasterData();
+      if (!before||addMasterTemplate.disabled) return;
+      const editable=JSON.parse(JSON.stringify(before));
+      addMasterTemplate.disabled=true;
       const timestamp = Date.now(),
         catalogKey = `custom-${timestamp}`;
       routing.lines.flatMap((line) => line.stages).forEach((stage) => {
@@ -3216,6 +3151,7 @@ function bindDataInner(tab) {
           mediaItems: [],
         });
       });
+      try{await applyProcessMasterSnapshot(before,editable);}catch(error){toast(error.message);return;}finally{addMasterTemplate.disabled=false;}
       document.querySelector('#data-content').innerHTML = processMasterView();
       bindDataInner('process-master');
       const latest = document.querySelector('.photo-template:last-child');
@@ -3223,12 +3159,18 @@ function bindDataInner(tab) {
       latest?.querySelector('[data-master-name]')?.select();
     };
     document.querySelectorAll('[data-master-name]').forEach((input) => {
-      input.oninput = () => {
+      let lastQueued=null;
+      const synchronize = () => {
+        if(lastQueued===input.value)return;
         const key = input.closest('.master-template')?.dataset.templateKey;
-        processMasterCatalogMatches(editableProcessMasterData(), key).forEach(
-          (template) => (template.name = input.value),
-        );
+        const snapshot=editableProcessMasterData();if(!snapshot)return;
+        const ids=new Set(processMasterCatalogMatches(snapshot,key).map(template=>template.id));
+        const patches=Object.entries(snapshot).flatMap(([stage,list])=>list.filter(template=>ids.has(template.id)).map(template=>({op:'set',path:[stage,{id:template.id},'name'],value:input.value})));
+        lastQueued=input.value;
+        window.MasterDataWorkflow.shared.patch('PROCESS',patches).then(updateProcessSharedStatus).catch(error=>{lastQueued=null;toast(error.message);});
       };
+      input.oninput=event=>{if(!event.isComposing)synchronize();};
+      input.oncompositionend=synchronize;
     });
     document.querySelector('#process-master-version-choice')?.addEventListener(
       'change',
@@ -3261,10 +3203,7 @@ function bindDataInner(tab) {
     document.querySelector('#process-master-review')?.addEventListener(
       'click',
       () => {
-        state.masterReviewId = selectedProcessMasterVersion()?.id;
-        state.approvalTab = 'master';
-        state.view = 'approval';
-        render();
+        window.MasterReview.open('PROCESS', selectedProcessMasterVersion()?.id);
       },
     );
     const exportButton = document.querySelector('#export-process-master');
@@ -3272,8 +3211,10 @@ function bindDataInner(tab) {
     const importButton = document.querySelector('#import-process-master'),
       importFile = document.querySelector('#process-master-import-file');
     if (importButton)
-      importButton.onclick = () => {
+      importButton.onclick = async () => {
+        const actorId=currentUser?.id;
         if (processMasterDraft()) {
+          if(processMasterPending()||!editableProcessMasterData())return;
           importFile?.click();
           return;
         }
@@ -3281,10 +3222,8 @@ function bindDataInner(tab) {
           toast('流程資料正在主管審核中，請先解除送審再匯入');
           return;
         }
-        beginProcessMasterDraft();
-        requestAnimationFrame(() =>
-          document.querySelector('#process-master-import-file')?.click(),
-        );
+        if(!(await beginProcessMasterDraft())||currentUser?.id!==actorId||!processMasterDraft()||processMasterPending()||!editableProcessMasterData())return;
+        document.querySelector('#process-master-import-file')?.click();
       };
     if (importFile)
       importFile.onchange = async () => {
@@ -3304,19 +3243,24 @@ function bindDataInner(tab) {
       );
     document.querySelectorAll('[data-master-media]').forEach((input) => {
       input.onchange = async () => {
+        const before=editableProcessMasterData();if(!before||input.disabled)return;
+        const next=JSON.parse(JSON.stringify(before));
         const card = input.closest('.master-template'),
           matches = processMasterCatalogMatches(
-            editableProcessMasterData(),
+            next,
             card?.dataset.templateKey,
           ),
           template = matches[0];
         if (!template || !input.files?.length) return;
+        input.disabled=true;
+        try{
         const prepared = await prepareMediaUploads([...input.files]);
         const nextMedia = [
           ...processTemplateMediaItems(template),
           ...prepared.items,
         ];
         matches.forEach((item) => setProcessTemplateMedia(item, nextMedia));
+        await applyProcessMasterSnapshot(before,next);
         document.querySelector('#data-content').innerHTML =
           processMasterView();
         bindDataInner('process-master');
@@ -3325,21 +3269,26 @@ function bindDataInner(tab) {
             ? `已加入 ${prepared.items.length} 張照片，其中 ${prepared.compressedCount} 張已自動壓縮`
             : `已加入 ${prepared.items.length} 張照片`,
         );
+        }catch(error){toast(error.message);}finally{input.disabled=false;input.value='';}
       };
     });
     document
       .querySelectorAll('[data-remove-template-media]')
       .forEach((button) => {
-        button.onclick = () => {
+        button.onclick = async () => {
+          const before=editableProcessMasterData();if(!before||button.disabled)return;
+          const next=JSON.parse(JSON.stringify(before));
           const card = button.closest('.master-template'),
             matches = processMasterCatalogMatches(
-              editableProcessMasterData(),
+              next,
               card?.dataset.templateKey,
             ),
             template = matches[0],
-            items = processTemplateMediaItems(template);
+            items = processTemplateMediaItems(template).slice();
           items.splice(Number(button.dataset.removeTemplateMedia), 1);
           matches.forEach((item) => setProcessTemplateMedia(item, items));
+          button.disabled=true;
+          try{await applyProcessMasterSnapshot(before,next);}catch(error){toast(error.message);return;}finally{button.disabled=false;}
           document.querySelector('#data-content').innerHTML =
             processMasterView();
           bindDataInner('process-master');
@@ -3428,7 +3377,7 @@ function applyPlatformIdentity() {
             : 'OP';
   if (name) name.textContent = currentUser?.name || '尚未登入';
   if (role)
-    role.textContent = `${roleLabels[currentUser?.role] || ''}${currentUser?.lines?.length ? ` · ${currentUser.lines.join('/')} 線` : ''}`;
+    role.textContent = roleLabels[currentUser?.role] || '';
 }
 function enterPlatform(user) {
   sessionStorage.removeItem('process-platform-signed-out');
@@ -3455,7 +3404,7 @@ function enterPlatform(user) {
 function renderLogin() {
   document.querySelector('.app-shell').classList.add('platform-locked');
   const loginRoot = document.querySelector('#login-root');
-  loginRoot.innerHTML = `<section class="login-screen"><div class="login-brand"><div class="brand-mark">製</div><p class="eyebrow">PROCESS CONTROL PORTAL</p><h1>製程中控入口</h1><p>依帳號權限進入管理、確認、編輯或產線播放功能。</p></div><div class="login-panel"><div class="demo-identities"><h2>選擇示範身分</h2><div class="role-login-grid"><button data-quick-login="admin"><b>ADMIN</b><span>全部功能與使用者管理</span></button><button data-quick-login="rd"><b>RD 主管</b><span>版本確認與製程檢視</span></button><button data-quick-login="operator"><b>製程人員（STAFF）</b><span>依授權線別修改製程</span></button></div></div><div class="login-divider"><span>或輸入帳號密碼</span></div><div class="login-form"><div class="field"><label>帳號</label><input id="login-id" autocomplete="username"></div><div class="field"><label>密碼</label><input id="login-password" type="password" autocomplete="current-password"></div><button class="button signal" id="login-submit">登入平台</button></div><div class="device-entry"><h3>產線設備直接播放</h3><div class="two-field"><div class="field"><label>線別</label><select id="entry-line">${lines.map((line) => `<option value="${line.code}">${line.code} 線 · ${escapeHtml(line.name)}</option>`).join('')}</select></div><div class="field"><label>公段</label><select id="entry-stage">${(lines[0]?.stages || []).map((stage) => `<option value="${stage.code}">${stage.code} · ${escapeHtml(stage.name)}</option>`).join('')}</select></div></div><button class="button ghost" id="device-entry-button">進入工段播放</button></div><small class="login-hint">請輸入由 ADMIN 建立的平台帳號與密碼。</small></div></section>`;
+  loginRoot.innerHTML = `<section class="login-screen"><div class="login-brand"><div class="brand-mark">製</div><p class="eyebrow">製程中控平台</p><h1>製程中控入口</h1><p>依帳號權限進入管理、確認、編輯或產線播放功能。</p></div><div class="login-panel"><div class="demo-identities"><h2>選擇示範身分</h2><div class="role-login-grid"><button data-quick-login="admin"><b>ADMIN</b><span>全部功能與使用者管理</span></button><button data-quick-login="rd"><b>RD 主管</b><span>版本確認與製程檢視</span></button><button data-quick-login="operator"><b>製程人員（STAFF）</b><span>製程編輯與送審</span></button></div></div><div class="login-divider"><span>或輸入帳號密碼</span></div><div class="login-form"><div class="field"><label>帳號</label><input id="login-id" autocomplete="username"></div><div class="field"><label>密碼</label><input id="login-password" type="password" autocomplete="current-password"></div><button class="button signal" id="login-submit">登入平台</button></div><div class="device-entry"><h3>產線設備直接播放</h3><div class="two-field"><div class="field"><label>線別</label><select id="entry-line">${lines.map((line) => `<option value="${line.code}">${line.code} 線 · ${escapeHtml(line.name)}</option>`).join('')}</select></div><div class="field"><label>工段</label><select id="entry-stage">${(lines[0]?.stages || []).map((stage) => `<option value="${stage.code}">${stage.code} · ${escapeHtml(stage.name)}</option>`).join('')}</select></div></div><button class="button ghost" id="device-entry-button">進入工段播放</button></div><small class="login-hint">請輸入由 ADMIN 建立的平台帳號與密碼。</small></div></section>`;
   document
     .querySelectorAll('[data-quick-login]')
     .forEach(
@@ -3540,11 +3489,14 @@ document.querySelector('#menu-toggle').onclick = () =>
 document.querySelector('#account-button').onclick = () =>
   document.querySelector('#account-menu').classList.toggle('open');
 document.querySelector('#logout-button').onclick = async () => {
-  if(await window.ProcessSync?.flush?.()!==true){
-    toast(window.ProcessSync?.saveFailureMessage?.() || '草稿尚未完成伺服器儲存，內容保留在目前頁面。請勿關閉；確認連線後再次儲存。');
-    return;
+  const draftAccount=window.sharedDraftAccountState?.();
+  if(draftAccount?.queued||draftAccount?.unknown||draftAccount?.failed){
+    if(!confirm('Thao tác chưa đồng bộ hoặc chưa rõ kết quả. Bản đã lưu vẫn ở máy chủ; hãy đăng nhập lại bằng cùng tài khoản để kiểm tra mã thao tác. Đăng xuất mà không lưu thêm?\n尚有未同步或結果未知的操作。已儲存資料仍在伺服器；請以相同帳號重新登入查證操作。是否登出而不補存？'))return;
   }
-  await fetch('/api/platform-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout'})});
+  if(await window.ProcessSync?.flush?.()!==true){
+    if(!confirm('Không thể xác nhận đồng bộ. Dữ liệu đã lưu vẫn ở máy chủ; đầu vào chưa đồng bộ được giữ riêng theo tài khoản, không tự gửi lại. Không đóng trang trước khi tải bản phục hồi. Đăng xuất?\n無法確認同步。已儲存資料仍在伺服器；未同步輸入按帳號保留，不自動補送。下載保全檔前請勿關閉本頁。仍要登出？'))return;
+  }
+  try{const response=await fetch('/api/platform-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'logout'}),signal:AbortSignal.timeout(15000)});if(!response.ok)throw Error('LOGOUT_NOT_CONFIRMED');}catch{toast('Chưa xác nhận đăng xuất; tài khoản và đầu vào vẫn được giữ. / 尚未確認登出，帳號及輸入仍保留。');return;}
   window.ProcessSync?.clearIdentity?.();
   sessionStorage.setItem('process-platform-signed-out', '1');
   currentUser = null;

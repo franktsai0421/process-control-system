@@ -1,6 +1,19 @@
 (() => {
   const STORAGE_KEY = "processUILanguage";
   const exact = new Map(Object.entries({
+    "流程核准後可供製程編輯台使用。":"Quy trình đã duyệt được dùng trong trình soạn thảo.",
+    "尚未發送產品":"Chưa gửi sản phẩm",
+    "生產管理中心":"Trung tâm quản lý sản xuất",
+    "今日工廠狀態":"Tình trạng nhà máy hôm nay",
+    "製程中控入口":"Cổng điều hành quy trình",
+    "製程中控平台":"Cổng điều hành quy trình",
+    "請輸入由 ADMIN 建立的平台帳號與密碼。":"Đăng nhập bằng tài khoản do ADMIN tạo.",
+    "請使用由 ADMIN 建立的平台帳號與密碼。":"Đăng nhập bằng tài khoản do ADMIN tạo.",
+    "主要功能":"Chức năng chính",
+    "目前身分：ADMIN｜可管理使用者與權限。":"Vai trò hiện tại: ADMIN | Có thể quản lý người dùng và quyền.",
+    "個人資料與密碼請開啟「我的帳號」。":"Mở Tài khoản của tôi để xem thông tin và đổi mật khẩu.",
+    "產品編號／名稱／規格":"Mã / tên / quy cách sản phẩm",
+    "此線別沒有可查看的產品":"Chuyền này không có sản phẩm để xem",
     "版本尚未完成伺服器儲存，內容與原狀態已保留。請確認連線後重試；衝突或登入失效需先重新登入確認。":"Phiên bản chưa được lưu trên máy chủ. Nội dung và trạng thái trước đó được giữ lại. Kiểm tra kết nối rồi thử lại; nếu có xung đột hoặc phiên đăng nhập hết hạn, hãy đăng nhập lại để kiểm tra.",
     "缺少適用流程":"Thiếu quy trình áp dụng", "BOM 未分配":"BOM chưa phân bổ", "前往修正":"Đi đến sửa", "查看問題":"Xem vấn đề",
     "前往建立連線":"Đi đến tạo liên kết", "前往補寫作業說明":"Đi đến bổ sung hướng dẫn", "前往填寫基本資料":"Đi đến điền thông tin cơ bản", "前往分配 BOM":"Đi đến phân bổ BOM", "前往建立流程":"Đi đến tạo quy trình",
@@ -55,15 +68,15 @@
     "本方塊被選取":"Đã chọn trong ô này", "其他方塊":"Ô khác", "查看":"Xem", "影片":"Video", "自訂流程":"Quy trình tùy chỉnh",
     "作業說明與完成標準":"Hướng dẫn và tiêu chuẩn hoàn thành", "照片與影片":"Ảnh và video",
     "製程標準播放系統":"Hệ thống hiển thị tiêu chuẩn quy trình","製":"SX","製程":"Quy trình",
-    "製程中控":"Điều hành quy trình","總覽":"Tổng quan","生產總覽":"Tổng quan sản xuất","系統管理員":"Quản trị hệ thống",
+    "製程中控":"Điều hành quy trình","製程中控系統":"Hệ thống điều hành quy trình","品質管理":"Quản lý chất lượng","品質管理系統":"Hệ thống quản lý chất lượng","品質系統":"Hệ thống chất lượng","中控系統":"Hệ thống điều hành","模具設備":"Thiết bị khuôn","檢具與測試設備":"Dưỡng kiểm và thiết bị thử","選擇系統":"Chọn hệ thống","總覽":"Tổng quan","生產總覽":"Tổng quan sản xuất","系統管理員":"Quản trị hệ thống",
     "產線播放台":"Màn hình chuyền","發送介面":"Điều phối","產品製程狀態":"Trạng thái quy trình",
-    "版本確認平台":"Nền tảng duyệt phiên bản","製程版本確認平台":"Nền tảng duyệt phiên bản quy trình",
-    "製程編輯台":"Trình chỉnh sửa quy trình","資料後台":"Quản lý dữ liệu","系統連線正常":"Hệ thống hoạt động bình thường",
-    "尚未登入":"Chưa đăng nhập","登出":"Đăng xuất","登入平台":"Đăng nhập","帳號":"Tài khoản","密碼":"Mật khẩu",
+    "版本確認平台":"Duyệt phiên bản","製程版本確認平台":"Nền tảng duyệt phiên bản quy trình",
+    "製程編輯台":"Soạn quy trình","資料後台":"Quản lý dữ liệu","系統連線正常":"Hệ thống hoạt động bình thường",
+    "尚未登入":"Chưa đăng nhập","登出／切換使用者":"Đổi tài khoản","切換使用者":"Đổi tài khoản","登出":"Đăng xuất","登入平台":"Đăng nhập","登入中控系統":"Đăng nhập hệ thống điều hành","登入品質系統":"Đăng nhập hệ thống chất lượng","切換至品質系統":"Sang hệ chất lượng","切換至中控系統":"Sang hệ điều hành","帳號":"Tài khoản","密碼":"Mật khẩu",
     "選擇示範身分":"Chọn vai trò dùng thử","全部功能與使用者管理":"Toàn bộ chức năng và quản lý người dùng",
-    "版本確認與製程檢視":"Duyệt phiên bản và xem quy trình","依授權線別修改製程":"Chỉnh sửa theo chuyền được cấp quyền",
+    "版本確認與製程檢視":"Duyệt phiên bản và xem quy trình","製程編輯與送審":"Chỉnh sửa và gửi duyệt",
     "或輸入帳號密碼":"Hoặc nhập tài khoản và mật khẩu","產線設備直接播放":"Thiết bị chuyền phát trực tiếp",
-    "進入工段播放":"Mở màn hình công đoạn","線別":"Chuyền","公段":"Công đoạn","工段":"Công đoạn",
+    "進入工段播放":"Mở màn hình công đoạn","線別":"Chuyền","公段":"Công đoạn","工段":"Công đoạn","標準搜尋":"Tìm tiêu chuẩn","品質報告":"Báo cáo chất lượng","例行檢查":"Kiểm tra định kỳ","例行報告資料庫":"Cơ sở dữ liệu báo cáo định kỳ","品質管理系統基本框架":"Khung cơ bản của hệ thống quản lý chất lượng","功能建置中":"Chức năng đang được xây dựng",
     "使用者與平台權限":"Người dùng và quyền hệ thống","建立使用者":"Tạo người dùng","姓名":"Họ tên","角色範本":"Mẫu vai trò",
     "完整使用者管理":"Quản lý người dùng đầy đủ","查看帳號狀態、角色繼承、個別設定與最終有效權限。":"Xem trạng thái tài khoản, quyền kế thừa, thiết lập riêng và quyền hiệu lực cuối cùng.","登入頁顯示示範身分":"Hiển thị vai trò mẫu tại trang đăng nhập","初始密碼":"Mật khẩu ban đầu","啟用中":"Đang hoạt động","已停用":"Đã vô hiệu hóa","帳號啟用":"Kích hoạt tài khoản","繼承角色設定":"Kế thừa thiết lập vai trò","最終有效權限":"Quyền hiệu lực cuối cùng","可用產線":"Chuyền được phép dùng","可進入頁面":"Trang được phép truy cập","個別設定":"Thiết lập riêng","儲存修改":"Lưu thay đổi","重設密碼":"Đặt lại mật khẩu","新密碼":"Mật khẩu mới","確認重設":"Xác nhận đặt lại",
     "製程人員":"Nhân viên quy trình","人員":"Nhân viên","主管":"Quản lý","RD 主管":"Quản lý RD",
@@ -126,6 +139,7 @@
     "早安，生產管理中心":"Chào buổi sáng, trung tâm quản lý sản xuất","第一班":"Ca 1",
     "PDF 產品分類":"Phân loại sản phẩm PDF","產品分類":"Phân loại sản phẩm","產品類別":"Loại sản phẩm",
     "BOM 對應產品":"Sản phẩm có BOM","成品製程路線":"Tuyến quy trình thành phẩm","半成品製程":"Quy trình bán thành phẩm",
+    "已完成":"Đã hoàn tất",
     "三條產線已建立，產品會依 Master SKU 自動帶出線別與製程。":"Đã thiết lập ba chuyền sản xuất; sản phẩm sẽ tự động nạp chuyền và quy trình theo Master SKU.",
     "產線即時狀態":"Trạng thái chuyền theo thời gian thực","成品組裝線":"Chuyền lắp ráp thành phẩm · ",
     "配件組裝線":"Chuyền lắp ráp phụ kiện · ","零件加工線":"Chuyền gia công linh kiện · ","等待下一張工單":"Chờ lệnh sản xuất tiếp theo",
@@ -155,7 +169,36 @@
     "全部":"tất cả","授權線":"chuyền được cấp quyền","比對":"so sánh","重新":"lại","舊版":"phiên bản cũ","修訂":"bản sửa đổi","影片":"video",
     "人操作":"người vận hành","已選":"Đã chọn","可選":"có thể chọn","組產品":"nhóm sản phẩm","未分配":"chưa phân bổ",
     "固定資產":"Tài sản cố định","機器編號":"Mã máy","設備建議":"Đề xuất thiết bị","定額／用量":"Định mức / số lượng",
-    "單位":"Đơn vị","損耗":"Hao hụt","照片預覽":"Xem trước ảnh","支援 JPG、PNG、MP4":"Hỗ trợ JPG, PNG, MP4"
+    "單位":"Đơn vị","損耗":"Hao hụt","照片預覽":"Xem trước ảnh","支援 JPG、PNG、MP4":"Hỗ trợ JPG, PNG, MP4",
+    "錯誤代碼":"Mã lỗi","錯誤名稱":"Tên lỗi","檢查項目":"Hạng mục kiểm tra","檢查編號":"Mã kiểm tra","FQC 檢查編號":"Mã kiểm tra FQC","FQC 檢查編號／名稱":"Mã / tên kiểm tra FQC",
+    "檢查編號／項目":"Mã / hạng mục kiểm tra","檢查方式敘述":"Mô tả phương pháp kiểm tra","檢查方式圖片":"Ảnh phương pháp kiểm tra","檢查工具":"Dụng cụ kiểm tra",
+    "變更理由":"Lý do thay đổi","變更理由（有實質差異時必填）":"Lý do thay đổi (bắt buộc khi có thay đổi thực tế)","變更理由（有變動時必填）":"Lý do thay đổi (bắt buộc khi có thay đổi)",
+    "請輸入錯誤名稱":"Vui lòng nhập tên lỗi","請輸入檢查項目名稱":"Vui lòng nhập tên hạng mục kiểm tra",
+    "有實質變動時必須填寫變更理由":"Vui lòng nhập lý do thay đổi khi có thay đổi thực tế","新增錯誤代碼時必須填寫理由":"Vui lòng nhập lý do khi tạo mã lỗi mới","儲存失敗":"Lưu thất bại",
+    "包含產品":"Sản phẩm bao gồm","是否啟用":"Kích hoạt / Đang kích hoạt","月檢查":"Kiểm tra tháng","季檢查":"Kiểm tra quý","年檢查":"Kiểm tra năm",
+    "加入月檢查列表":"Thêm vào danh sách kiểm tra tháng","加入季檢查列表":"Thêm vào danh sách kiểm tra quý","加入年檢查列表":"Thêm vào danh sách kiểm tra năm",
+    "自訂檢查週期":"Chu kỳ kiểm tra tùy chỉnh","自訂週期內容":"Nội dung chu kỳ tùy chỉnh","檢查週期":"Chu kỳ kiểm tra","啟用與檢查週期":"Kích hoạt và chu kỳ kiểm tra",
+    "產品適用矩陣":"Ma trận sản phẩm áp dụng","未涵蓋產品":"Sản phẩm chưa bao gồm","尚無啟用標準":"Chưa có tiêu chuẩn kích hoạt",
+    "照片備註":"Ghi chú ảnh","圖片檢視":"Xem hình ảnh","設為首圖":"Đặt làm ảnh đại diện","移至首圖":"Đặt làm ảnh đại diện",
+    "上移":"Di chuyển lên","下移":"Di chuyển xuống","刪除照片":"Xóa ảnh","新增錯誤代碼":"Thêm mã lỗi","修改錯誤代碼":"Sửa mã lỗi",
+    "刪除錯誤代碼":"Xóa mã lỗi","新增檢查項目":"Thêm hạng mục kiểm tra","修改檢查項目":"Sửa hạng mục kiểm tra","刪除檢查項目":"Xóa hạng mục kiểm tra",
+    "加入既有項目":"Thêm vào hạng mục hiện có","開始修改／刪除資料":"Bắt đầu sửa / xóa dữ liệu","匯出全部 Excel":"Xuất toàn bộ Excel",
+    "選擇既有檢查項目":"Chọn hạng mục kiểm tra hiện có","加入既有檢查項目":"Thêm vào hạng mục kiểm tra hiện có","目前產品":"Sản phẩm hiện tại",
+    "開啟並預勾產品":"Mở và chọn sẵn sản phẩm","儲存至草稿":"Lưu vào bản nháp","確認加入並儲存草稿":"Xác nhận thêm và lưu bản nháp",
+    "全選":"Chọn tất cả","取消全選":"Bỏ chọn tất cả","已選取":"Đã chọn","項":"mục","啟用狀態":"Trạng thái kích hoạt",
+    "請至少勾選一個檢查項目":"Vui lòng chọn ít nhất một hạng mục kiểm tra","此類別尚無任何檢查項目":"Nhóm sản phẩm này chưa có hạng mục kiểm tra nào",
+    "月 · 季":"Tháng · Quý","月":"Tháng","季":"Quý","年":"Năm","自訂":"Tùy chỉnh",
+    "此類別尚無錯誤代碼":"Nhóm này chưa có mã lỗi","此錯誤代碼尚無檢查項目":"Mã lỗi này chưa có hạng mục kiểm tra","此類別尚無產品主資料":"Nhóm này chưa có dữ liệu sản phẩm",
+    "此類別產品均已有啟用標準":"Tất cả sản phẩm trong nhóm đã có tiêu chuẩn kích hoạt","尚無檢查項目":"Chưa có hạng mục kiểm tra",
+    "版本紀錄與操作歷程":"Lịch sử phiên bản và thao tác","選擇版本／草稿":"Chọn phiên bản / bản nháp","送出主管審核":"Gửi quản lý duyệt",
+    "關閉 (Esc)":"Đóng (Esc)","上一張 (←)":"Ảnh trước (←)","下一張 (→)":"Ảnh sau (→)","▲ 上移":"▲ Di chuyển lên","▼ 下移":"▼ Di chuyển xuống",
+    "首圖":"Ảnh đại diện","無備註":"Không có ghi chú","尚未上傳檢查方式照片":"Chưa tải ảnh phương pháp kiểm tra",
+    "檢查方式圖片（可多選，追加不覆蓋）":"Ảnh phương pháp kiểm tra (có thể chọn nhiều, thêm tiếp không ghi đè)",
+    "FQC 檢查編號（自動）":"Mã kiểm tra FQC (tự động)","錯誤代碼（自動接續）":"Mã lỗi (tự động tiếp nối)",
+    "加入檢查項目":"Thêm vào hạng mục kiểm tra","自訂週期內容（如：每半年、每週、每批次）":"Nội dung chu kỳ tùy chỉnh (vd: nửa năm một lần, hằng tuần, theo lô)",
+    "請輸入自訂週期（必填）":"Vui lòng nhập chu kỳ tùy chỉnh (bắt buộc)","未選擇錯誤代碼":"Chưa chọn mã lỗi","· 檢查項目":"· Hạng mục kiểm tra",
+    "尚無紀錄":"Chưa có lịch sử","全部線別":"Tất cả chuyền","＋ 新增錯誤代碼":"＋ Thêm mã lỗi","＋ 新增檢查項目":"＋ Thêm hạng mục kiểm tra",
+    "前往版本確認平台":"Đến nền tảng duyệt phiên bản","編號或名稱":"Mã hoặc tên"
   }));
 
   const phrases = [
@@ -240,12 +283,11 @@
   ].sort((a,b) => b[0].length - a[0].length);
 
   const translationRules = [...phrases, ...exact.entries()].sort((a,b) => b[0].length - a[0].length);
-  let language = localStorage.getItem(STORAGE_KEY) === "vi" ? "vi" : "zh";
+  let language = localStorage.getItem(STORAGE_KEY) === "zh" ? "zh" : "vi";
   let applying = false;
   let observer;
   const textMemory = new WeakMap();
   const attrMemory = new WeakMap();
-  const valueMemory = new WeakMap();
 
   function translate(source) {
     const issueText=String(source).trim();
@@ -264,8 +306,21 @@
     if((match=issueText.match(/^(.+) 專用照片$/)))return 'Ảnh riêng của '+match[1];
     if((match=issueText.match(/^產品補充 (\d+)$/)))return 'Bổ sung sản phẩm '+match[1];
     if((match=issueText.match(/^產品照片 (\d+)$/)))return 'Ảnh sản phẩm '+match[1];
-    if((match=issueText.match(/^(.+) 尚未有任何流程方塊套用。$/)))return match[1]+' chưa có thẻ quy trình nào áp dụng.';
     if(issueText==='已用暫時方塊標出缺少位置；請從上方選擇流程建立。暫時方塊不會寫入正式資料')return 'Đã dùng thẻ tạm để đánh dấu vị trí còn thiếu; hãy chọn quy trình ở phía trên để tạo. Thẻ tạm không được ghi vào dữ liệu chính thức.';
+    if((match=issueText.match(/^版本紀錄與操作歷程 · (\d+) 筆操作$/)))return 'Lịch sử phiên bản và thao tác · '+match[1]+' thao tác';
+    if((match=issueText.match(/^(\d+) 個錯誤代碼$/)))return match[1]+' mã lỗi';
+    if((match=issueText.match(/^(\d+) 個檢查項目$/)))return match[1]+' hạng mục kiểm tra';
+    if((match=issueText.match(/^(\d+) 個類別產品$/)))return match[1]+' sản phẩm trong nhóm';
+    if((match=issueText.match(/^(\d+) 個未涵蓋$/)))return match[1]+' chưa bao gồm';
+    if((match=issueText.match(/^(\d+) 個產品$/)))return match[1]+' sản phẩm';
+    if((match=issueText.match(/^產品適用矩陣 · (\d+) 個產品尚無啟用標準$/)))return 'Ma trận sản phẩm áp dụng · '+match[1]+' sản phẩm chưa có tiêu chuẩn kích hoạt';
+    if((match=issueText.match(/^未涵蓋產品 · (\d+)$/)))return 'Sản phẩm chưa bao gồm · '+match[1];
+    if((match=issueText.match(/^(新增|修改)檢查項目 · (.+)$/)))return (match[1]==='新增'?'Thêm':'Sửa')+' hạng mục kiểm tra · '+match[2];
+    if((match=issueText.match(/^(新增|修改)錯誤代碼 · (.+)$/)))return (match[1]==='新增'?'Thêm':'Sửa')+' mã lỗi · '+match[2];
+    if((match=issueText.match(/^圖片檢視 · (.+)$/)))return 'Xem hình ảnh · '+match[1];
+    if((match=issueText.match(/^修改者：(.+) · (.+)$/)))return 'Người sửa: '+match[1]+' · '+match[2];
+    if((match=issueText.match(/^目前生效：(.+)$/)))return 'Đang có hiệu lực: '+match[1];
+    if((match=issueText.match(/^版本 (.+) · 修改帳號 (.+) · 儲存時間由伺服器完成後記錄$/)))return 'Phiên bản '+match[1]+' · Tài khoản sửa '+match[2]+' · Thời gian lưu do máy chủ ghi nhận';
 
     if (!source || !/[\u3400-\u9fff]/.test(source)) return source;
     const leading = source.match(/^\s*/)?.[0] || "";
@@ -283,12 +338,11 @@
   }
 
   function applyText(node) {
-    if (skipped(node) || node.nodeType !== Node.TEXT_NODE) return;
+    if (skipped(node) || node.nodeType !== Node.TEXT_NODE || node.parentElement?.closest('textarea,[contenteditable="true"]')) return;
     const current = node.nodeValue;
     let memory = textMemory.get(node);
     if (language === "vi") {
       if (!memory || current !== memory.translated) memory = { source: current, translated: translate(current) };
-      memory.translated = translate(memory.source);
       textMemory.set(node, memory);
       if (current !== memory.translated) node.nodeValue = memory.translated;
     } else if (memory && current === memory.translated) {
@@ -314,18 +368,8 @@
       }
     });
     attrMemory.set(element, memory);
-    if (element.matches?.('input[type="text"],input:not([type]),textarea')) {
-      const current = element.value;
-      let valueState = valueMemory.get(element);
-      if (language === "vi") {
-        if (!valueState || current !== valueState.translated) valueState = {source:current, translated:translate(current)};
-        valueState.translated = translate(valueState.source);
-        valueMemory.set(element, valueState);
-        if (current !== valueState.translated) element.value = valueState.translated;
-      } else if (valueState && current === valueState.translated) {
-        element.value = valueState.source;
-      }
-    }
+    // Form values are business data, not interface labels. Translation must not
+    // rewrite a name/instruction merely because a dialog opened or language changed.
   }
 
   function walk(root = document.body) {
@@ -334,7 +378,7 @@
     if (root.nodeType === Node.TEXT_NODE) applyText(root);
     else {
       applyAttributes(root);
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {acceptNode:node=>node.nodeType===Node.ELEMENT_NODE&&node.matches('script,style,[data-i18n-skip],textarea,[contenteditable="true"]')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
       let node;
       while ((node = walker.nextNode())) node.nodeType === Node.TEXT_NODE ? applyText(node) : applyAttributes(node);
     }
@@ -353,7 +397,7 @@
     button.type = "button";
     button.className = `language-switch ${location}`;
     button.dataset.i18nSkip = "true";
-    button.innerHTML = `<span>文/A</span><b></b>`;
+    button.innerHTML = `<span aria-hidden="true">中↔Vi</span><b></b>`;
     button.onclick = () => {
       language = language === "vi" ? "zh" : "vi";
       localStorage.setItem(STORAGE_KEY, language);
@@ -374,10 +418,10 @@
       login = makeSwitch("login-language-switch");
       document.querySelector("#login-root .login-screen").append(login);
     }
-    const nextLabel = language === "vi" ? "中文" : "Tiếng Việt";
+    const nextLabel = language === "vi" ? "繁體中文" : "Tiếng Việt";
     document.querySelectorAll(".language-switch b").forEach(label => { if (label.textContent !== nextLabel) label.textContent = nextLabel; });
-    const nextHint = language === "vi" ? "Chuyển sang tiếng Trung" : "Chuyển sang tiếng Việt";
-    document.querySelectorAll(".language-switch").forEach(button => { if (button.title !== nextHint) button.title = nextHint; });
+    const nextHint = language === "vi" ? "繁體中文" : "Tiếng Việt";
+    document.querySelectorAll(".language-switch").forEach(button => { if (button.title !== nextHint) button.title = nextHint; button.setAttribute('aria-label', nextHint); });
   }
 
   const originalConfirm = window.confirm.bind(window);
@@ -387,10 +431,9 @@
 
   observer = new MutationObserver(mutations => {
     if (applying) return;
-    mutations.forEach(mutation => {
-      mutation.addedNodes.forEach(node => walk(node));
-      if (mutation.type === "characterData") walk(mutation.target);
-    });
+    const roots=new Set();
+    for(const mutation of mutations){for(const node of mutation.addedNodes)if(node.isConnected&&!skipped(node))roots.add(node);if(mutation.type==='characterData'&&mutation.target.isConnected&&!skipped(mutation.target))roots.add(mutation.target);}
+    for(const node of roots){let parent=node.parentNode,covered=false;while(parent){if(roots.has(parent)){covered=true;break;}parent=parent.parentNode;}if(!covered)walk(node);}
     updateSwitches();
   });
   observer.observe(document.documentElement, {subtree:true, childList:true, characterData:true});

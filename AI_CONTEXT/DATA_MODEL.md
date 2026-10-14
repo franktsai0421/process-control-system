@@ -1,12 +1,67 @@
-# PROCESS OS - Current Data Model
+## 2026-10-12 傳輸與授權補充
 
-Last verified: 2026-09-18. This document describes only the current repository implementation.
+BOM 匯入 command.input 新增 `baseDigest` 與 `importMode:incremental-v1`；只影響傳輸及比對規則，持久 BOM occurrence、版本／快照／引用 ID 與 SQL schema 不變。一般缺列保留，新兄弟接至穩定父位置。角色範本更新依有效授權差異遞增既有 authEpoch；名稱／說明與不受範本影響的主要管理員不遞增。無 migration、遠端 binding 或真實帳號／業務資料移轉。見[BOM 規格](../docs/specs/current/BOM_REBUILD.md)、[權限規格](../docs/specs/current/PERMISSIONS_ADMIN.md)。
+
+## 2026-10-10 帳號權限候選模型
+
+沿用platformUsers，新增passwordHash（scrypt）、authEpoch、accessOverrides、deletedAt等可選欄位；processRoleTemplateOverrides/custom roles保留legacy欄位並支持151格access。processAccessControl保存schemaVersion/primaryAdminId/mappingVersion與無秘密audit。無SQL/schema migration；現有D1/R2records/CAS不變。真實14帳號尚未移轉，登入不自动hash。帳號/角色/模板不得经generic shared-state改寫；只由user-access专用API或明確離線工具处理。敏感password/hash/其他人設定由publicState/media/409投影移除。[欄位](models/CORE.md)、[規格](../docs/specs/current/PERMISSIONS_ADMIN.md)。
+
+## 2026-10-10 BOM occurrence 與共享草稿
+
+新增shared_state值`bomMasterControl`（scope `bom`），沿既有V3版本／working／saved／cases及R2 immutable record。`{bom,referenceIssues}`以根主件分組；每列十欄字串、原始level、id、parentId、path與来源。ID由根＋每層項次／料號建立，L2以上數值固定空白。核准才同一CAS投影`bomOverrides`的`PROCESS_OS_BOM_OCCURRENCES_V3` replaceAll wrapper；其他scope及舊製程選取不改。新BOM選取以產品＋occurrence ID套用原互鎖；舊code-only引用仍保留待確認。canonical保持ID且拒絕繞過工作流修改有效BOM。無SQL表／migration，日常BOM已經明確授權核准V6並投影生效；原最初待審為歷史證據。[規格](../docs/specs/current/BOM_REBUILD.md)、[收據](../docs/local-integration/20261010-bom-rebuild.md)。下方2026-10-08「產品＋零件碼」描述保留舊格式適用範圍，新格式以上述識別補充。
+
+## 2026-10-09 會話撤銷（僅明確啟用的目標）
+
+新增獨立 `process_revoked_sessions(token_digest,expires_at,revoked_at)`，token_digest為SHA-256及主鍵；不含原cookie、password或業務ID。不新增shared_state鍵，不修改流程／BOM／IPQC／案件歷史。公開API不建schema，`PROCESS_SESSION_REVOCATION_ENABLED=1`在明確migration後啟用。3020用自身private SQLite ledger；經2026-10-09使用者明確授權，0002 migration已在日常3000新增表並保留原業務；切換與驗證見[整合報告](../docs/local-integration/20261009-3020-to-3000.md)。保全與fail-closed界線見[登入撤銷報告](../docs/ipqc-reference/20261009-session-revocation.md)。共用／產品專用項目仍沿原name/text/standard JSON欄位，無業務模型遷移。
+
+## 2026-10-09 網頁回報 V1（3020及日常Local明確啟用）
+
+獨立 web_feedback_store(id,revision,payload) 以 CAS 保存 issues／attachments／batches／handoffs；不加 shared_state 鍵，不變更製程／BOM／IPQC模型。Drizzle 0002納入schema；既有Local使用明確upgrade，空環境沿正常初始化，公開API不建表。本機日常已啟用，遠端未部署。STATE_ARCHIVE 使用 web-feedback/v1/ 原圖與 immutable ZIP，附件記錄 owner／原存取 envelope／SHA-256。瀏覽器 IndexedDB process-web-feedback-v1 保存按 origin＋核驗帳號隔離的 Blob 草稿及固定待確認批次。資料流與容量／授權限制見 [WEB_FEEDBACK](modules/WEB_FEEDBACK.md)，實測保全見 [交付](../docs/web-feedback/20261009-implementation.md)。
+
+## 2026-10-08 畫布本機 journal
+
+伺服器資料模型、D1/R2 schema與BOM/IPQC所有權不變。新增瀏覽器localStorage恢復紀錄，以origin／頁面／actor／generation／tab隔離，entries以workspace、stage、operation ID、x/y/nextIds欄位辨識，保留base與value；pending存固定patch/guard及operationId供收據查核。這是本機預覽，不是共享working或Save內容。細節與界線見[製程編輯台規格](../docs/specs/current/PROCESS_EDITOR.md)及[本機画布報告](../docs/ipqc-reference/20261008-canvas-local.md)。
+
+## 製程編輯台相容欄位（2026-10-08）
+
+operation JSON 新增可選 `editorType`（entry/manual/inspection/machine/exit/custom）及 `ipqcQueryEnabled`（C 查詢開關）。沿用 productCodes、bomSelections[productCode]、machineIds、instructions/instructionSteps、productInstructions/productInstructionSteps、mediaItems/productMediaItems、nextIds、x/y；不另建 BOM 表或改用量。沒有 SQL/schema migration、持久鍵或日常資料移轉。舊缺 editorType 依 template.presetKey 判斷；模板已退休時沿用穩定 mode=machine，其他未知類型通用顯示，不依名稱猜能力；原 C ipqcAssignments 保留。唯一占用鍵為產品＋正規化零件碼，涵蓋完整 working workspace 隱藏工段；來源改動或舊非法分配列待確認。新非法占用由最終 CAS 寫入驗證拒絕。視角／產品高亮不持久化。見 [規格](../docs/specs/current/PROCESS_EDITOR.md) 與 [保全結果](../docs/ipqc-reference/20261008-process-editor.md)。
+
+## 群組路線相容欄位（2026-10-08）
+
+categoryGroups[].defaultStages 為群組有序預設（null 表示已移除）；products[].routeMode 為 group 或 exception，products[].stages 仍保存實際有效路線。移除群組設定轉為保留路徑的例外；製程 workspace 保留隱藏工段完整內容。無 schema migration。見 [本機提交範圍](../docs/ipqc-reference/20261008-local-commit.md)。
+
+# PROCESS OS — 實際資料模型入口
+
+狀態：Current checkout source；2026-10-05核對db/schema.ts及serializer/adapter。純文件分工，無資料／schema／migration改動。本次未驗證實際DBrevision或scope狀態。
+
+| 任務 | 正式欄位／資料流來源 |
+| --- | --- |
+| 使用者、角色、主資料、workspace/node、版本、BOM、dispatch、backup | [CORE](models/CORE.md) |
+| FQC、IQC、IPQC-AB/C、設備與來源稽核欄位 | [QUALITY](models/QUALITY.md) |
+| 模具設備／目錄／IQC引用／移轉／初始來源 | [TOOLING](models/TOOLING.md) |
+| 例行 FQC 工作／計畫／報告／逐樣品結果／異常／照片 | [ROUTINE_FQC](models/ROUTINE_FQC.md) |
+| V3shared draft、records-v1、receipts、照片wire／legacy相容 | [V3](models/V3.md) |
+| Canonicaldomain／manifest、bootstrap、同步base | [CANONICAL](models/CANONICAL.md) |
 
 ## Persistence Overview
 
+2026-10-07 Routine FQC回饋：新增唯讀`routineCatalog`完整分類投影，與正式時間排程來源分開；`half_yearly`對應既有半年曆期。沒有新增持久鍵、欄位、SQL或migration；既有Source快照不回寫。[模型](models/ROUTINE_FQC.md)／[驗收](../docs/routine-fqc/20261007-feedback.md)。
+
+2026-10-07 模具完整流程：新移轉可選 `quantity`／`unit` 保存當時數量，由伺服器固定來源與操作身分；IQC 零件可選 `isEnabled`，模具引用仍以穩定 ID 讀取正式版本，停用／移除顯示保留歷史投影。loopback ADMIN 的模具銜接保全完整 workflow、cases、saves、receipts 與照片，只變更模具 record pointer，CAS 前建立精確原指標備份。無 SQL schema、migration 或遠端 binding 變更，欄位及演算法見 [TOOLING](models/TOOLING.md)，實際 3030→3000 驗收見 [報告](../docs/tooling/20261007-flow-acceptance.md)。
+
+2026-10-06: optional operation-level `ipqcAssignments[]` and derived process references are documented in [CORE / Process Operation](models/CORE.md#process-operation--node). They use the existing process snapshot and CAS lifecycle; no table, migration, source-standard rewrite or live-data conversion occurs.
+
+2026-10-05本機整合維持既有資料模型：legacy大型snapshot直接上傳已計算digest的UTF-8 bytes，讀取以同一份bytes驗hash後解碼，減少重複編碼；原JSON／R2引用格式不變。保留V3 records/chunks路徑與revision保護的原始儲存引用備份，無schema、migration或既有資料轉換。
+
+Request-only `commandWireVersion:1` envelopes intern repeated raster data URLs using `media[]` and bounded `__commandMedia` references. They are expanded before module validation, permission checks and idempotency fingerprinting; they are not persisted storage references. Old commands and recovery records remain readable. The request limit is unchanged; invalid/unused references fail closed. Browser recovery uses the same envelope but preserves the original operation identity and guards on retry.
+
+New receipts store action plus canonical interned-command SHA-256 (`commandDigestV1`), avoiding photo-sized receipt metadata. Replay uses the stored receipt's old/new fingerprint format; legacy raw fingerprints remain valid. Envelopes allow 64 unique raster strings, 256 references, depth48 and 8 MB expanded repeated-media characters; violations reject before mutation. These bounded request/receipt changes do not convert existing Local records.
+
+Quality photo endpoints read only live account/role/maintenance keys for authorization, not historical workflows. User-reference protection first inspects legacy/V3 actor metadata, then scans verified immutable bodies serially when needed. Operational records restore validates every reachable body/index plus byte-exact legacy sources, streaming source SHA in Workers, and commits the original backup pointer via CAS instead of re-encoding complete historical JSON. Effective pending cases across all applicable scopes prohibit whole-state restore. Legacy restore retains its compatible path; reads and restore previews never automatically adopt a workflow.
+
 ### Hosted D1 / SQLite
 
-`db/schema.ts` and the Drizzle migrations define two tables:
+`db/schema.ts` and the Drizzle migrations define four tables. Local upgrade 0002 adds `web_feedback_store(id,revision,payload)` and `process_revoked_sessions(token_digest,expires_at,revoked_at)` as described above; no remote migration was executed. The two business state tables remain:
 
 #### `shared_state`
 
@@ -28,8 +83,6 @@ Last verified: 2026-09-18. This document describes only the current repository i
 | `actor` | text | Platform user ID or `system`. |
 | `created_at` | text | ISO creation timestamp. |
 
-The normal shared-state POST saves its pre-write backup by copying the exact stored D1 `values` field at the expected revision. For large states this preserves the existing immutable R2 snapshot reference without decoding and re-encoding a second full snapshot. The new state still uses the existing SHA-256-checked R2 serializer and D1 revision compare-and-swap. Other explicit or scheduled backup paths retain their established behavior.
-
 The database does **not** currently have normalized tables for products, BOM rows, process nodes, users, roles, SOPs, QC results, dispatch records, or media.
 
 ### Browser and sync layer
@@ -38,179 +91,20 @@ The SPA retains its legacy `localStorage` call sites, but `public/process/shared
 
 The opt-in `X-Process-Media: deferred-v1` read representation replaces large raster/video data URIs with `/api/state-media?id=<sha256>` delivery URLs. R2 `delivery/media/` contains byte-identical immutable copies, and `delivery/v1/` caches sanitized snapshot projections by content digest. The media route retains the shared-state read policy and supports ranges. POST resolves delivery URLs and verifies their hashes before validation/persistence, retaining the original data-URI representation and backup/export compatibility. `X-Process-Receipt: sha256` requests a compact receipt for each exact submitted value after the revision-checked write; the client verifies every digest before reporting success. Older clients still receive the existing full response. No SQL table, field, key or migration is added, and existing R2 objects are never deleted.
 
-All writes include a base revision. On HTTP 409, the same deferred-media representation used at load is returned; the browser checks only the keys it is trying to write. If those keys are unchanged, explicit Save may rebase and retry twice while preserving changes in other keys; keys changed elsewhere remain stale locally and cannot be written without review. Same-key 409 and HTTP 401/403 block writes and preserve unsynced updates in memory, with a best-effort `sessionStorage` copy under `process-unsynced-recovery` when it fits. A network/temporary failure pauses automatic writes; explicit Save retries it. Concurrent Saves share the same pending operation and drain later dirty updates before reporting success. There is no polling or automatic failure retry. Failed initial loading refuses writes until data is reloaded. No schema or new shared-state key is introduced.
+Legacy writes include a base revision; V3 commands instead carry scope generation, operation ID, client sequence and dependency guards, with backend shared-row CAS. HTTP 401/403/409 blocks writes for login/conflict handling and preserves unsynced updates in memory, with a best-effort `sessionStorage` copy under `process-unsynced-recovery` when it fits. A network/temporary failure pauses automatic writes; an explicit Save retries it once. Concurrent Saves share the same pending operation and drain later dirty updates before reporting success. The generic client has no polling or automatic failure retry; the IPQC-C V3 client polls scoped revision tokens and queries durable operation receipts. Failed initial loading refuses writes until data is reloaded.
 
 An old native `processEditor:<category>:<line>` cache is validated against its envelope and stage-array shape and is never deleted merely by loading. When its server key is absent, the valid cached workspace remains readable and is staged for an authenticated editor. A differing server snapshot remains authoritative until explicit legacy recovery and Save. Clearing the cache requires a successful API echo of the current write, identical complete stage content to the old cache, an unchanged native copy, and no later queued update. Modified or invalid caches are retained. Reopening a draft uses its saved workspace when `savedAt` is at least its version's `updatedAt`/`createdAt`; protected version snapshots keep their existing authority. This uses the existing workspace/version JSON and adds no shared-state key, table, entity, SQL schema change or migration.
 
-## Allowed Shared-State Keys
-
-- `platformUsers`
-- `processCustomRoles`
-- `processRoleTemplateOverrides`
-- `approvalVersions`
-- `dispatchBoard`
-- `publishedProcess`
-- `processMasterData`
-- `masterDataControl`
-- `bomOverrides`
-- `versionSampleSeed4`
-- `backupSettings`
-- any key beginning with `processEditor:`
-
-The server rejects other shared keys and rejects values that are not valid JSON strings (or explicit deletion).
-
-## Core Entities
-
-### Platform User
-
-Stored in `platformUsers`.
-
-- `id`: login identifier and stable user key.
-- `name`: display name.
-- `authMode: "demo"`: marks the three fixed test identities (`demo-admin`, `demo-rd`, `demo-staff`); these users contain neither `password` nor `passwordHash`. Names are Demo Admin / Demo RD / Demo Staff.
-- `password`: legacy formal-account verification value; absent from demo users and seed, stripped from public responses. Formal hashing is outside this change.
-- `role`: `admin`, `rd`, `staff`, or a custom role ID. User ID `admin` is forced to role `admin`.
-- `enabled`: whether login and authenticated operations are allowed.
-- `inheritRole`: when true, the role template supplies the user's scope; when false, individual scope fields are used.
-- `lines[]`: allowed production-line codes.
-- `views[]`: allowed page IDs.
-- `permissions[]`: allowed action keys.
-
-User IDs are canonicalized to lowercase for storage and compared case-insensitively. The ADMIN-only `/api/users` route applies optimistic shared-state revision updates, preserves password values when ordinary edits omit them, and returns only sanitized users. Historical or audited users are archived with deletedAt and deletedBy, hidden from the active list and blocked from login; records retain their identity. Unreferenced users can be removed. Current-user deletion and final enabled ADMIN removal/demotion are prohibited.
-
-### Role Template
-
-Built-in defaults live in code; custom roles are stored in `processCustomRoles`, and built-in role changes are stored in `processRoleTemplateOverrides`.
-
-- `id`, `name` for custom roles.
-- `lines[]`, `views[]`, `permissions[]` define shared scope.
-- Users relate to a template by `user.role`. Role changes reset inheritRole=true and replace old individual scopes; custom mode uses only the user's arrays. Role edits affect followers dynamically. ADMIN is fixed. Role/user writes use /api/users with the existing shared-state revision. Demo Sessions are versioned HMAC-signed HttpOnly cookies containing a fixed identity ID, `sessionType: "demo"`, nonce and eight-hour expiry, never passwords. Every protected use validates `DEMO_LOGIN_ENABLED`, demo mode, fixed role and live account status. Local signing secrets are random and persisted outside Git.
-
-### Master Data Control
-
-Stored in `masterDataControl`.
-
-- `active.AB` and `active.C`: currently approved catalog snapshots.
-- `versions[]`: historical/draft/pending master snapshots.
-
-Each master version contains:
-
-- `id`, `scope` (`AB` or `C`), `number`, `status`.
-- `snapshot`: catalog content.
-- `creatorId`, `creatorName`, `createdAt`, `updatedAt`.
-- optional `parentVersionId`, reviewer fields, warnings, and history entries.
-
-Only approval copies a version snapshot into `active[scope]`. Typical statuses are `draft`, `pending`, `approved`, and `superseded`.
-
-### Catalog Snapshot
-
-- `name`.
-- `products[]`.
-- `lines[]`.
-- optional `categoryGroups[]`, allowing an empty category to exist independently of products.
-
-Product fields used by current code include:
-
-- `code`: unique SKU/product identifier across scopes.
-- `name`, `category`, `specification`, `unit`.
-- `line`: A/B/C line code.
-- `stages[]`: ordered route stage codes.
-
-Line fields:
-
-- `code`, `name`.
-- `stages[]`.
-
-Stage fields include `code`, `name`, and optional operator/machine metadata used by the UI. Product `stages[]` entries must refer to stages belonging to the selected line.
-
-### Process Template Master
-
-Stored in `processMasterData` as a map:
-
-```text
-stageCode -> ProcessTemplate[]
-```
-
-A template contains `id`, optional `presetKey`/`presetVersion`, optional shared `catalogKey`, `name`, compatibility fields `mode`, `people`, and `machineIds[]`, plus `media`, `mediaName`, `mediaType`, and `mediaItems[]`. Every valid stage retains the same ordered five required presets: Entry, Manual, Manual Inspection, Machine Setting (internal compatibility key `machine-assembly`), and Exit; user-created templates without a preset key may follow them. The master-data UI presents one global catalog instead of a stage selector: standard/custom names, photos, additions, and deletions propagate to every stage through the shared preset or catalog key. Static curated images provide the initial preset media. Additional uploads are stored in the existing template JSON after client-side photo compression. Selecting a template copies its media items into the operation, after which operation media is independent. The preset version keeps required-template migration idempotent, migrates legacy Machine Setting equipment into the unified machine preset, and does not rewrite approved history.
-
-The authoritative process-template version set now lives in the existing `masterDataControl` JSON alongside AB/C versions. `active.PROCESS` is the approved stage-to-template map; version records with `scope: PROCESS` contain the usual `id`, `number`, `status`, `snapshot`, creator/reviewer timestamps, warnings, and history. Draft and pending snapshots never alter the editor. On approval, `active.PROCESS` is updated and projected to the existing `processMasterData` shared-state key for backward-compatible editor reads. The API validates required presets, template identity, duplicate IDs, media-array shape, approval authority, and deletion rules.
-
-The process-master page exchanges its complete selected snapshot using `PROCESS_OS_PROCESS_MASTER_EXCEL` format version `3` (v1/v2 imports remain supported). Sheets are `格式說明`, `流程資料`, `照片資料`, `設備資料`, `設備照片`, and `照片內容`. Template and equipment fields are editable rows with unknown fields retained in `其他資料JSON`. Version 3 removes the obsolete equipment quantity and manually entered process columns, adds machine type and an informational approved-usage column, and maps legacy machine assembly/setting rows into the unified machine preset. Photo metadata references a deduplicated content ID; image bytes are split into ordered chunks of at most 28,000 characters. Import rejects missing/duplicate chunks, unsupported versions, invalid associations and duplicate equipment IDs. A bundled asset URL is reused only after byte comparison with embedded content, otherwise the embedded image is retained. Import replaces only the current draft after confirmation, never the approved catalog.
-
-The unified Machine Setting template may contain `equipment[]`. A record has a stable `id`, physical `number` (blank if unknown), `line`, `stageCode`, compatibility `kind` (`machine-assembly`), `name`, `nameVi`, optional `machineType`, `purpose`, `purposeVi`, `note`, `mediaItems[]`, and optional `source` metadata (sheet, row, photo code, original stage/number and source cells). Quantity and manually maintained process are not stored. The displayed process usage is derived dynamically from approved `approvalVersions` snapshots, so an approved block rename or reassignment is reflected without editing equipment. Source records use deterministic IDs and line/stage/number deduplication so repeat imports replace the source catalog without duplicating physical machines while preserving manually created records. API validation enforces ID uniqueness, stage/line/preset association and array shape; removing equipment uses the existing master-delete permission. `operation.machineIds[]` may contain these stable IDs or legacy machine IDs; `machineDetails[]` stores selected equipment snapshots. The same physical machine may be selected by multiple operations. No new D1 table or shared-state key is added.
-
-### Process Editor Workspace
-
-Stored under `processEditor:<category>:<line>`.
-
-- `category`, `line`, `savedAt`.
-- `stages`: map of `stageCode -> ProcessOperation[]`.
-
-The corresponding in-memory workspace key is `<category>:<line>`. Only stages required by approved routes in that category/line are added.
-
-### Process Operation / Node
-
-Important current fields:
-
-- Identity and placement: `id`, `stageCode`, `number`, `templateId`, `name`, `x`, `y`.
-- Graph relation: `nextIds[]` references other operation IDs in the same stage graph.
-- Applicability: `productCodes[]` references catalog product codes. Their union is the participating-product set for the current `category:line` workspace.
-- Selecting or removing a product in one node applies that workspace choice to every existing node whose stage belongs to the product's approved route. New nodes inherit the same union filtered by target stage. Products not selected on any node are excluded from submission-level route and BOM checks. This uses existing fields only; temporary validation placeholders are UI state and are never persisted. Saved sample versions are not normalized/relinked on startup.
-- BOM: `bomProductCode`, `bomItems[]`, and/or `bomSelections` keyed by product. Every operation editor displays the complete root BOM for each selected product. Authoring enforces one owning operation per normalized product/item combination: an item assigned elsewhere remains visible with its owning operation number/name, but its checkbox is disabled until the original operation clears it. The owning operation remains editable so the assignment can be removed before selecting it in another block. Validation still uses the union of that product's assignments across operations whose stages belong to its formal route; one occurrence satisfies completeness, while assignments outside the formal route do not. Inside one operation, an available selected item code is mirrored across enabled `bomSelections` rows of selected products that contain the same normalized code; products without that code, different item codes, and rows owned elsewhere are unchanged. When the category/line participating-product set is propagated along formal route stages, each affected operation performs the same intersection-based inheritance so a newly added product receives only codes already assigned in that operation and present in its own root BOM. Existing legacy duplicate assignments are not deleted automatically and remain removable from their owning operations. Storage still uses the existing arrays; no new field or schema is introduced.
-- Labor/equipment: `mode`, `people`, `machineId`, `machineIds[]`.
-- Work instruction/QC: `instructionSteps[]`, `productInstructionSteps`, `instructions`, product-specific instruction text, and `ipqc`.
-- Media: operation-level media URL/data, name, MIME type, and `mediaItems[]`; optional `productMediaItems` maps each assigned product code to its own media-item array. New raster-photo uploads are normalized client-side to WebP with a maximum 1600-pixel edge before being stored in those existing arrays; video, GIF, SVG, and existing saved media retain their original representation. This remains inside the existing operation JSON and adds no D1 table or shared-state key. Product-specific media is read only for the selected/dispatched product.
-
-An instruction step has `text` and `standard`. This is the current SOP/QC representation; there is no separate SOP or QC table.
-
-### Process Version
-
-Stored in `approvalVersions`.
-
-- `id`, `number`, `category`, `line`, `status`.
-- `stages`: complete stage-to-operation snapshot.
-- creator/timestamps and optional `parentVersionId`.
-- review fields such as `reviewNote`, `reviewerName`, `reviewedAt`, `changeRequested`.
-- `history[]` entries with action/label, actor, timestamp, and optional note.
-
-Statuses used by current workflow: `draft`, `pending`, `approved`, `superseded`, and `rejected`. At most one version per category/line is treated as current approved production data; approving a replacement supersedes the previous approved version.
-
-### Product and BOM Source Data
-
-- Base product/BOM data is generated into `public/process/data/imported-data.js` as `window.IMPORTED_DATA`.
-- Base line, stage, and product-route data is in `public/process/data/line-process-data.js` as `window.LINE_PROCESS_DATA`.
-- C-line master input is in `public/process/data/line-c-master.js`.
-- Approved `masterDataControl.active` is applied over these sources at runtime and becomes the authoritative operational catalog.
-- `bomOverrides` stores imported/replaced root BOM structures. Legacy values remain a plain SKU map and overlay the generated source. A complete-page BOM Excel import stores `{ __format, replaceAll: true, data }`; runtime loading clears the generated BOM before applying `data`, so omitted SKUs remain omitted after reload.
-
-BOM rows retain source identifiers, names, levels, quantities, units, specifications, waste, and source type as available. Tree relationships are determined by preorder level and contiguous descendants, not by a normalized parent foreign key.
-
-System-exported AB/C master workbooks use `PROCESS_OS_MASTER_PAGE_EXCEL` v2 and include format metadata, products, category groups (including empty groups), lines/stages, unknown-field JSON, and a read-only version-history sheet. Line/stage-only workbooks use `PROCESS_OS_LINE_STAGE_EXCEL` v2. BOM workbooks use `PROCESS_OS_BOM_EXCEL` v2. The format marker distinguishes full-scope replacement from backward-compatible legacy partial updates.
-
-### Dispatch Board
-
-Stored in `dispatchBoard`:
-
-```text
-{ A: productCode[], B: productCode[], C: productCode[] }
-```
-
-Each line is limited by UI/business logic to three unique product codes. A dispatched product must belong to the line and have a current approved process version consistent with the latest approved route and BOM.
-
-### Backup Settings and Backups
-
-`backupSettings` stores cloud schedule state: `enabled`, weekly frequency, Saturday day number, time, and `Asia/Ho_Chi_Minh` timezone. The local ADMIN backup page can switch its active endpoint between host ZIP backup and this cloud snapshot API; that mode choice is browser session UI state and is not persisted in D1. When cloud scheduling is enabled, an allowed shared-state GET performs an idempotent missed-run check, so the due snapshot can be created when the site is opened even if the backup page is not open.
-
-Cloud snapshots use `state_backups`. Host ZIP backup settings are stored separately in `local-backup.settings.json`; schedule state, audit logs, locks, and the encryption key live under the configured backup directory's `.system` folder. The Windows default is `.local-backups`, overridable with `PROCESS_BACKUP_PATH`. A path-picker capability is reported by the local backend only when the host can safely open one; manual server paths remain available and are validated and created by the backend.
 
 ## Source of Truth and Data Flow
 
 1. `data/canonical/` is the shared reviewed collaboration baseline. New Local bootstraps from it; bundled product/BOM files remain legacy adapters, not the latest baseline.
 2. `masterDataControl.active` is the approved source of truth for operational products, categories, lines, stages, and routes.
-3. Master approval reconciliation updates runtime product/routing data, process templates, editor stage sets, BOM slots, and removes invalid dispatch/editor references when required.
-4. `approvalVersions` is the source for approved process content. Draft workspaces do not affect line playback until approved.
+3. Master approval reconciliation updates permitted runtime projections. Stage deletion protects pre-mutation product routes and formal/pending/draft/workspace references; it cannot clear those references to bypass protection. Necessary template activation follows the pinned PROCESS source and atomic linked-case checks described above.
+4. `processAuthoringControl.activeVersionId` is the process-content source after explicit whole-platform adoption; otherwise `approvalVersions` retains the legacy source. Working or saved drafts never affect line playback until approved.
 5. `dispatchBoard` selects which approved products appear on each line.
 6. Shared changes are written as a new singleton-state revision. Cloud and host backups snapshot that state before protected mutations/restores.
+
 
 ## File and Media Storage
 
@@ -220,7 +114,10 @@ Cloud snapshots use `state_backups`. Host ZIP backup settings are stored separat
 - Every shared-state, user, backup, scheduled-backup and release write uses the same serializer; R2 is written before the D1 compare-and-swap. A failed D1 write can leave an unreferenced immutable R2 object, never a missing referenced object. Reads verify the hash and fail closed if unavailable. Current objects are retained, including older backup references.
 - Local full ZIP backups include consistent SQLite snapshots of the R2 metadata plus its blob files. Restore copies blobs and replaces metadata rows transactionally, avoiding overwriting a live SQLite/WAL file. Portable maintenance exports expand all business JSON and embedded media and must be paired with the static asset package.
 
+
 ## Integrity and Security Constraints
+
+2026-10-07 例行 FQC 操作：既有 Document 增加 optional cancelled（操作者／時間／原狀態）與 lifecycle[]，取消不刪草稿／照片／案件歷史。planFamily、reportAvailability、dependencies 與驗證 issues 為 GET 唯讀投影；CAS、actor 收據及 saved/pending 固定快照不變。無 SQL schema、migration、D1/R2 binding 或日常資料回填。參見 [ROUTINE_FQC 模型](models/ROUTINE_FQC.md)。
 
 - Shared keys are allowlisted and must contain valid JSON.
 - Server permissions gate protected key families and approval/deletion operations.
@@ -229,14 +126,21 @@ Cloud snapshots use `state_backups`. Host ZIP backup settings are stored separat
 - Public API responses remove user passwords.
 - Current password values are not modeled as hashes; improving credential storage would be a future data-model and migration change, not an existing capability.
 
-## Local schema and seed initialization
 
-Only existing Drizzle migrations create `shared_state` and `state_backups` in an empty Local D1. Startup checks schema, primary keys and nullability; ordinary reads do not create tables or silently add administrators. The initializer never re-seeds an existing singleton or replaces business data. Existing incomplete demo setup or ID conflicts stop startup for separate review. Non-authentication legacy seed values remain unchanged, but new Local bootstraps from Canonical rather than that legacy seed. Missing current state in a nonempty schema is refused. Local-only config and state are ignored under `.wrangler`; no Production binding is used. 測試階段快捷入口預設開放；正式營運前必須由Frank明確確認關閉。
+## Key ownership
 
-## Canonical collaboration persistence
+Generic /api/shared-state allowlist由lib/process-state.ts的allowedKey決定；platformUsers、processCustomRoles、processRoleTemplateOverrides寫入已由route拒絕，其他項含approvalVersions、dispatchBoard、publishedProcess、processMasterData、masterDataControl、bomOverrides、versionSampleSeed4、backupSettings、canonicalQuality、qualityMasterControl及processEditor:*。專用品質／authoringworkflow routes可經各自權限寫入其control／recovery keys，不因此把這些keys放進generic allowlist。細節見QUALITY及V3模型。
 
-Schema/bootstrap versions are 1. Domain files have fixed-ID records, optional explicit deletedAt tombstones, stable ordering, and file SHA-256 indexes. Manifest dataVersion is content-derived; generatedAt is unchanged without domain changes. No accounts, identities, passwords, sessions or audit history enter Canonical. Local quality collaboration uses canonicalQuality with separate fqc/iqc/ipqc records and fixed product/part/stage references; existing process-node IPQC fields are preserved separately. No quality screen or new SQL schema is introduced.
+DB binding保持DB，R2為STATE_ARCHIVE。舊檢具原型EQUIPMENT_DB、equipment_*表及/api/equipment/draft只是淘汰提案，不是實際schema。
 
-Ignored `.wrangler/local-only/canonical-base.json` holds last-synced domain values/version and last-export hash. Three-way sync rejects unexported or conflicting Local edits. Physical backups preserve complete D1/WAL/SHM/R2 and Local session/base settings; CAS updates revision, retains old R2 snapshots, verifies projection and rolls back failure. Unchanged domains retain Local serialized contents; existing accounts and private version history stay Local. Assets retain source-content IDs/hashes and add web metadata (relative path, SHA-256/content version, MIME, bytes, width and height). assets/web-manifest.json is hashed in the main manifest and includes image tombstones/package version. Verified WebP files enter Git; original content remains outside Git. Local R2 keeps immutable canonical-images/<source-sha>/<web-sha>.webp objects. The Local-only image route streams these objects; bootstrap/sync resolve Canonical references to that route while preserving private uploads and drafts. Unreferenced image objects are retained for recovery, not physically deleted. No SQL schema or bootstrap-version change.
+2026-10-06 IPQC policy: optional `DraftIssue.code` and `contentIssues.policy=ipqc-completeness-v1` classify fixed non-blocking submission reminders in existing workflow/version records. See [V3 model](models/V3.md). No new entity, SQL schema, migration, binding, storage architecture, bulk history rewrite or daily-data conversion.
 
-Four layers: Canonical in reviewed main, individual Local D1/R2, an explicitly synchronized separate Staging mirror, and separately approved Production. Git merge changes Canonical only. Complete release materialization reuses the existing shared-state keys/serializer, preserves accounts/private drafts/history and non-managed keys, and appends only missing passwordless demo identities. No SQL table, field or migration is added. Target R2 retains immutable images and snapshots; `<environment>-canonical/latest.json` and revision/content-specific checkpoints store Canonical domains, dataVersion/generatedAt and managed hashes for conflict/tombstone checks. Reviewed image references use generated static copies of the same R2 WebP bytes; the Local image API stays loopback-only. Full D1 SQL exports are ignored private artifacts, and pre-write logical snapshots use state_backups. See DEPLOYMENT.md and LOCAL_DATA_COLLABORATION.md.
+2026-10-06 review5 的逐群組 AB 操作已由 2026-10-07 [整份文稿規格](../docs/specs/current/WHOLE_MODULE_DRAFT.md)取代。`ipqcABMasterControl.moduleDraft` 保存全庫 `scopes`／`bases` 的 working、saved、固定 cases；一次 shared-state CAS 更新整份案件及各群組的兼容版本投影，穩定項目 ID 與歷史案件保留。未增加跨模組資料鍵、SQL schema、migration、D1／R2 binding。`reviewer-completeness-v2` 仍分類非阻擋待補。
+
+2026-10-07 模具介面：optional `inspectionFrequency` 與既有 `frequencyMonths` 共同表示週／月／季／半年／每年，舊快照保留原值；更正沿用既有 `correctionOf` 穩定 ID 關係。確認總覽只讀原模組 adapter，不存新關聯或事件。詳見 [TOOLING](models/TOOLING.md)；D1／R2、SQL schema 與 migrations 不變。
+
+2026-10-08 路線隱藏：核准產品最大路線僅控制 canvas 可見投影；legacy 與 V3 完整 workspace 保留隱藏工段及其引用。未新增 entity、schema、migration 或 storage key。3020 兩產品只改 category；ID、stages 與其他 control 不變。見[保全報告](../docs/ipqc-reference/20261008-group-route-canvas.md)。
+
+2026-10-08例行FQC：既有ResultRow[]允許跨列同樣品多次測試，既有followup notes同次CAS記錄改善及複測；無新增欄位、SQL或migration。正式快照不改寫，單樣品失敗依每份正式報告各次結果聚合，細則見[ROUTINE_FQC模型](models/ROUTINE_FQC.md)。
+
+2026-10-12例行FQC：維持ResultRow.samples既有陣列及Document.number格式，不新增欄位／SQL／migration。新選樣單一且同項跨列不重複，未變更舊樣品保存相容；新複測RTS／更正COR號，舊號不回寫。照片移除僅文稿引用，正式歷史與R2實體保留。[模型](models/ROUTINE_FQC.md)。

@@ -13,8 +13,8 @@ export const digest = async (value: string) =>
 
 // Delivery copies only: retain the original D1 values and historical R2 snapshots.
 // Immutable, byte-identical images are fetched when displayed, not on every login.
-export async function mediaState(state: State) {
-  const source = publicState(state);
+export async function mediaState(state: State, actorId?: string) {
+  const source = publicState(state, actorId);
   const bucket = env.STATE_ARCHIVE;
   const cacheKey = `delivery/v1/${await digest(JSON.stringify(source))}.json`;
   const cached = await bucket.get(cacheKey);
@@ -87,21 +87,32 @@ export async function restoreMediaUpdates(
   previousValues: Record<string, string> = {},
 ) {
   const media = new Map<string, string>();
-  async function visit(value: unknown, previous: unknown): Promise<unknown> {
+  // Index only affected, already integrity-checked server values. Match by content
+  // digest, not array position: reorder/move must never attach another item's photo.
+  const wanted = new Set<string>();
+  for (const raw of Object.values(updates))
+    for (const match of raw?.matchAll(/\/api\/state-media\?id=([a-f0-9]{64})/g) || []) wanted.add(match[1]);
+  const seen = new Set<string>();
+  async function reuse(value: unknown): Promise<void> {
+    if (typeof value === 'string' && mediaPattern.test(value) && !seen.has(value)) {
+      seen.add(value);
+      const id = await digest(value);
+      if (wanted.has(id)) media.set(`/api/state-media?id=${id}`, value);
+    } else if (Array.isArray(value)) {
+      for (const item of value) await reuse(item);
+    } else if (value && typeof value === 'object') {
+      for (const item of Object.values(value)) await reuse(item);
+    }
+  }
+  for (const key of Object.keys(updates))
+    if (wanted.size && previousValues[key]?.includes('data:')) await reuse(JSON.parse(previousValues[key]));
+  async function visit(value: unknown): Promise<unknown> {
     if (
       typeof value === 'string' &&
       /^\/api\/state-media\?id=[a-f0-9]{64}$/.test(value)
     ) {
       if (media.has(value)) return media.get(value);
       const id = value.slice(value.indexOf('=') + 1);
-      // Most saves submit the same images that were delivered on GET. Reuse
-      // the already decoded snapshot rather than fetching, decoding and
-      // base64-encoding every R2 image again on each small text edit.
-      if (typeof previous === 'string' && mediaPattern.test(previous) &&
-          (await digest(previous)) === id) {
-        media.set(value, previous);
-        return previous;
-      }
       const object = await env.STATE_ARCHIVE.get(`delivery/media/${id}`);
       if (!object) throw Error('Media unavailable; content was not saved');
       const bytes = new Uint8Array(await object.arrayBuffer());
@@ -118,15 +129,13 @@ export async function restoreMediaUpdates(
     }
     if (Array.isArray(value)) {
       const result = [];
-      for (let index = 0; index < value.length; index++)
-        result.push(await visit(value[index], Array.isArray(previous) ? previous[index] : undefined));
+      for (const item of value) result.push(await visit(item));
       return result;
     }
     if (value && typeof value === 'object') {
-      const result: Record<string, unknown> = {};
+      const result: Record<string, unknown> = Object.create(null);
       for (const [key, item] of Object.entries(value))
-        result[key] = await visit(item, previous && typeof previous === 'object' && !Array.isArray(previous)
-          ? (previous as Record<string, unknown>)[key] : undefined);
+        result[key] = await visit(item);
       return result;
     }
     return value;
@@ -134,7 +143,7 @@ export async function restoreMediaUpdates(
   const result: Record<string, string | null> = {};
   for (const [key, raw] of Object.entries(updates))
     result[key] = raw?.includes('/api/state-media?id=')
-      ? JSON.stringify(await visit(JSON.parse(raw), previousValues[key] ? JSON.parse(previousValues[key]) : undefined))
+      ? JSON.stringify(await visit(JSON.parse(raw)))
       : raw;
   return result;
 }

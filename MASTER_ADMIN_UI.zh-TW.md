@@ -1,3 +1,5 @@
+> 狀態：Current，正式維護來源。其他語言為閱讀版本；修改共同規則時同步翻譯，測試數量是fixture基線。
+
 [Tiếng Việt](MASTER_ADMIN_UI.md) | [繁體中文](MASTER_ADMIN_UI.zh-TW.md) | [English](MASTER_ADMIN_UI.en.md)
 
 # MASTER_ADMIN_UI

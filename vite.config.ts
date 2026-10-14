@@ -5,6 +5,7 @@ import { defineConfig } from 'vite';
 import hostingConfig from './.openai/hosting.json';
 import { localBackupPlugin } from './lib/local-backup-vite.mjs';
 import { assertLocalMode, localPaths, readLocalSession, configureOfflineLocal } from './lib/local-runtime.mjs';
+import { readLocalFeatures, localFeaturesPlugin } from './lib/local-features.mjs';
 
 const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
   '00000000-0000-4000-8000-000000000000';
@@ -39,6 +40,7 @@ const localBindingConfig = {
 export default defineConfig(async ({ command }) => {
   const local = command === 'serve';
   if (local) { assertLocalMode([], process.env); configureOfflineLocal(process.cwd()); }
+  const features = local ? readLocalFeatures(process.cwd()) : {webFeedback:false, sessionRevocation:false};
   // Keep Wrangler and Miniflare state project-local. These are non-secret tool
   // settings; application environment belongs in ignored `.env*` files.
   process.env.WRANGLER_WRITE_LOGS ??= 'false';
@@ -51,8 +53,9 @@ export default defineConfig(async ({ command }) => {
 
   return {
     css: { postcss: { plugins: [tailwindcss()] } },
-    server: { host: '127.0.0.1', strictPort: true, hmr: false, headers: {'Content-Security-Policy': "connect-src 'self'; font-src 'self' data:; img-src 'self' data: blob:; media-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; frame-src 'self'"}, watch: { ignored: ['**/.wrangler/**','**/local-backup.*.json','**/AI_CONTEXT/**'], ...(isCodexSeatbeltSandbox ? {useFsEvents:false,usePolling:true} : {}) } },
+    server: { host: '127.0.0.1', strictPort: true, hmr: false, headers: {'Content-Security-Policy': "connect-src 'self'; font-src 'self' data:; img-src 'self' data: blob:; media-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; frame-src 'self'"}, watch: { ignored: ['**/.wrangler/**','**/local-backup.*.json','**/AI_CONTEXT/**','**/docs/**'], ...(isCodexSeatbeltSandbox ? {useFsEvents:false,usePolling:true} : {}) } },
     plugins: [
+      ...(local ? [localFeaturesPlugin(process.cwd(), features)] : []),
       localBackupPlugin(process.cwd()),
       vinext(),
       sites(),
@@ -70,6 +73,8 @@ export default defineConfig(async ({ command }) => {
               PROCESS_SESSION_SECRET: readLocalSession(process.cwd()),
               PROCESS_LOCAL_IMAGES: 'true',
               DEMO_LOGIN_ENABLED: process.env.DEMO_LOGIN_ENABLED ?? 'true',
+              WEB_FEEDBACK_ENABLED: features.webFeedback ? '1' : '0',
+              PROCESS_SESSION_REVOCATION_ENABLED: features.sessionRevocation ? '1' : '0',
             },
           },
         } : { config: localBindingConfig }),

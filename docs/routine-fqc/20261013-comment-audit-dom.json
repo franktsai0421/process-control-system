@@ -1,0 +1,279 @@
+{
+  "date": "2026-10-13",
+  "scope": "existing approved QA report on 3040, no data edits",
+  "chinese": {
+    "asideLeft": -280,
+    "lang": "zh-Hant",
+    "photos": [
+      {
+        "complete": true,
+        "height": 48,
+        "src": "/api/routine-fqc/photo?id=00f78677974a0f63bc581b0b29717bc94c69b8e2e01e8df4ab2722a222656ba3",
+        "width": 48
+      }
+    ],
+    "readonly": true,
+    "rows": [
+      {
+        "id": "61704d36-0cfa-43ab-bc28-27323d3db253",
+        "open": true,
+        "summaryHeight": 44
+      },
+      {
+        "id": "b729818e-6746-40f1-90fa-2809236c3c02",
+        "open": false,
+        "summaryHeight": 44
+      }
+    ],
+    "scrollWidth": 375,
+    "width": 390
+  },
+  "vietnamese": {
+    "asideLeft": -280,
+    "lang": "vi",
+    "languageButton": "中↔Vi繁體中文",
+    "photo": {
+      "complete": true,
+      "height": 48,
+      "width": 48
+    },
+    "rows": [
+      {
+        "id": "61704d36-0cfa-43ab-bc28-27323d3db253",
+        "open": true,
+        "summaryHeight": 44
+      },
+      {
+        "id": "b729818e-6746-40f1-90fa-2809236c3c02",
+        "open": false,
+        "summaryHeight": 44
+      }
+    ],
+    "scrollWidth": 375,
+    "width": 390
+  },
+  "keyboard": {
+    "enterOpen": {
+      "activeResult": "b729818e-6746-40f1-90fa-2809236c3c02",
+      "focusOutline": "solid",
+      "rows": [
+        {
+          "id": "61704d36-0cfa-43ab-bc28-27323d3db253",
+          "open": true
+        },
+        {
+          "id": "b729818e-6746-40f1-90fa-2809236c3c02",
+          "open": true
+        }
+      ]
+    },
+    "enterOpenAndClose": "PASS",
+    "focusOutline": "solid",
+    "space": "NOT_CONFIRMED",
+    "note": "Playwright Space/literal-space and native wrapper did not visibly toggle; no isolated evidence separates tool behavior from product. No blanket keyboard PASS."
+  },
+  "restored": {
+    "lang": "zh-Hant",
+    "number": "FQC-RTS-20261013-0045",
+    "readonly": true,
+    "width": 873
+  },
+  "images": [
+    "20261013-audit-phone-zh.jpg",
+    "20261013-audit-phone-vi.jpg"
+  ],
+  "physicalPhone": "NOT_AVAILABLE",
+  "editablePhotoTouchAndKeyboard": "NOT_RUN",
+  "comments": [
+    {
+      "comment": 1,
+      "requirement": "選樣後移除「以此樣品再測一次」",
+      "evidence": [
+        "10/12 sample-ui/navigation 已 PASS",
+        "10/13 uiChecks[7] oldButtonCount=0",
+        "照片上傳畫面"
+      ],
+      "scope": "render／實際頁面"
+    },
+    {
+      "comment": 2,
+      "requirement": "初測／複測名稱與正式編號分開",
+      "evidence": [
+        "initialNumber=FQC-RPT-20261013-0044",
+        "retestNumber=FQC-RTS-20261013-0045",
+        "uiChecks[7]"
+      ],
+      "scope": "實際建檔／API／DOM"
+    },
+    {
+      "comment": 3,
+      "requirement": "其他結果列已選樣品，新列不能重選",
+      "evidence": [
+        "uiChecks[3] radio disabled",
+        "repeat.cjs 的 SAMPLE_OUTSIDE_COVERAGE_OR_DUPLICATE 拒絕",
+        "sample-ui render 已 PASS"
+      ],
+      "scope": "實際已用選項停用／kernel",
+      "boundary": "本次兩列初始由支持的 API 預備；沒有另外錄製從＋新增列開始的完整實際選樣流程"
+    },
+    {
+      "comment": 4,
+      "requirement": "錯放照片可以清除",
+      "evidence": [
+        "uiChecks[0..2,4..5]",
+        "savedBeforeRemoval／savedAfterRemoval",
+        "finalPixels.readAfterRemoveAndClosure"
+      ],
+      "scope": "真實上傳／頁面移除 Save Submit／R2"
+    },
+    {
+      "comment": 5,
+      "requirement": "上傳不新增或自行展開第二列",
+      "evidence": [
+        "uiChecks[2] 原 ID／兩列 open=true,false",
+        "照片上傳畫面",
+        "sample-ui 上傳等待期移位測試"
+      ],
+      "scope": "實際頁面／事件測試"
+    },
+    {
+      "comment": 6,
+      "requirement": "原樣品入口不要自動打開結果列",
+      "evidence": [
+        "uiChecks[6..7] 新 RTS 唯一預填列與舊入口數0"
+      ],
+      "scope": "實際建立／DOM",
+      "boundary": "原按鈕已移除，因此不再測試點擊不存在的入口"
+    },
+    {
+      "comment": 7,
+      "requirement": "直接顯示固定原樣品文字，無按鈕或第二列",
+      "evidence": [
+        "uiChecks[7] rowCount=1,sampleInputCount=0,oldButtonCount=0",
+        "原樣品提示 DOM／10/12 中越文截圖"
+      ],
+      "scope": "實際複測 DOM／render"
+    },
+    {
+      "comment": 8,
+      "requirement": "樣品只能選一個",
+      "evidence": [
+        "uiChecks[3] type=radio",
+        "repeat.cjs SINGLE_SAMPLE_REQUIRED",
+        "sample-ui 已 PASS"
+      ],
+      "scope": "實際單選 DOM／kernel"
+    },
+    {
+      "comment": 9,
+      "requirement": "移除「以此樣品再測一次」",
+      "evidence": [
+        "與 comment 1 相同"
+      ],
+      "scope": "render／實際頁面"
+    },
+    {
+      "comment": 10,
+      "requirement": "初測每結果列選一個品項",
+      "evidence": [
+        "uiChecks[3] 第一列checked／第二列已用disabled",
+        "原生 Save 快照的兩個 samples 各一個",
+        "repeat.cjs SINGLE_SAMPLE_REQUIRED"
+      ],
+      "scope": "實際選樣 DOM／保存／kernel"
+    },
+    {
+      "comment": 11,
+      "requirement": "複測編號與初測識別不同",
+      "evidence": [
+        "initialNumber／retestNumber",
+        "uiChecks[7] purple rgb(112,50,140)",
+        "10/12 navigation 已 PASS"
+      ],
+      "scope": "真實建號／DOM／render"
+    },
+    {
+      "comment": 12,
+      "requirement": "初測複測分類顏色和編號方式不同",
+      "evidence": [
+        "10/12 navigation 的分類／RPT RTS COR 檢查",
+        "uiChecks[7] 新RTS紫色與正式號",
+        "原始 DOM 分類列"
+      ],
+      "scope": "分類 render／實際RTS明細",
+      "boundary": "本次沒有額外保存同一畫面同時展示兩個新分類色的截圖"
+    },
+    {
+      "comment": 13,
+      "requirement": "複測顯示前次原樣品，無建立按鈕或額外列",
+      "evidence": [
+        "uiChecks[7] 固定105B100051／一列／無選樣輸入與舊按鈕",
+        "uiChecks[8] 複測保存與原初測快照保留"
+      ],
+      "scope": "實際建立／固定樣品／保存"
+    },
+    {
+      "comment": 14,
+      "requirement": "移除「以此樣品再測一次」",
+      "evidence": [
+        "與 comment 1 相同"
+      ],
+      "scope": "render／實際頁面"
+    }
+  ],
+  "candidateHashes": [
+    {
+      "path": "public/process/routine-fqc.js",
+      "matches": true
+    },
+    {
+      "path": "public/process/routine-fqc.css",
+      "matches": true
+    },
+    {
+      "path": "lib/routine-fqc.ts",
+      "matches": true
+    },
+    {
+      "path": "app/api/routine-fqc/photo/route.ts",
+      "matches": true
+    }
+  ],
+  "previousEvidence": "20261013-page-acceptance-evidence.json",
+  "lint": {
+    "lastRecordedDate": "2026-10-12",
+    "lastRecordedResult": "FAIL",
+    "existingDiagnostics": 13,
+    "repairedInThisAudit": false,
+    "rerun": false,
+    "currentFreshCount": "NOT_RUN",
+    "note": "Unresolved last-run baseline; do not describe as a new clean/full lint result."
+  },
+  "outOfScope": [
+    "3000／3035／其他模組",
+    "C2C 自動開啟、連接或修復",
+    "共用文件與登入／權限修改"
+  ],
+  "lifecycleScopes": {
+    "nativeChromeUI": [
+      "檔案選擇器上傳紅圖／綠圖",
+      "移除照片",
+      "初測 Save／缺照 Submit／恢復照片後 Submit",
+      "改善並建立複測 modal",
+      "複測填寫合格結果、Save／Submit"
+    ],
+    "productionAPI": [
+      "專用 QA 標準／計畫／初測草稿準備",
+      "初測明確自審 approve",
+      "複測明確自審 approve",
+      "ready-close 後明確 close",
+      "保存與 R2 實體像素／原資料保全讀回"
+    ],
+    "notPerformedThroughNativeUI": [
+      "初測 approve",
+      "複測 approve",
+      "close"
+    ],
+    "dataChangesInThisSupplementaryAudit": 0
+  }
+}

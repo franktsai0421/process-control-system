@@ -11,7 +11,7 @@ const source = process.cwd();
 const fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'process-demo-init-fixture-'));
 let proxy;
 try {
-  for (const file of ['package.json', 'db/schema.ts', 'db/seed.json', 'lib/user-access.ts',
+  for (const file of ['package.json', 'db/schema.ts', 'db/seed.json', 'lib/user-access.ts', 'public/process/access-policy.mjs',
     'drizzle/meta/_journal.json', ...fs.readdirSync('drizzle').filter(n => n.endsWith('.sql')).map(n => 'drizzle/' + n)]) {
     const destination = path.join(fixture, file);
     fs.mkdirSync(path.dirname(destination), { recursive: true }); fs.copyFileSync(file, destination);

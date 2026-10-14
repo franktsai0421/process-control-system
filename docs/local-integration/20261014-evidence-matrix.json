@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 1,
+  "at": "2026-10-14T10:18:35.091Z",
+  "remoteBase": "51a3979c7639b4ecc00295b5fac55c51e835039e",
+  "status": "CURRENT_SCOPED_RESULTS_WITH_OPEN_GAPS",
+  "items": [
+    {
+      "item": "Latest source/build/ZIP owner integrity",
+      "status": "REUSE_PASS",
+      "reason": "1358 source hashes match checkout; owner build exit0,510 outputs, ZIP31756b. No source changes yet."
+    },
+    {
+      "item": "Latest independent13/13",
+      "status": "MISSING_ORIGINAL_RECEIPT",
+      "reason": "Do not relabel old13/13 as4a7bb. Locate original before deciding any independent gap."
+    },
+    {
+      "item": "4228 permission VM decisions",
+      "status": "REUSE_PASS",
+      "reason": "4a7bb candidate, five dependency hashes match; 27 modules151 cells14 scenarios. Excludes GUI."
+    },
+    {
+      "item": "ACK-loss/account scoped recovery",
+      "status": "REUSE_PASS",
+      "reason": "Latest data-safety UI/CSS and queue candidate; exact own download, same-tab reload, actor isolation and CAS evidence retained."
+    },
+    {
+      "item": "Full private backup and restore",
+      "status": "REUSE_PASS_SEALED_SOURCE_FRESH",
+      "reason": "2026-10-14 09:19 UTC double-read D1 sqlite/WAL and R2 indexed sqlite/WAL exactly match sealed rev495 metadata, zero Main handles/writes. Full original8.17GB restore evidence remains applicable."
+    },
+    {
+      "item": "Account migration upgrade/idempotence/preservation",
+      "status": "REUSE_PASS_SYNTHETIC_ONLY",
+      "reason": "27→28→28 preserved isolated business/history/media and four unchanged core dependencies; not a formal account or Production migration."
+    },
+    {
+      "item": "Single-B initial-A player",
+      "status": "PASS_SCOPED_VM_GUI_BLOCKED",
+      "reason": "Actual final playerPage renderer; 7 first/reload/selection/device/actor cases PASS. Dispatch-only B is not a new role restriction. GUI acceptance remains BLOCKED."
+    },
+    {
+      "item": "38 affected lint diagnostics",
+      "status": "FAIL_CURRENT_25_AFTER_12_SAFE_CLEANUPS",
+      "reason": "38 snapshot→37 after actual awaited import fix→25 after12 safe local naming/catch/callback/Set cleanups. Cross-file globals, legacy extension, Storage receiver, beforeunload compatibility and remaining unused/dead helpers are retained; no global relaxation or runtime defect proven by remaining25."
+    },
+    {
+      "item": "V3 Save unknown saved snapshot",
+      "status": "PASS_SCOPED_HANDLER_TRANSPORT_BROWSER_NOT_RUN",
+      "reason": "5 actual production handler+transport SQLite/R2 ACK-loss/receipt/actor/idempotence/snapshot cases PASS. Fresh VM client is not real browser reopen."
+    },
+    {
+      "item": "All draft-page lifecycle and multiuser",
+      "status": "PASS_11_SCOPE_HANDLER_TAIL_GUI_BLOCKED",
+      "reason": "11 scope actual handler Save/Submit/Withdraw/unlock/retained saved+working/resubmit/approve/history tails PASS. New Tooling/BOM CAS collaboration PASS. Actual source/review withdraw GUI BLOCKED; prior per-page collaboration is reused only where dependency and policy remain applicable."
+    },
+    {
+      "item": "All-role/cell GUI",
+      "status": "NOT_RUN",
+      "reason": "VM4228 does not include GUI; reuse historical finite control cases, supplement only uncovered interaction."
+    },
+    {
+      "item": "Cross-machine,physical phone,IME,CWV",
+      "status": "NOT_RUN",
+      "reason": "No qualifying real-device/machine evidence. Do not call viewport or localhost VM a PASS."
+    },
+    {
+      "item": "Complete desktop pixels",
+      "status": "NOT_AVAILABLE_CAPTURE_CLIPPED",
+      "reason": "Prior desktop DOM geometry and phone viewport pixels remain scopedPASS; full desktop capture missing."
+    },
+    {
+      "item": "Clean clone cold initialization",
+      "status": "PASS",
+      "reason": "Fixed source-relative createRequire; real isolated blank/idempotent startup initialization passes. No Main data/role/schema changes."
+    },
+    {
+      "item": "Portable main-only source build/preflight",
+      "status": "PASS_CURRENT_OVERLAY",
+      "reason": "1452 source files,51 remote-history commits,zero preflight findings; isolated build exit0. Original local histories and2 raw Excel preserved outside publish tree. Final package freeze/independent check still pending."
+    },
+    {
+      "item": "Legacy master-admin CI fixture",
+      "status": "PASS_CURRENT_COMPONENT_BRIDGE_HANDLER",
+      "reason": "Current ordered loader +actual shared bridge/signed SQLite handlers; preserved pure component grouping/Cancel/history/route/bilingual, explicit fixed Save/withdraw reason/self-review confirmation. No GUI claim; original failure retained."
+    },
+    {
+      "item": "Canonical/image/data-merge loader fixtures",
+      "status": "PASS",
+      "reason": "Actual policy dependency copied, three targeted isolated tests pass. Canonical physical mismatch proven only transient D1 SHM read marks; all other bytes/SHA +5 SQLite integrity/all-table content checks retained. No expected hash updated."
+    },
+    {
+      "item": "Complete sanitized development package",
+      "status": "FAIL_V3_POLICY_PRESERVATION_NEW_VERSION_IN_PROGRESS",
+      "reason": "All1726 objects/current/100history classified, but substring scrub wrongly drops legitimate user-password permission cells. V3 revoked for delivery; production policy-context fix and independent original role/override comparison required. Middle private database remains isolated. Independent original role/access comparison found136 lost policy cells and47/404 failed trees in V3; do not distribute. V4 rebuilding with production-codebook schema and original semantic comparison."
+    }
+  ],
+  "limitations": [
+    "No whole GUI or physical-device acceptance",
+    "Current25 lint findings remain unresolved",
+    "Complete sanitized development package blocked by V3 policy-cell preservation defect; new version pending",
+    "Frank review/merge and exact-mainSHA Production approval required"
+  ]
+}

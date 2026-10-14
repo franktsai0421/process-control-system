@@ -1,8 +1,6 @@
 const fs = require('node:fs');
 const path = require('node:path');
-const vm = require('node:vm');
 const assert = require('node:assert/strict');
-const ts = require('typescript');
 const crypto = require('node:crypto');
 const { DatabaseSync } = require('node:sqlite');
 
@@ -12,14 +10,7 @@ const env = { DB: { prepare(sql) { let args = []; return { bind(...value) { args
 const adminPassword = crypto.randomUUID(), staffPassword = crypto.randomUUID(), resetPassword = crypto.randomUUID();
 const seed = { revision: 1, values: { platformUsers: JSON.stringify([{ id: 'admin', name: 'Existing Admin', role: 'admin', password: adminPassword, enabled: true, lines: ['A','B','C'], views: ['dashboard','data'], permissions: [] }]), processCustomRoles: '[]', processRoleTemplateOverrides: '{}', approvalVersions: '[]' } };
 db.prepare('INSERT INTO shared_state(id,revision,"values",updated_at) VALUES(1,?,?,?)').run(seed.revision,JSON.stringify(seed.values),'fixture');
-const cache = {};
-function load(file) {
-  if (cache[file]) return cache[file];
-  const module = { exports: {} }; cache[file] = module.exports;
-  const source = ts.transpileModule(fs.readFileSync(file, 'utf8'), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true } }).outputText;
-  vm.runInNewContext(source, { module, exports: module.exports, require: (id) => id.endsWith('.mjs') ? require(path.resolve('lib/demo-identities.mjs')) : id === 'cloudflare:workers' ? { env } : id === '@/db/seed.json' ? seed : load(path.resolve(id.includes('user-access')?'lib/user-access.ts':'lib/process-state.ts')), Response, Request, URL, crypto, Date, console, TextEncoder, atob, btoa });
-  return module.exports;
-}
+const load = require('./ipqc-ab-import-harness.cjs')(env);
 const usersApi = load(path.resolve('app/api/users/route.ts'));
 const loginApi = load(path.resolve('app/api/platform-login/route.ts'));
 const headers = { Origin: 'https://example.test', 'Content-Type': 'application/json', 'X-Process-Admin-Id': 'Admin', 'X-Process-Admin-Password': adminPassword };
