@@ -9,7 +9,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || runtime.playwright
   const canonical = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data/canonical/quality/fqc.json'), 'utf8'));
   const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'db/seed.json'), 'utf8'));
   let revision = seed.revision || 20;
-  const values = { ...(seed.values || {}), canonicalQuality: JSON.stringify({ fqc: canonical.records, iqc: [], ipqc: [] }) };
+  const values = { ...seed.values, canonicalQuality: JSON.stringify({ fqc: canonical.records, iqc: [], ipqc: [] }) };
   const user = { id: 'admin', role: 'admin', name: 'Fixture Admin' };
   const context = await browser.newContext({ viewport: { width: 1366, height: 900 }, acceptDownloads: true });
 
@@ -112,9 +112,9 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || runtime.playwright
   await page.locator('.fqc-modal-overlay').waitFor({ state: 'detached' });
 
   // Verify persistence in shared state
-  let control = JSON.parse(values.qualityMasterControl);
-  let draft = control.libraries.fqc.versions.find(version => version.status === 'draft');
-  let saved = draft.snapshot.items.find(item => item.checkNo === checkNo);
+  const control = JSON.parse(values.qualityMasterControl);
+  const draft = control.libraries.fqc.versions.find(version => version.status === 'draft');
+  const saved = draft.snapshot.items.find(item => item.checkNo === checkNo);
   assert.equal(saved.isYearly, true);
   assert.equal(saved.isCustomPeriod, true);
   assert.equal(saved.customPeriodText, '每半年一次');

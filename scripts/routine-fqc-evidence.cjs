@@ -61,7 +61,7 @@ for (const n of [
   if (fs.existsSync(path.join(task, n))) names.push(n);
 for (const n of names) fs.copyFileSync(path.join(task, n), path.join(out, n));
 const evidence = [];
-for (const n of names.filter((n) => /evidence\.json$/.test(n))) {
+for (const n of names.filter((n) => n.endsWith('evidence.json'))) {
   const j = JSON.parse(fs.readFileSync(path.join(out, n)));
   for (const e of Array.isArray(j) ? j : [j])
     evidence.push({

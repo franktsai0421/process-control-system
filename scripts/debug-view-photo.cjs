@@ -24,7 +24,7 @@ const { chromium } = require('playwright');
               res.push({ selector: rule.selectorText, cssText: rule.cssText });
             }
           }
-        } catch (e) {}
+        } catch {}
       }
       return res;
     };
@@ -35,4 +35,4 @@ const { chromium } = require('playwright');
   });
   console.log(JSON.stringify(rules, null, 2));
   await browser.close();
-})();
+})().catch(error => { console.error(error); process.exitCode = 1; });

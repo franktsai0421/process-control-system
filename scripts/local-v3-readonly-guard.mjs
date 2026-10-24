@@ -6,7 +6,8 @@ import http from 'node:http';
 const directory=path.resolve('.wrangler/local-only/v3-adoption-20261003');
 const flag=path.join(directory,'read-only.lock');
 if(!fs.existsSync(flag))throw Error('Local adoption read-only lock is required');
-const original=http.Server.prototype.emit;
+// Snapshot the inherited callable; delegation keeps its dynamic receiver and call lookup.
+const original=Reflect.get(http.Server.prototype,'emit');
 http.Server.prototype.emit=function(event,...args){
  if(event==='request'&&this.address()?.port===3000&&fs.existsSync(flag)){
   const [request,response]=args,url=new URL(request.url,'http://127.0.0.1:3000');

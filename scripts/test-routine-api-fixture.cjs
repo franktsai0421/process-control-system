@@ -10,8 +10,9 @@ const { webcrypto, randomUUID } = require('node:crypto');
 const db = new DatabaseSync(':memory:');
 for (const name of fs.readdirSync('drizzle').filter(name => name.endsWith('.sql')).sort()) db.exec(fs.readFileSync(path.join('drizzle', name), 'utf8'));
 const objects = new Map();
+const maintenanceToken = randomUUID();
 const env = {
-  PROCESS_SESSION_SECRET: randomUUID(), DEMO_LOGIN_ENABLED: 'true',
+  PROCESS_SESSION_SECRET: randomUUID(), DEMO_LOGIN_ENABLED: 'true', PROCESS_RELEASE_TOKEN: maintenanceToken,
   DB: { prepare(sql) { let args = []; return { bind(...values) { args = values; return this; },
     async run() { return { meta: { changes: Number(db.prepare(sql).run(...args).changes) } }; },
     async first() { return db.prepare(sql).get(...args) || null; },
@@ -37,6 +38,7 @@ function load(file) {
     { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true } }).outputText;
   vm.runInNewContext(code, { module: fixtureModule, exports: fixtureModule.exports, require(id) {
     if (id === 'cloudflare:workers') return { env };
+    if (require('node:module').isBuiltin(id)) return require(id);
     const target = id.startsWith('@/') ? path.resolve(id.slice(2)) : path.resolve(path.dirname(file), id);
     return target.endsWith('.mjs') ? require(target) : load(target.endsWith('.ts') ? target : target + '.ts');
   }, Request, Response, URL, crypto: webcrypto, Date, TextEncoder, TextDecoder, atob, btoa, console });
@@ -48,11 +50,11 @@ const api = load('app/api/routine-equipment/route.ts');
 const photoApi = load('app/api/routine-equipment/photo/route.ts');
 const base = 'http://127.0.0.1:3900';
 let cookies;
-async function call(role, action, extra = {}, revision) {
+async function call(role, action, extra = {}, revision, maintenance = false) {
   const current = revision ?? (await (await api.GET(new Request(base + '/api/routine-equipment',
     { headers: { Cookie: cookies[role] } }))).json()).revision;
   const request = new Request(base + '/api/routine-equipment', { method: 'POST',
-    headers: { Cookie: cookies[role], Origin: base, 'Content-Type': 'application/json' },
+    headers: { Cookie: cookies[role], Origin: base, 'Content-Type': 'application/json', ...(maintenance ? { 'X-Process-Release-Token': maintenanceToken } : {}) },
     body: JSON.stringify({ action, baseRevision: current, ...extra }) });
   const response = await api.POST(request);
   return { status: response.status, body: await response.json() };
@@ -143,13 +145,16 @@ async function read(role) {
   assert.equal(photoSave.status, 200);
   const restored = await read('rd');
   assert.equal(restored.body.control.versions.find(version => version.status === 'draft').equipment.at(-1).photoId, imageId);
+  const missingDate = domain.submitProblems({ ...draft, equipment: nextSnapshot.equipment }).find(problem => problem.id === draft.equipment.at(-1).id && problem.field === 'calibratedAt');
+  assert.ok(missingDate);assert.notEqual(missingDate.blocking, true, 'Missing content remains advisory under whole-module draft policy');
+  const invalidDateSnapshot = { ...nextSnapshot, equipment: nextSnapshot.equipment.map(item => item.pieceMark === '03' ? { ...item, calibratedAt: '2026-10-10', expiresAt: '2026-10-09' } : item) };
   const beforeInvalidSubmit = restored.body.revision;
   const invalidSubmit = await call('admin', 'submit', { versionId: draft.id,
     versionRevision: photoSave.body.control.versions.find(version => version.status === 'draft').revision,
-    snapshot: nextSnapshot });
+    snapshot: invalidDateSnapshot });
   assert.equal(invalidSubmit.status, 422);
   assert.equal((await read('admin')).body.revision, beforeInvalidSubmit);
-  assert.ok(invalidSubmit.body.problems.some(problem => problem.id === draft.equipment.at(-1).id && problem.field === 'calibratedAt'));
+  assert.ok(invalidSubmit.body.problems.some(problem => problem.id === draft.equipment.at(-1).id && problem.field === 'expiresAt' && problem.blocking === true));
   assert.equal(domain.availability({ ...draft.equipment.at(-1), enabled: true, confirmed: true,
     calibrationMethod: '內部＋外部 / Nội bộ + Bên ngoài' }), false);
   draft = (await read('admin')).body.control.versions.find(version => version.status === 'draft');
@@ -179,12 +184,16 @@ async function read(role) {
   const workbookSnapshot = { ...hierarchySnapshot, equipment: [...draft.equipment,
     { id: workbookId, assetCode: 'FIX001', pieceMark: '', groupId: 'TG-FIX', name: 'Mới', quantity: 1,
       unit: '個', enabled: true, confirmed: false, calibrationMethod: 'none', calibratedAt: '', expiresAt: '' }] };
-  response = await call('admin', 'workbookImport', { versionId: draft.id, versionRevision: draft.revision, snapshot: workbookSnapshot });
+  const beforeMaintenanceImport = db.prepare('SELECT revision,"values" FROM shared_state WHERE id=1').get();
+  const deniedImport = await call('admin', 'workbookImport', { versionId: draft.id, versionRevision: draft.revision, snapshot: workbookSnapshot });
+  assert.equal(deniedImport.status,403);assert.equal(deniedImport.body.error,'NON_BOM_IMPORT_MAINTENANCE_ONLY');
+  assert.deepEqual(db.prepare('SELECT revision,"values" FROM shared_state WHERE id=1').get(),beforeMaintenanceImport);
+  response = await call('admin', 'workbookImport', { versionId: draft.id, versionRevision: draft.revision, snapshot: workbookSnapshot }, undefined, true);
   assert.equal(response.status, 200);
   assert.equal(response.body.control.versions.find(version => version.status === 'draft').equipment.find(item => item.id === workbookId).pieceMark, '04');
   draft = response.body.control.versions.find(version => version.status === 'draft');
   response = await call('admin', 'workbookImport', { versionId: draft.id, versionRevision: draft.revision,
-    snapshot: { ...workbookSnapshot, equipment: workbookSnapshot.equipment.map(item => item.id === workbookId ? { ...item, pieceMark: '04' } : item) } });
+    snapshot: { ...workbookSnapshot, equipment: workbookSnapshot.equipment.map(item => item.id === workbookId ? { ...item, pieceMark: '04' } : item) } }, undefined, true);
   assert.equal(response.status, 200);
   assert.equal(response.body.control.versions.find(version => version.status === 'draft').equipment.filter(item => item.id === workbookId).length, 1);
   const competingRevision = response.body.revision;

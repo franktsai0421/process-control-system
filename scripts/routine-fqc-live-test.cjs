@@ -1,7 +1,9 @@
 // Real HTTP handlers, normal password login, isolated storage; never target 3000.
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict'),crypto=require('node:crypto');
 const base='http://127.0.0.1:3040',task=path.resolve('.wrangler/local-only/routine-fqc-3040'),evidence=process.argv.includes('--extended')?JSON.parse(fs.readFileSync(path.join(task,'live-evidence.json'))):[];
-const uid=()=>crypto.randomUUID();let cookies={},data,sequence=0;const client=uid();
+const uid=()=>crypto.randomUUID();const cookies={};
+let data;
+let sequence=0;const client=uid();
 async function call(route,body,actor='admin',expected=200){const r=await fetch(base+route,{method:body?'POST':'GET',headers:{origin:base,'content-type':'application/json',cookie:cookies[actor]||''},...(body?{body:JSON.stringify(body)}:{})});const text=await r.text();let value;try{value=JSON.parse(text);}catch{throw Error(route+' non-JSON '+r.status+' '+text.slice(0,300));}assert.equal(r.status,expected,route+' '+JSON.stringify(value).slice(0,500));return value;}
 async function login(body,key){const r=await fetch(base+'/api/platform-login',{method:'POST',headers:{origin:base,'content-type':'application/json'},body:JSON.stringify(body)});const v=await r.json();assert.equal(r.status,200,JSON.stringify(v));cookies[key]=r.headers.get('set-cookie').split(';')[0];assert.ok(cookies[key].startsWith('process_demo_3040='));return v;}
 async function fresh(){data=await call('/api/routine-fqc');return data;}

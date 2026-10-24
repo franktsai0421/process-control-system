@@ -1,10 +1,13 @@
+import {openLeasedLocalSQLite} from '../lib/local-storage-sqlite.mjs';
+import {acquireLocalStorageLease} from '../lib/local-storage-lease.mjs';
 // Explicit local-only schema upgrade. Never called by a public request or startup.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import net from 'node:net';
 import assert from 'node:assert/strict';
-import {DatabaseSync, backup} from 'node:sqlite';
+import {DatabaseSync} from 'node:sqlite';
+import * as sqlite from 'node:sqlite';
 import {pathToFileURL} from 'node:url';
 import {assertLocalMode, localPaths} from '../lib/local-runtime.mjs';
 import {inspectMigrations} from './local-init.mjs';
@@ -21,7 +24,11 @@ async function listening(port) {
   });
 }
 
-export async function upgradeLocalFeatures(root, {port, expectedRevision, expectedValuesHash, backupDirectory}) {
+export async function upgradeLocalFeatures(...args) {
+  const storageLease = acquireLocalStorageLease(args[0]);
+  try { return await upgradeLocalFeaturesUnderLease(...args); } finally { storageLease.release(); }
+}
+async function upgradeLocalFeaturesUnderLease(root, {port, expectedRevision, expectedValuesHash, backupDirectory}) {
   assertLocalMode([]);
   assert(Number.isInteger(port) && port > 0 && port < 65536, 'Explicit stopped Local port required');
   assert(Number.isInteger(expectedRevision) && /^[a-f0-9]{64}$/.test(expectedValuesHash), 'Pinned revision and hash required');
@@ -32,13 +39,20 @@ export async function upgradeLocalFeatures(root, {port, expectedRevision, expect
   assert.equal(names.length,1,'Ambiguous application database');
   assert(backupDirectory && path.isAbsolute(backupDirectory) && !fs.existsSync(backupDirectory), 'New backup directory required');
   fs.mkdirSync(backupDirectory,{recursive:true});
-  const db = new DatabaseSync(path.join(folder,names[0]));
+  const db = openLeasedLocalSQLite(root,DatabaseSync,path.join(folder,names[0]));
   const setting = path.join(paths.directory,'features.json');
   try {
     assert.equal(db.prepare('PRAGMA integrity_check').get().integrity_check,'ok');
     const before=db.prepare('SELECT revision,"values" FROM shared_state WHERE id=1').get();
     assert.equal(before.revision,expectedRevision);assert.equal(sha(before.values),expectedValuesHash);
-    await backup(db,path.join(backupDirectory,'database-before.sqlite'));
+    const backupFile=path.join(backupDirectory,'database-before.sqlite');
+    if(typeof sqlite.backup==='function') {
+      const backup=sqlite.backup;
+      await backup(db,backupFile);
+    } else {
+      // Node 22.13 provides DatabaseSync but not the online backup API.
+      db.exec(`VACUUM INTO '${backupFile.replaceAll("'","''")}'`);
+    }
     if(fs.existsSync(setting))fs.copyFileSync(setting,path.join(backupDirectory,'features-before.json'));
     db.exec('BEGIN IMMEDIATE');
     try {

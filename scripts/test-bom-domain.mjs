@@ -4,7 +4,7 @@ import vm from 'node:vm';
 import * as D from '../public/process/bom-domain.mjs';
 const row=(root,level,ordinal,code,name='Tên',quantity='1',denominator='1')=>[root,'.'.repeat(level)+level,ordinal,code,name,'Quy cách','CAI',quantity,denominator,'0'];
 const parse=rows=>D.parseMatrices([{name:'Fixture',rows:[D.columns,...rows]}]);
-let bom=parse([row('001',0,'','','Gốc','0','0'),row('001',1,'0020','P'),row('001',2,'0010','Q'),row('001',3,'01','R'),row('001',4,'01','S'),row('001',5,'01','T'),row('001',1,'0030','P')]);
+const bom=parse([row('001',0,'','','Gốc','0','0'),row('001',1,'0020','P'),row('001',2,'0010','Q'),row('001',3,'01','R'),row('001',4,'01','S'),row('001',5,'01','T'),row('001',1,'0030','P')]);
 assert.equal(bom['001'][0].itemCode,'');assert.equal(bom['001'][0].denominator,'0');assert.equal(bom['001'][1].ordinal,'0020');assert.equal(bom['001'][2].quantity,'');assert.notEqual(bom['001'][1].id,bom['001'][6].id);D.validate(bom);
 assert.equal(D.compare(bom,bom).changes.length,0);
 const changed=structuredClone(bom);changed['001'][1].itemName='Đồng';changed['001'][1].quantity='2';

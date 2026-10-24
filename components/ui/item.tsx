@@ -6,17 +6,31 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 
-function ItemGroup({ className, ...props }: React.ComponentProps<'div'>) {
+function ItemGroup({ className, children, ...props }: React.ComponentProps<'ul'>) {
+  const items: { child: React.ReactNode; key: string }[] = [];
+  const collect = (nodes: React.ReactNode, prefix = '') => React.Children.toArray(nodes).forEach((child, index) => {
+    const key = prefix + (React.isValidElement(child) ? child.key ?? index : index);
+    if (React.isValidElement<{ children?: React.ReactNode }>(child) && child.type === React.Fragment) {
+      collect(child.props.children, key + '/');
+    } else if (child !== null && child !== undefined && typeof child !== 'boolean') {
+      items.push({child, key});
+    }
+  });
+  collect(children);
   return (
-    <div
-      role="list"
+    <ul
       data-slot="item-group"
-      className={cn(
-        'gap-4 has-data-[size=sm]:gap-2.5 has-data-[size=xs]:gap-2 group/item-group flex w-full flex-col',
-        className,
-      )}
+      className={cn('m-0 list-none p-0 gap-4 has-data-[size=sm]:gap-2.5 has-data-[size=xs]:gap-2 group/item-group flex w-full flex-col', className)}
       {...props}
-    />
+    >
+      {items.map(({child, key}) => {
+        if (React.isValidElement(child) && child.type === 'li') return React.cloneElement(child, {key});
+        const separator = React.isValidElement(child) && child.type === ItemSeparator;
+        return <li key={key}
+          className="min-w-0" role={separator ? 'presentation' : undefined}
+          aria-hidden={separator || undefined}>{child}</li>;
+      })}
+    </ul>
   );
 }
 

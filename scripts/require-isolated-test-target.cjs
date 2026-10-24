@@ -1,5 +1,6 @@
 /* Validate explicit local isolation evidence before any network request. No default target. */
-const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),{spawnSync}=require('node:child_process');
+const { fs, path, crypto, childProcess } = require('./isolated-target-builtins.mjs').default;
+const { spawnSync } = childProcess;
 function probeRuntime(port){const script=`$listener=Get-NetTCPConnection -LocalPort ${Number(port)} -State Listen -ErrorAction Stop; $ownerIds=@($listener.OwningProcess | Select-Object -Unique); if($ownerIds.Count -ne 1){throw 'Ambiguous listener'}; $runtimeProcess=Get-CimInstance Win32_Process -Filter ('ProcessId='+$ownerIds[0]); @{pid=$runtimeProcess.ProcessId; command=$runtimeProcess.CommandLine} | ConvertTo-Json -Compress`;const result=spawnSync('powershell.exe',['-NoProfile','-NonInteractive','-Command',script],{encoding:'utf8',windowsHide:true,timeout:10000});if(result.status!==0)throw Error('RUNTIME_PROBE_UNAVAILABLE');try{return JSON.parse(result.stdout);}catch{throw Error('RUNTIME_PROBE_UNAVAILABLE');}}
 function inside(root,file){const relative=path.relative(root,fs.realpathSync(file));return relative&&!relative.startsWith('..')&&!path.isAbsolute(relative);}
 function verify(settings=process.env,runtimeProbe=probeRuntime){

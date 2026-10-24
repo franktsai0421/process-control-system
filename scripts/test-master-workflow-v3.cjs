@@ -17,6 +17,8 @@ async function send(scope,who,body){const r=await api.POST(new Request(url(scope
 async function command(scope,who,action,detail={}){return{operationId:randomUUID(),clientId:'fixture-'+who+scope,sequence:sequence[who+scope]=(sequence[who+scope]||0)+1,generation:(await get(scope,who)).control.workflow.generation,action,...detail};}
 async function run(scope,who,action,detail={}){const r=await send(scope,who,{command:await command(scope,who,action,detail)});assert.equal(r.status,200,JSON.stringify(r.body));return r.body;}
 const set=(field,value)=>({op:'set',path:['products',{id:'products:A1'},field],value});
+// Explicit captured fixture baseline only; never read/rebase a stale command here.
+function fixtureSetGuards(before,patches){return{patches,guards:patches.map(p=>({path:p.path,value:p.path.reduce((row,key)=>typeof key==='string'?row?.[key]:Array.isArray(row)?row.find(item=>item.id===key.id):undefined,before)}))};}
 async function check(name,fn){await fn();results.push({name,status:'PASS'});console.log('PASS '+name);}
 (async()=>{try{
  for(const user of users){const r=await load('app/api/platform-login/route.ts').POST(new Request('http://fixture/api/platform-login',{method:'POST',headers:{Origin:'http://fixture','Content-Type':'application/json'},body:JSON.stringify({id:user.id,password})}));assert.equal(r.status,200);sessions[user.id]={Cookie:r.headers.get('set-cookie').split(';')[0],Origin:'http://fixture','Content-Type':'application/json'};}
@@ -28,16 +30,16 @@ async function check(name,fn){await fn();results.push({name,status:'PASS'});cons
   const root=JSON.parse((await core.readState()).values.masterDataControl);for(const v of original.versions)assert.deepEqual(root.versions.find(x=>x.id===v.id).snapshot,v.snapshot);
  });
  await check('master T02/T08 all-user synchronization and saved-only immutable submission',async()=>{
-  await run('AB','a','apply',{patches:[set('name','Tên A')]});await run('AB','b','apply',{patches:[set('specification','Quy cách B')]});const saved=(await run('AB','b','save')).control.workflow.saved;
-  assert.equal(saved.content.products[0].name,'Tên A');assert.equal(saved.content.products[0].specification,'Quy cách B');await run('AB','a','apply',{patches:[set('name','Not saved')]});const result=await run('AB','a','submit',{savedId:saved.id,reason:'Sửa dữ liệu'});assert.equal(result.control.workflow.cases.at(-1).content.products[0].name,'Tên A');
-  const denied=await send('AB','b',{command:await command('AB','b','apply',{patches:[set('name','bypass')]})});assert.equal(denied.status,409);await run('AB','reviewer','approve',{caseId:result.receipt.caseId});
+  const baseline=(await get('AB','a')).control.workflow.working;await run('AB','a','apply',fixtureSetGuards(baseline,[set('name','Tên A')]));await run('AB','b','apply',fixtureSetGuards(baseline,[set('specification','Quy cách B')]));const saved=(await run('AB','b','save')).control.workflow.saved;
+  assert.equal(saved.content.products[0].name,'Tên A');assert.equal(saved.content.products[0].specification,'Quy cách B');await run('AB','a','apply',fixtureSetGuards((await get('AB','a')).control.workflow.working,[set('name','Not saved')]));const result=await run('AB','a','submit',{savedId:saved.id,reason:'Sửa dữ liệu'});assert.equal(result.control.workflow.cases.at(-1).content.products[0].name,'Tên A');
+  const denied=await send('AB','b',{command:await command('AB','b','apply',fixtureSetGuards(result.control.workflow.working,[set('name','bypass')]))});assert.equal(denied.status,409);await run('AB','reviewer','approve',{caseId:result.receipt.caseId});
   const stored=JSON.parse((await core.readState()).values.masterDataControl);assert.equal(stored.active.AB.products[0].name,'Tên A');assert.deepEqual(stored.active.C,original.active.C);
  });
  await check('T16/T45 PROCESS draft blocks template-changing stage additions only',async()=>{
   await send('AB','admin',{action:'begin'});const before=await core.readState();
   const denied=await send('AB','admin',{command:await command('AB','admin','apply',{patches:[{op:'insert',path:['lines',{id:'lines:A'},'stages'],value:{id:'stage:new',code:'A-NEW',name:'Mới'}}]})});
   assert.equal(denied.status,409);assert.equal(denied.body.error,'PROCESS_TEMPLATE_SCOPE_BUSY');assert.ok(denied.body.details.resolveUrl.includes('process-master'));assert.equal((await core.readState()).revision,before.revision);
-  await run('AB','admin','apply',{patches:[set('specification','unrelated edit remains allowed')]});
+  await run('AB','admin','apply',fixtureSetGuards((await get('AB','admin')).control.workflow.working,[set('specification','unrelated edit remains allowed')]));
   const {assertStageTemplateAvailable:guard}=load('lib/master-process-lock.ts');
   const empty={lines:[]},withStage={lines:[{stages:[{code:'A-NEW'}]}]};
   for(const status of ['draft','pending','pending-test'])assert.throws(()=>guard({active:{PROCESS:{}},versions:[{scope:'PROCESS',id:'case',status}]},empty,withStage),/PROCESS_TEMPLATE_SCOPE_BUSY/);
@@ -52,7 +54,7 @@ async function check(name,fn){await fn();results.push({name,status:'PASS'});cons
   const exposed=JSON.parse(core.publicState(state).values.masterDataControl);assert.equal(exposed.workflowScopes,undefined);assert.ok(exposed.versions.every(v=>v.status==='approved'));
  });
  await check('PROCESS T08 approval updates effective source and mirror in one revision',async()=>{
-  await run('PROCESS','a','apply',{patches:[{op:'set',path:['A-CUT',{id:'A-CUTmanual'},'name'],value:'Tên quy trình mới'}]});const saved=(await run('PROCESS','a','save')).control.workflow.saved;
+  await run('PROCESS','a','apply',fixtureSetGuards((await get('PROCESS','a')).control.workflow.working,[{op:'set',path:['A-CUT',{id:'A-CUTmanual'},'name'],value:'Tên quy trình mới'}]));const saved=(await run('PROCESS','a','save')).control.workflow.saved;
   const pending=await run('PROCESS','a','submit',{savedId:saved.id,reason:'Sửa mẫu'});const before=await core.readState();await run('PROCESS','reviewer','approve',{caseId:pending.receipt.caseId});const after=await core.readState();assert.equal(after.revision,before.revision+1);const root=JSON.parse(after.values.masterDataControl);assert.deepEqual(JSON.parse(after.values.processMasterData),root.active.PROCESS);assert.equal(root.active.PROCESS['A-CUT'][1].name,'Tên quy trình mới');
  });
  await check('master partial T17/T23/T45 direct cross-scope collision and restore preview enforce server permissions',async()=>{

@@ -2,6 +2,7 @@ import { sites } from '@openai/sites-vite-plugin';
 import tailwindcss from '@tailwindcss/postcss';
 import vinext from 'vinext';
 import { defineConfig } from 'vite';
+import buildAuthAudit from './lib/build-auth-audit-vite.cjs';
 import hostingConfig from './.openai/hosting.json';
 import { localBackupPlugin } from './lib/local-backup-vite.mjs';
 import { assertLocalMode, localPaths, readLocalSession, configureOfflineLocal } from './lib/local-runtime.mjs';
@@ -57,6 +58,7 @@ export default defineConfig(async ({ command }) => {
     plugins: [
       ...(local ? [localFeaturesPlugin(process.cwd(), features)] : []),
       localBackupPlugin(process.cwd()),
+      ...(!local ? [buildAuthAudit.buildAuthAuditPlugin()] : []),
       vinext(),
       sites(),
       cloudflare({

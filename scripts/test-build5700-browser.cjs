@@ -1,6 +1,5 @@
 const isolatedTestTarget_20261010=require('./require-isolated-test-target.cjs')();
-const fs = require('node:fs');
-const assert = require('node:assert/strict');
+const { fs, assert } = require('./build5700-builtins.mjs').default;
 const { chromium } = require(
   process.env.PLAYWRIGHT_MODULE ||
     require('./browser-test-runtime.cjs').playwrightModule,

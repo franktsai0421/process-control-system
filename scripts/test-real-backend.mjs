@@ -90,4 +90,4 @@ import { chromium } from 'playwright';
   }
 
   await browser.close();
-})();
+})().catch(error => { console.error(error); process.exitCode = 1; });

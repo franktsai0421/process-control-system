@@ -8,6 +8,7 @@ import { installLocalNetworkGuard } from '../lib/local-network-guard.mjs';
 import { decodeLocalSnapshot, encodeLocalValues } from '../lib/local-snapshot.mjs';
 import { loadTypeScript, inspectMigrations } from './local-init.mjs';
 import { verifyLocalSchema } from '../lib/local-schema.mjs';
+import { assertPinnedSDKLayout, assertNativePersistBudget } from './u1-package.mjs';
 
 const digest = value => crypto.createHash('sha256').update(value).digest('hex');
 const fail = message => { throw new LocalSetupError(message); };
@@ -33,6 +34,14 @@ export async function restoreDevelopmentPackage(root, directory, expectedManifes
   if (!/^[a-f0-9]{64}$/.test(expectedManifestSha256 || '')) fail('An independently reviewed manifest hash is required');
   const paths = configureOfflineLocal(root);
   if (fs.existsSync(path.join(paths.project, '.wrangler'))) fail('Existing Local storage refused; use a fresh clone');
+  try {
+    assertPinnedSDKLayout(paths.project);
+    assertNativePersistBudget(fs.realpathSync.native(paths.project));
+  } catch (error) {
+    if (error?.code === 'U1_NATIVE_STORAGE_PATH_TOO_LONG') fail('Local storage path is too long; use a shorter fresh installation directory');
+    if (error?.code === 'U1_NATIVE_SDK_LAYOUT_UNSUPPORTED') fail('Installed Local SDK does not match this package version; install the supplied lockfile dependencies');
+    throw error;
+  }
   const pack = fs.realpathSync(directory);
   if (fs.lstatSync(directory).isSymbolicLink() || fs.lstatSync(path.join(pack, 'objects')).isSymbolicLink()) fail('Linked package roots refused');
   regular(path.join(pack, 'manifest.json')); regular(path.join(pack, 'database.json'));

@@ -68,3 +68,9 @@ __pycache__/
 /.local-backups/
 /.sites-runtime/
 /data/.canonical-*/
+
+# Private offline snapshot update journals, backups and security overlays
+/.process-update/
+
+# Offline full-snapshot SDK staging; contains private local storage.
+/.u1s/

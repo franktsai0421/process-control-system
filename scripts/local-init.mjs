@@ -1,3 +1,4 @@
+import {acquireLocalStorageLease} from '../lib/local-storage-lease.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -50,6 +51,9 @@ export function inspectMigrations(root) {
 
 export async function initializeLocal(root, args = [], environment = process.env) {
   assertLocalMode(args, environment);
+  const storageLease = acquireLocalStorageLease(root);
+  let storageMayRelease = true;
+  try {
   const schema = inspectMigrations(root);
   const paths = configureOfflineLocal(root);
   if (fs.existsSync(path.join(paths.directory, 'development-package-incomplete.json')))
@@ -65,6 +69,7 @@ export async function initializeLocal(root, args = [], environment = process.env
     fs.writeFileSync(paths.config, JSON.stringify(config, null, 2));
     // Explicit config and false remoteBindings prevent auto-discovery or remote access.
     const { getPlatformProxy } = createRequire(path.join(root,'package.json'))('wrangler');
+    storageMayRelease = false;
     proxy = await getPlatformProxy({ configPath: paths.config,
       persist: { path: path.join(paths.state, 'v3') }, remoteBindings: false, envFiles: [] });
     const db = proxy.env.DB;
@@ -133,9 +138,10 @@ export async function initializeLocal(root, args = [], environment = process.env
     console.log('Local initialization verified: existing migrations, passwordless demo accounts, remote bindings disabled.');
     console.log(`Local canonical images: ${images.imported} imported, ${images.present} already present, ${images.tombstones} tombstones.`);
   } finally {
-    if (proxy) await proxy.dispose();
+    if (proxy) { await proxy.dispose(); storageMayRelease = true; }
     fs.rmdirSync(lock);
   }
+  } finally { if (storageMayRelease) storageLease.release(); }
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

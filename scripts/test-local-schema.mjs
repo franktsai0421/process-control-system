@@ -4,9 +4,9 @@ import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { DatabaseSync } from 'node:sqlite';
 import { verifyLocalSchema } from '../lib/local-schema.mjs';
-const require=createRequire(import.meta.url),ts=require('typescript'),module={exports:{}};
-vm.runInNewContext(ts.transpileModule(fs.readFileSync('db/schema.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{module,exports:module.exports,require});
-const tables=Object.values(module.exports).map(require('drizzle-orm/sqlite-core').getTableConfig);
+const require=createRequire(import.meta.url),ts=require('typescript'),workflowModule={exports:{}};
+vm.runInNewContext(ts.transpileModule(fs.readFileSync('db/schema.ts','utf8'),{compilerOptions:{module:ts.ModuleKind.CommonJS}}).outputText,{module: workflowModule,exports:workflowModule.exports,require});
+const tables=Object.values(workflowModule.exports).map(require('drizzle-orm/sqlite-core').getTableConfig);
 const db=new DatabaseSync(':memory:');
 const adapter={prepare(sql){let args=[];return{bind(...values){args=values;return this},async first(){return db.prepare(sql).get(...args)},async all(){return{results:db.prepare(sql).all(...args)}}}}};
 try {
