@@ -1,3 +1,6 @@
+> Deprecated（2026-10-10）：本文件保存舊版查詢／直接匯入行為。現行日常 BOM 請見 [BOM Digiwin 重建規格](docs/specs/current/BOM_REBUILD.md)，實際生效狀態見 [本機交付](docs/local-integration/20261010-bom-rebuild.md)。
+
+
 [Tiếng Việt](BOM_SEARCH.md) | [繁體中文](BOM_SEARCH.zh-TW.md) | [English](BOM_SEARCH.en.md)
 
 # BOM_SEARCH

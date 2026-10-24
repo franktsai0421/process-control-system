@@ -1,4 +1,5 @@
 (function () {
+  const displayDraftError = error => window.sharedDraftErrorMessage?.(error) ?? (typeof error === 'string' ? error : error?.message || String(error ?? ''));
   const STORAGE = 'masterDataControl',
     clone = (value) => JSON.parse(JSON.stringify(value));
   const now = () => new Date().toISOString(),
@@ -67,7 +68,10 @@
   state.masterCategory = state.masterCategory || '全部';
   state.masterSearch = state.masterSearch || '';
   state.masterReviewId = state.masterReviewId || null;
-  function persist() {
+  const sharedLoaded=new Set(),sharedLoading=new Set();
+  const shared=window.createMasterSharedBridge({control,onChange:()=>render()});
+  function persist(scope=state.masterScope) {
+    if(['AB','C','PROCESS'].includes(scope))return shared.execute(scope,'apply');
     localStorage.setItem(STORAGE, JSON.stringify(control));
   }
   function canPublishProcessMaster() {
@@ -98,7 +102,8 @@
       warnings: [],
       history: [{ label: '流程資料建立', actor: '系統', at: created }],
     });
-    if (canPublishProcessMaster()) persist();
+    // Legacy missing catalogs require explicit initialization; loading a page
+    // must not adopt or submit a different scope as a side effect.
     return true;
   }
   ensureProcessMasterVersionScope();
@@ -113,17 +118,17 @@
   function pending(scope = state.masterScope) {
     return versions(scope).find((item) => item.status === 'pending');
   }
-  function editable() {
+  let editable = function() {
     return draft()?.snapshot || null;
-  }
-  function current() {
+  };
+  let current = function() {
     return (
       editable() ||
       pending()?.snapshot ||
       control.active[state.masterScope] ||
       seed[state.masterScope]
     );
-  }
+  };
   function statusText(status) {
     return (
       {
@@ -144,40 +149,13 @@
     });
     version.updatedAt = now();
   }
-  function beginDraft() {
-    if (draft() || pending()) {
-      toast('此資料已有草稿或正在主管審核中');
-      return;
-    }
-    const previous = versions()[0],
-      version = {
-        id: `MD-${state.masterScope}-${Date.now()}`,
-        scope: state.masterScope,
-        number: Math.max(0, ...versions().map((item) => item.number || 0)) + 1,
-        status: 'draft',
-        snapshot: clone(control.active[state.masterScope]),
-        creatorId: currentUser?.id || 'local',
-        creatorName: currentUser?.name || '本機使用者',
-        createdAt: now(),
-        updatedAt: now(),
-        parentVersionId: previous?.id || null,
-        warnings: [],
-        history: [],
-      };
-    record(version, '建立主資料草稿');
-    control.versions.push(version);
-    persist();
-    toast('已建立可修改的主資料草稿');
-    render();
+  async function beginDraft() {
+    try{await shared.execute(state.masterScope,'begin');sharedLoaded.add(state.masterScope);render();}
+    catch(error){toast(displayDraftError(error));}
+    return;
   }
-  function saveDraft() {
-    const version = draft();
-    if (!version) return;
-    syncRows();
-    record(version, '儲存主資料草稿');
-    persist();
-    toast('主資料草稿已儲存');
-    render();
+  async function saveDraft() {
+    try{await shared.execute(state.masterScope,'save');toast(document.documentElement.lang==='vi'?'Đã lưu toàn bộ nội dung đã đồng bộ.':'已儲存全員已同步內容。');render();}catch(error){toast(displayDraftError(error));}
   }
   function validateCatalog(catalog) {
     const errors = [],
@@ -209,26 +187,10 @@
     });
     return errors;
   }
-  function submitDraft() {
-    const version = draft();
-    if (!version) return;
-    syncRows();
-    const errors = validateCatalog(version.snapshot);
-    state.masterValidationErrors = errors;
-    if (errors.length) {
-      toast(`送審前需修正 ${errors.length} 項主資料問題`);
-      render();
-      return;
-    }
-    version.status = 'pending';
-    state.masterReviewId = version.id;
-    record(version, '送出主資料確認');
-    persist();
-    state.masterValidationErrors = [];
-    toast('主資料已送主管確認');
-    render();
+  async function submitDraft() {
+    try{await shared.submit(state.masterScope);render();}catch(error){const focused=document.activeElement?.id,scroll=window.scrollY;render();document.getElementById(focused)?.focus({preventScroll:true});window.scrollTo(0,scroll);toast(displayDraftError(error));}
   }
-  function syncRows() {
+  let syncRows = function() {
     const version = draft();
     if (!version) return;
     document.querySelectorAll('[data-master-row]').forEach((row) => {
@@ -258,12 +220,12 @@
       if (old !== product.code)
         record(version, '修改產品編號', `${old} → ${product.code}`);
     });
-  }
-  function categories(catalog = current()) {
+  };
+  let categories = function(catalog = current()) {
     return [
       ...new Set(catalog.products.map((item) => normalized(item.category))),
     ].sort((a, b) => a.localeCompare(b));
-  }
+  };
   function visibleProducts() {
     const catalog = current(),
       q = state.masterSearch.toLowerCase();
@@ -284,7 +246,7 @@
       ? `<span>${safe(value || '待補')}</span>`
       : `<input data-field="${field}" class="${field === 'stages' ? 'route-input' : ''}" value="${safe(value || '待補')}">`;
   }
-  function productRows() {
+  let productRows = function() {
     const locked = !editable(),
       bad = new Set(
         (state.masterValidationErrors || []).map((item) => item.code),
@@ -297,7 +259,7 @@
         )
         .join('') || `<tr><td colspan="8">沒有符合的資料</td></tr>`
     );
-  }
+  };
   function versionBar() {
     const item = draft() || pending() || versions()[0],
       errors = state.masterValidationErrors || [];
@@ -328,7 +290,7 @@
       locked = !editable();
     return `<details class="master-line-editor"><summary>線別與工段管理 · ${catalog.lines.length} 條線別 · ${catalog.lines.reduce((sum, line) => sum + line.stages.length, 0)} 個工段</summary>${catalog.lines.map((line) => `<section class="master-line-block" data-line="${safe(line.code)}"><div class="master-line-head"><input data-line-code value="${safe(line.code)}" ${locked ? 'disabled' : ''}><input data-line-name value="${safe(line.name || '待補')}" ${locked ? 'disabled' : ''}>${locked ? '' : `<button class="master-small" data-add-stage="${safe(line.code)}">＋ 新增工段</button><button class="master-small danger" data-delete-line="${safe(line.code)}">刪除線別</button>`}</div><div class="master-stage-grid">${line.stages.map((stage) => `<div class="master-stage-card" data-stage="${safe(stage.code)}"><input data-stage-code value="${safe(stage.code)}" ${locked ? 'disabled' : ''}><input data-stage-name value="${safe(stage.name || '待補')}" ${locked ? 'disabled' : ''}>${locked ? '' : `<button class="master-small" data-delete-stage="${safe(stage.code)}">刪除</button>`}</div>`).join('')}</div></section>`).join('')}${locked ? '' : `<div class="master-line-add"><button class="master-small" id="add-master-line">＋ 新增線別</button></div>`}</details>`;
   }
-  function masterView() {
+  let masterView = function() {
     const catalog = current();
     return `<div class="master-shell">${versionBar()}<section class="master-toolbar"><div class="field"><label>產品類別</label><select id="master-category"><option>全部</option>${categories()
       .map(
@@ -337,21 +299,25 @@
       )
       .join(
         '',
-      )}</select></div><div class="field"><label>搜尋產品</label><input id="master-search" value="${safe(state.masterSearch)}" placeholder="輸入類別、編號或名稱"></div><div class="actions"><input hidden type="file" id="master-import-file" accept=".xlsx,.xls,.csv"><button class="button ghost" id="master-import">匯入 Excel</button><button class="button ghost" id="master-export">匯出 Excel</button>${editable() ? `<button class="button signal" id="master-add-product">＋ 新增產品</button>` : ''}</div></section><div class="master-summary"><span>${catalog.products.length} 筆產品</span><span>${categories().length} 個類別</span><span>${catalog.lines.length} 條線別</span><span>${catalog.lines.reduce((sum, line) => sum + line.stages.length, 0)} 個工段</span></div>${editable() ? `<div class="master-edit-note">目前修改的是草稿；送審並經主管確認後，才會套用到其他平台。</div>` : ''}${categoryBox()}${lineEditor()}<div class="master-table-wrap"><table class="master-table"><thead><tr><th>產品類別</th><th>產品編號</th><th>產品名稱</th><th>規格</th><th>單位</th><th>線別</th><th>製程路線</th><th>操作</th></tr></thead><tbody>${productRows()}</tbody></table></div></div>`;
-  }
-  const originalDataView = dataView,
-    originalBindData = bindData;
+      )}</select></div><div class="field"><label>搜尋產品</label><input id="master-search" value="${safe(state.masterSearch)}" placeholder="輸入類別、編號或名稱"></div><div class="actions">${editable() ? `<button class="button signal" id="master-add-product">＋ 新增產品</button>` : ''}</div></section><div class="master-summary"><span>${catalog.products.length} 筆產品</span><span>${categories().length} 個類別</span><span>${catalog.lines.length} 條線別</span><span>${catalog.lines.reduce((sum, line) => sum + line.stages.length, 0)} 個工段</span></div>${editable() ? `<div class="master-edit-note">目前修改的是草稿；送審並經主管確認後，才會套用到其他平台。</div>` : ''}${categoryBox()}${lineEditor()}<div class="master-table-wrap"><table class="master-table"><thead><tr><th>產品類別</th><th>產品編號</th><th>產品名稱</th><th>規格</th><th>單位</th><th>線別</th><th>製程路線</th><th>操作</th></tr></thead><tbody>${productRows()}</tbody></table></div></div>`;
+  };
+
   dataView = function () {
     return `<section class="page"><div class="tabs master-tabs"><button class="tab master-tab ${state.masterSection !== 'lines' && state.masterScope === 'AB' ? 'active' : ''}" data-master-scope="AB">AB 產線與類別</button><button class="tab master-tab ${state.masterSection !== 'lines' && state.masterScope === 'C' ? 'active' : ''}" data-master-scope="C">C 產線與類別</button><button class="tab master-tab" data-tab="bom">BOM 資料</button><button class="tab master-tab ${state.masterSection === 'lines' ? 'active' : ''}" data-tab="line-admin">線別與工段管理</button><button class="tab master-tab" data-tab="process-master">流程資料</button><button class="tab master-tab" data-tab="users">使用者與權限</button></div><div id="data-content">${masterView()}</div></section>`;
   };
   function selectDataTab(tab, push = false) {
-    if (!['AB','C','bom','line-admin','process-master','users','backups'].includes(tab)) tab='AB';
-    if (['users','backups'].includes(tab) && currentUser?.role!=='admin') tab='AB';
+    if (!['AB','C','bom','line-admin','process-master','users'].includes(tab)) tab='AB';
     state.dataTab=tab;
     state.masterSection=tab==='line-admin'?'lines':'products';
     if (tab==='AB'||tab==='C') {if(state.masterScope!==tab){state.masterCategory='全部';state.masterSearch='';}state.masterScope=tab;}
     const content=document.querySelector('#data-content');
     if (!content) return;
+    if(tab==='process-master'&&!sharedLoaded.has('PROCESS')){
+      content.textContent=document.documentElement.lang==='vi'?'Đang tải dữ liệu quy trình…':'載入流程資料中…';
+      if(!sharedLoading.has('PROCESS')){sharedLoading.add('PROCESS');shared.load('PROCESS').then(()=>{sharedLoaded.add('PROCESS');if(state.dataTab==='process-master')selectDataTab(tab);}).catch(error=>{
+        if(state.dataTab!=='process-master')return;content.textContent=displayDraftError(error);const retry=document.createElement('button');retry.className='button ghost';retry.textContent=document.documentElement.lang==='vi'?'Thử lại':'重試';retry.onclick=()=>selectDataTab(tab);content.append(retry);
+      }).finally(()=>sharedLoading.delete('PROCESS'));}bindTabButtons();return;
+    }
     content.dataset.activeTab=tab;
     const url=new URL(location.href);
     if (push && url.searchParams.get('dataTab')!==tab) {
@@ -366,6 +332,12 @@
   }
   function bindTabButtons() {
     document.querySelectorAll('.master-tabs .tab').forEach(button=>{
+      if (button.dataset.qualityTab) {
+        button.classList.toggle('active', button.dataset.qualityTab === state.dataTab);
+        button.setAttribute('aria-selected', String(button.dataset.qualityTab === state.dataTab));
+        button.onclick = () => window.ProcessDualSystem?.renderQualityDataTab?.(button.dataset.qualityTab, true);
+        return;
+      }
       const tab=button.dataset.masterScope||button.dataset.tab||(button.id==='backup-tab'?'backups':'');
       button.classList.toggle('active',tab===state.dataTab);
       button.setAttribute('aria-selected',String(tab===state.dataTab));
@@ -385,7 +357,7 @@
     document.querySelector('#data-content').innerHTML = masterView();
     bindMaster();
   }
-  function bindMaster() {
+  let bindMaster = function() {
     document.querySelectorAll('[data-master-scope]').forEach(
       (button) =>
         (button.onclick = () => {
@@ -664,7 +636,7 @@
       .querySelector('#master-export')
       ?.addEventListener('click', exportExcel);
     bindMasterRows();
-  }
+  };
   function bindMasterRows() {
     document.querySelectorAll('[data-delete-product]').forEach(
       (button) =>
@@ -816,77 +788,23 @@
     );
     toast('Excel 匯出成功');
   }
-  function cleanEditorSet(
-    editorData,
-    validProducts,
-    validStages,
-    requiredStages = null,
-  ) {
+  function cleanEditorSet(editorData, _validProducts, validStages, requiredStages = null) {
     if (!editorData || typeof editorData !== 'object') return false;
     let changed = false;
-    Object.keys(editorData).forEach((stageCode) => {
-      if (
-        !validStages.has(stageCode) ||
-        (requiredStages && !requiredStages.has(stageCode))
-      ) {
-        delete editorData[stageCode];
+    // Master refresh only adds missing visible stages. Old nodes and references
+    // belong to the saved workspace, even when its group or route disappears.
+    for (const stageCode of requiredStages || []) {
+      if (validStages.has(stageCode) && !Object.hasOwn(editorData, stageCode)) {
+        editorData[stageCode] = [];
         changed = true;
-        return;
       }
-      const operations = Array.isArray(editorData[stageCode])
-        ? editorData[stageCode]
-        : [];
-      operations.forEach((operation) => {
-        const before = (operation.productCodes || []).length;
-        operation.productCodes = (operation.productCodes || []).filter((code) =>
-          validProducts.has(code),
-        );
-        if (operation.productCodes.length !== before) changed = true;
-        for (const key of Object.keys(operation.bomSelections || {}))
-          if (!validProducts.has(key)) {
-            delete operation.bomSelections[key];
-            changed = true;
-          }
-        for (const key of Object.keys(operation.productInstructions || {}))
-          if (!validProducts.has(key)) {
-            delete operation.productInstructions[key];
-            changed = true;
-          }
-        if (
-          operation.noteProductCode &&
-          !validProducts.has(operation.noteProductCode)
-        ) {
-          operation.noteProductCode = operation.productCodes[0] || '';
-          changed = true;
-        }
-        operation.bomProductCode = operation.productCodes.includes(
-          operation.bomProductCode,
-        )
-          ? operation.bomProductCode
-          : operation.productCodes[0] || '';
-        operation.bomItems = Object.values(
-          operation.bomSelections || {},
-        ).flat();
-      });
-      const ids = new Set(operations.map((operation) => operation.id));
-      operations.forEach((operation) => {
-        const next = (operation.nextIds || []).filter((id) => ids.has(id));
-        if (next.length !== (operation.nextIds || []).length) {
-          operation.nextIds = next;
-          changed = true;
-        }
-      });
-    });
-    if (requiredStages)
-      requiredStages.forEach((stageCode) => {
-        if (!Array.isArray(editorData[stageCode])) {
-          editorData[stageCode] = [];
-          changed = true;
-        }
-      });
+    }
     return changed;
   }
   function reconcileEditorMaster(all, categoryGroups = []) {
+    // Adopted V3 scopes must not prune another editor's draft as a side effect
+    // of refreshing master data. Referenced removals need the explicit cascade policy.
+    if(Object.keys(control.workflowScopes||{}).length)return;
     const validProducts = new Set(all.map((item) => item.code)),
       validStages = new Set(
         routing.lines.flatMap((line) => line.stages.map((stage) => stage.code)),
@@ -910,7 +828,7 @@
       ensureProcessMasterStages();
     Object.keys(state.editorByCategory || {}).forEach((key) => {
       if (!validEditorKeys.has(key)) {
-        delete state.editorByCategory[key];
+        // Keep dormant categories so reintroducing their route restores content.
         return;
       }
       cleanEditorSet(
@@ -929,7 +847,7 @@
         if (!storageKey?.startsWith('processEditor:')) continue;
         const editorKey = storageKey.slice('processEditor:'.length);
         if (!validEditorKeys.has(editorKey)) {
-          localStorage.removeItem(storageKey);
+          // The last product leaving a category must not erase its canvas.
           continue;
         }
         try {
@@ -1018,8 +936,8 @@
     ].forEach((item) => {
       if (item?.line && item?.name)
         groupMap.set(`${item.line}\u0000${item.name}`, {
-          line: item.line,
-          name: item.name,
+          ...item,
+          ...groupMap.get(`${item.line}\u0000${item.name}`),
         });
     });
     const categoryGroups = [...groupMap.values()];
@@ -1038,7 +956,7 @@
     data.categories.splice(
       0,
       data.categories.length,
-      ...[...new Set(categoryGroups.map((item) => item.name))],
+      ...new Set(categoryGroups.map((item) => item.name)),
     );
     Object.keys(routing.productRoutes).forEach(
       (key) => delete routing.productRoutes[key],
@@ -1072,15 +990,21 @@
     );
     reconcileEditorMaster(all, categoryGroups);
     if (control.active.PROCESS) {
-      processMaster = clone(control.active.PROCESS);
-      const processCatalogChanged = ensureProcessMasterStages();
-      control.active.PROCESS = clone(processMaster);
-      if (!processCatalogChanged || canPublishProcessMaster())
-        localStorage.setItem('processMasterData', JSON.stringify(processMaster));
-      if (processCatalogChanged && canPublishProcessMaster()) persist();
+      const approved = clone(control.active.PROCESS);
+      if (window.ProcessSync?.projectProcessMaster) {
+        if (window.ProcessSync.projectProcessMaster(JSON.stringify(approved))) processMaster = approved;
+      } else {
+        processMaster = approved;
+        const processCatalogChanged = Object.keys(control.workflowScopes||{}).length?false:ensureProcessMasterStages();
+        control.active.PROCESS = clone(processMaster);
+        if (!processCatalogChanged || canPublishProcessMaster())
+          localStorage.setItem('processMasterData', JSON.stringify(processMaster));
+        if (processCatalogChanged && canPublishProcessMaster()&&!Object.keys(control.workflowScopes||{}).length)
+          localStorage.setItem(STORAGE,JSON.stringify(control));
+      }
     }
   }
-  function approvalSection() {
+  let approvalSection = function() {
     const reviewable = control.versions
         .filter((item) => item.status !== 'draft')
         .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)),
@@ -1088,9 +1012,9 @@
         reviewable.find((item) => item.id === state.masterReviewId) ||
         reviewable[0];
     if (selected && !state.masterReviewId) state.masterReviewId = selected.id;
-    return `<section class="master-pending"><header><p class="eyebrow">MASTER DATA VERSION CONTROL</p><h2>主資料版本確認</h2><p>AB 與 C 的產品、線別、工段與製程路線都在這裡確認；刪除變更會特別標示。</p></header><div class="master-review-grid"><aside class="master-review-list">${reviewable.map((item) => `<button data-master-review="${item.id}" class="${item.id === selected?.id ? 'active' : ''}"><span class="master-status ${item.status}">${statusText(item.status)}</span><b>${item.scope} · V${item.number}</b><small>${safe(item.creatorName)} · ${labelTime(item.updatedAt)}</small></button>`).join('')}</aside><div class="master-review-detail">${selected ? `<span class="master-status ${selected.status}">${statusText(selected.status)}</span><h3>${selected.scope} 產線與類別 · V${selected.number}</h3><div class="master-change-grid"><span><b>${selected.snapshot.products.length}</b><br>產品</span><span><b>${[...new Set(selected.snapshot.products.map((item) => item.category))].length}</b><br>類別</span><span><b>${selected.snapshot.lines.reduce((sum, line) => sum + line.stages.length, 0)}</b><br>工段</span></div>${selected.warnings?.length ? `<div class="master-danger-list"><b>⚠ 刪除警告</b>${selected.warnings.map((item) => `<div>${safe(item)}</div>`).join('')}</div>` : ''}<div class="master-version-actions">${canApprove() && selected.status === 'pending' ? `<button class="button signal" id="approve-master">確認版本</button>` : ''}${selected.status === 'pending' && (selected.creatorId === currentUser?.id || currentUser?.role === 'admin') ? `<button class="button ghost" id="withdraw-master-review">解除送審，繼續修改</button>` : ''}</div>` : '尚無主資料版本'}</div></div></section>`;
-  }
-  function bindApprovalMaster() {
+    return `<section class="master-pending"><header><p class="eyebrow">MASTER DATA VERSION CONTROL</p><h2>主資料版本確認</h2><p>AB 與 C 的產品、線別、工段與製程路線都在這裡確認；刪除變更會特別標示。</p></header><div class="master-review-grid"><aside class="master-review-list">${reviewable.map((item) => `<button data-master-review="${item.id}" class="${item.id === selected?.id ? 'active' : ''}"><span class="master-status ${item.status}">${statusText(item.status)}</span><b>${item.scope} · V${item.number}</b><small>${safe(item.creatorName)} · ${labelTime(item.updatedAt)}</small></button>`).join('')}</aside><div class="master-review-detail">${selected ? `<span class="master-status ${selected.status}">${statusText(selected.status)}</span><h3>${selected.scope} 產線與類別 · V${selected.number}</h3><div class="master-change-grid"><span><b>${selected.snapshot.products.length}</b><br>產品</span><span><b>${new Set(selected.snapshot.products.map((item) => item.category)).size}</b><br>類別</span><span><b>${selected.snapshot.lines.reduce((sum, line) => sum + line.stages.length, 0)}</b><br>工段</span></div>${selected.warnings?.length ? `<div class="master-danger-list"><b>⚠ 刪除警告</b>${selected.warnings.map((item) => `<div>${safe(item)}</div>`).join('')}</div>` : ''}<div class="master-version-actions">${canApprove() && selected.status === 'pending' ? `<button class="button signal" id="approve-master">確認版本</button>` : ''}${selected.status === 'pending' && (selected.creatorId === currentUser?.id || currentUser?.role === 'admin') ? `<button class="button ghost" id="withdraw-master-review">解除送審，繼續修改</button>` : ''}</div>` : '尚無主資料版本'}</div></div></section>`;
+  };
+  let bindApprovalMaster = function() {
     document.querySelectorAll('[data-master-review]').forEach(
       (button) =>
         (button.onclick = () => {
@@ -1133,7 +1057,7 @@
         toast('已解除送審，項目已從待確認清單移除');
         render();
       });
-  }
+  };
   if (window.MasterAdminUI) {
     const enhanced = window.MasterAdminUI.install({
       state,
@@ -1149,11 +1073,18 @@
       importExcel,
       exportExcel,
       validateCatalog,
+      shared,
     });
     current = enhanced.current;
+    window.MasterAdminUI.preserveView=enhanced.preserveView;
     editable = enhanced.editable;
     masterView = enhanced.masterView;
-    bindMaster = enhanced.bindMaster;
+    bindMaster = function(){enhanced.bindMaster();const scope=state.masterScope;if(sharedLoaded.has(scope)||sharedLoading.has(scope))return;
+      sharedLoading.add(scope);document.querySelectorAll('#data-content button').forEach(b=>b.disabled=true);
+      shared.load(scope).then(()=>{sharedLoaded.add(scope);render();}).catch(error=>{
+        toast(displayDraftError(error));const panel=document.querySelector('#data-content');if(!panel)return;
+        const retry=document.createElement('button');retry.className='button ghost';retry.textContent=document.documentElement.lang==='vi'?'Thử tải lại bản nháp chung':'重新載入共用草稿';retry.onclick=()=>{retry.remove();bindMaster();};panel.prepend(retry);
+      }).finally(()=>sharedLoading.delete(scope));};
     productRows = enhanced.productRows;
     syncRows = enhanced.syncRows;
     categories = enhanced.categories;
@@ -1165,6 +1096,7 @@
         record,
         validateCatalog,
         applyActive,
+        shared,
         showVersion: (scope, id) => {
           if (scope === 'PROCESS')
             window.ProcessMasterVersioning?.showVersion(id);
@@ -1172,7 +1104,7 @@
         },
       });
       approvalSection = review.view;
-      bindApprovalMaster = review.bind;
+      bindApprovalMaster = function(){review.bind();const missing=['AB','C','PROCESS'].filter(scope=>!sharedLoaded.has(scope)&&!sharedLoading.has(scope));if(!missing.length)return;missing.forEach(s=>sharedLoading.add(s));Promise.all(missing.map(s=>shared.load(s).then(()=>sharedLoaded.add(s)))).then(()=>render()).catch(e=>toast(displayDraftError(e))).finally(()=>missing.forEach(s=>sharedLoading.delete(s)));};
     }
   }
   window.MasterDataWorkflow = {
@@ -1180,14 +1112,30 @@
     persist,
     record,
     applyActive,
+    shared,
   };
+  let sharedPoll;
+  function pollMaster(){clearTimeout(sharedPoll);sharedPoll=setTimeout(async()=>{
+    try{if(document.visibilityState!=='hidden'&&!shared.busy()&&sharedLoaded.size){
+      const editing=document.querySelector('dialog[open],.shared-restore-overlay')||document.activeElement?.matches('input,textarea,select');
+      if(!editing&&(document.querySelector('.master-organized,.process-master-version')||state.view==='approval'&&state.approvalTab==='master')){let changed=false;
+        const scopes=state.view==='approval'?[...sharedLoaded]:[document.querySelector('.process-master-version')?'PROCESS':state.masterScope];
+        for(const scope of scopes){if(!sharedLoaded.has(scope))continue;const result=await shared.load(scope);changed ||= !result.unchanged||result.permissionsChanged;}
+        if(changed){applyActive();render();}
+      }
+    }}catch(error){const panel=document.querySelector('#master-shared-status');if(panel)panel.textContent=displayDraftError(error);}finally{pollMaster();}
+  },4000);}
+  pollMaster();
   applyActive();
   window.addEventListener('process-shared-state-updated', () => {
     platformUsers = readStore('platformUsers', platformUsers);
     approvalVersions = readStore('approvalVersions', approvalVersions);
     dispatchBoard = readStore('dispatchBoard', dispatchBoard);
     processMaster = readStore('processMasterData', processMaster);
-    control = readStore(STORAGE, control);
+    const incoming=readStore(STORAGE,control),kept=control.workflowScopes||{};
+    incoming.workflowScopes=kept;
+    for(const scope of Object.keys(kept)){incoming.active[scope]=control.active[scope];incoming.versions=incoming.versions.filter(v=>v.scope!==scope).concat(control.versions.filter(v=>v.scope===scope));}
+    Object.assign(control,incoming);
     ensureProcessMasterVersionScope();
     if (state.view !== 'editor') state.editorByCategory = {};
     applyActive();
@@ -1202,11 +1150,15 @@
     window.dispatchEvent(new CustomEvent('process-runtime-updated'));
   });
   const priorRender = render;
+  if (new URL(location.href).searchParams.get('approvalTab') === 'routine') state.approvalTab = 'routine';
   render = function () {
+    const restoreMaster=window.MasterAdminUI?.preserveView?.();
     if (state.view === 'approval')
-      state.approvalTab =
-        state.approvalTab === 'process' ? 'process' : 'master';
+      state.approvalTab = ['process', 'quality', 'routine'].includes(state.approvalTab)
+        ? state.approvalTab
+        : 'master';
     priorRender();
+    restoreMaster?.();
     if (state.view === 'approval') {
       const masterActive = state.approvalTab === 'master';
       window.ApprovalTabs.mount({
@@ -1214,12 +1166,57 @@
         state,
         masterHTML: masterActive ? approvalSection() : '',
         masterPending: control.versions.filter((v) => v.status === 'pending')
-          .length,
-        processPending: approvalVersions.filter((v) => v.status === 'pending')
-          .length,
-        onSelect: () => render(),
+          .length + (window.BOMWorkspace?.pendingCount() || 0),
+        processPending: window.ProcessAuthoringV3?.enabled()?window.ProcessAuthoringV3.pendingCount()??'—':window.ProcessSync?.legacyProcessPendingCount?.()??'—',
+        qualityHTML:
+          state.approvalTab === 'quality'
+            ? `<header class="quality-review-intro"><p class="eyebrow">QUALITY VERSION CONTROL</p><h2>${document.documentElement.lang==='vi'?'Cơ sở dữ liệu chất lượng':'品質系統資料庫'}</h2><p>${document.documentElement.lang==='vi'?'FQC, IQC, IPQC-AB, IPQC-C và thiết bị lưu riêng hồ sơ gửi duyệt và duyệt.':'FQC、IQC、IPQC-AB、IPQC-C、檢具與測試設備各自保留送審與確認紀錄。'}</p></header>`
+              + (window.QualityReviewOverview?.html?.() || '')
+              + `<div class="quality-review-section" id="review-fqc">${window.FQCMasterUI?.reviewHTML?.() || ''}</div>`
+              + `<div class="quality-review-section" id="review-iqc">${window.IQCMasterUI?.reviewHTML?.() || ''}</div>`
+              + `<div class="quality-review-section" id="review-ipqc-ab">${window.IPQCABUI?.reviewHTML?.() || ''}</div>`
+              + `<div class="quality-review-section" id="review-ipqc-c">${window.IPQCCUI?.reviewHTML?.() || ''}</div>`
+              + `<div class="quality-review-section" id="review-equipment">${window.RoutineEquipmentUI?.reviewHTML?.() || ''}</div>`
+              + `<div class="quality-review-section" id="review-tooling">${window.ToolingUI?.reviewHTML?.() || ''}</div>`
+
+            : '',
+        qualityPending: (window.FQCMasterUI?.pendingCount?.() || 0) + (window.RoutineEquipmentUI?.pendingCount?.() || 0) + (window.IQCMasterUI?.pendingCount?.() || 0) + (window.IPQCCUI?.pendingCount?.() || 0) + (window.IPQCABUI?.pendingCount?.() || 0) + (window.ToolingUI?.pendingCount?.() || 0),
+        routineHTML: state.approvalTab === 'routine' ? window.RoutineFQCUI?.reviewHTML?.() || '' : '',
+        routinePending: window.RoutineFQCUI?.pendingCount?.() || 0,
+        onSelect: (key) => {
+          const route = new URL(location.href);
+          route.searchParams.set('approvalTab', key);
+          if (key !== 'routine') { route.searchParams.delete('rfDocument'); route.searchParams.delete('rfCase'); }
+          history.replaceState(null, '', route);
+          render();
+        },
       });
-      if (masterActive) bindApprovalMaster();
+      if (masterActive) {bindApprovalMaster();void window.BOMWorkspace?.loadReview().catch(()=>{});}
+      if (state.approvalTab === 'quality') window.QualityReviewOverview?.mount?.(document.querySelector('#approval-panel-quality'));
+      if (state.approvalTab === 'quality') window.ToolingUI?.bindReview?.(document.querySelector('#approval-panel-quality'));
+      if (state.approvalTab === 'routine') window.RoutineFQCUI?.bindReview?.(document.querySelector('#approval-panel-routine'));
+      window.RoutineFQCUI?.refreshPending?.();
+      if (state.approvalTab === 'quality')
+        window.FQCMasterUI?.bindReview?.(
+          document.querySelector('#approval-panel-quality'),
+        );
+      if (state.approvalTab === 'quality')
+        window.RoutineEquipmentUI?.bindReview?.(
+          document.querySelector('#approval-panel-quality'),
+        );
+      if (state.approvalTab === 'quality')
+        window.IQCMasterUI?.bindReview?.(
+          document.querySelector('#approval-panel-quality'),
+        );
+      if (state.approvalTab === 'quality')
+        window.IPQCCUI?.bindReview?.(
+          document.querySelector('#approval-panel-quality'),
+        );
+      if (state.approvalTab === 'quality')
+        window.IPQCABUI?.bindReview?.(
+          document.querySelector('#approval-panel-quality'),
+        );
     }
   };
+  window.addEventListener('process-language-change',()=>{if(state.view==='approval'&&!document.querySelector('dialog[open]')){const x=window.scrollX,y=window.scrollY;render();window.scrollTo(x,y);}});
 })();

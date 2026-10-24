@@ -1,6 +1,6 @@
 {
   "bootstrapVersion": 1,
-  "dataVersion": "ec44855354f0b27c4fc4da9d518db0b735c7a71e8f3a553c038152e771d7f83b",
+  "dataVersion": "b483311f9bd17d59006221286480cffc22ff8a1a93ad33c57b2a0dd18f23b1ab",
   "files": {
     "assets/manifest.json": "79be05bbd75e97b98c41eb631b2cefa00179ce4d097bc34d4f2e9ef7dd4b3664",
     "assets/web-manifest.json": "9f829d295e1001d7af4284e59c9e1b909f4682115d889b2f3583d561ff89e194",
@@ -14,13 +14,13 @@
     "process-versions.json": "3bdd47e5a68bd23e0ae69b4a1739ac4787bd20e27684ede461886fbd9387d495",
     "processes.json": "aa0f3536a3b9d3394f861bf5829e6952e1607456e3012f68876ffd372747d94e",
     "products.json": "db2988a58534b601938633f0378e1c23bcb704996519eb72d71d32076c91f01d",
-    "quality/fqc.json": "50f739f152430d379ae501faa6b166e1e7a630d0241f170e5ac834810caf155e",
+    "quality/fqc.json": "849fc3f595b3ed18d5242090196fb1f0e13a8da383aff66f19e65f67b2108e3a",
     "quality/ipqc.json": "77b750a3340a26895589d8aa0e8526bbad9560f70c8386b209d19ff517303577",
     "quality/iqc.json": "ee18b640fdebc4e40ab6b1e93f6d6b6f87c84621496b3cfaf0ab8b9aa9567337",
     "settings.json": "197ba34afdf16c8e1d10ca5f3b90b6f12b09e568993bac665543f35ebfd0eb3e",
     "stages.json": "464ec96f20b99c1d4d261eb5ea152cc0666095de7d7711eb69cd6d7e8bc42610"
   },
-  "generatedAt": "2026-09-18T07:27:38.989Z",
+  "generatedAt": "2026-09-21T07:12:36.358Z",
   "schemaVersion": 1,
   "sourceClassification": "approved-local-and-bundled-business"
 }

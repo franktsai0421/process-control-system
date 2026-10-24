@@ -1,0 +1,1 @@
+請解壓縮這個交接 ZIP，依序閱讀 READ-ME.md、equipment-review-workflow.md、equipment-d1-r2-plan.md，再讀 equipment-ui-hierarchy.html；原始設備Excel.xlsx 用於核對資料。這是檢具與測試設備 UI 的現有成果，請延續，不要重新設計、不要回到舊版 10 筆示範資料。先顯示目前 UI 給我看，等待我指定下一步。如果檔案無法讀取，請點名檔案。正式 D1/R2、品質系統版本確認平台與 FQC 修改尚未完成；請不要說已連接。所有新增決策請更新交接 MD，讓下次換對話可以繼續。

@@ -41,40 +41,59 @@
   const originalNormalize = window.normalizePlatformUser;
   window.normalizePlatformUser = (user) => {
     originalNormalize?.(user);
-    if (user.id === 'admin') {
-      user.role = 'admin';
-      user.views = [...allViews];
-      user.lines = ['A', 'B', 'C'];
-      user.permissions = [
-        'approval.viewAll',
-        'approval.viewLine',
-        'approval.compare',
-        'approval.submit',
-        'approval.withdraw',
-        'approval.approve',
-        'approval.reject',
-        'approval.requestChange',
-        'approval.revoke',
-        'approval.revise',
-        'status.viewAllLines',
-        'status.viewDetails',
-        'status.viewMedia',
-        'master.delete',
-        'master.import',
-        'master.export',
-      ];
-    }
     return user;
   };
   const priorIdentity = applyPlatformIdentity;
   applyPlatformIdentity = function () {
     if (currentUser) window.normalizePlatformUser(currentUser);
     priorIdentity();
+    updateOwnRecovery();
     document.querySelectorAll('.nav-item').forEach((n) => {
       n.hidden = !canView(n.dataset.view);
       n.style.display = n.hidden ? 'none' : '';
     });
   };
+  function updateOwnRecovery(notify = false) {
+    const menu = document.querySelector('#account-menu'),
+      owner = sync?.identity?.id,
+      recovery = sync?.ownRecovery?.();
+    let button = menu?.querySelector('[data-own-recovery]');
+    if (!menu || !owner || currentUser?.id !== owner ||
+        recovery?.actorId !== owner || !Object.keys(recovery.updates || {}).length) {
+      button?.remove();
+      return;
+    }
+    const vi = document.documentElement.lang === 'vi';
+    if (!button) {
+      button = document.createElement('button');
+      button.type = 'button';
+      button.dataset.ownRecovery = '1';
+      button.dataset.i18nSkip = 'true';
+      menu.append(button);
+    }
+    button.textContent = vi ? 'Tải bản phục hồi' : '下載未同步輸入';
+    button.title = vi ? 'Tải đầu vào chưa đồng bộ' : '下載未同步輸入';
+    button.onclick = () => {
+      const own = sync?.ownRecovery?.();
+      // A button opened before an account switch must not export another actor.
+      if (sync?.identity?.id !== owner || currentUser?.id !== owner ||
+          own?.actorId !== owner || !Object.keys(own.updates || {}).length) {
+        updateOwnRecovery();
+        return;
+      }
+      const url = URL.createObjectURL(new Blob([JSON.stringify(own, null, 2)], { type: 'application/json' })),
+        link = document.createElement('a');
+      link.href = url;
+      link.download = 'unsynced-input-recovery.json';
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    };
+    if (notify) toast(vi
+      ? 'Có đầu vào chưa đồng bộ. Tải bản phục hồi trong menu tài khoản; không tự gửi lại.'
+      : '有未同步輸入，可從帳號選單下載保全檔；不會自動補送。');
+  }
+  window.addEventListener('process-sync-status', () => updateOwnRecovery());
+  window.addEventListener('process-language-change', () => updateOwnRecovery());
   async function platformLogin(id, password) {
     const response = await fetch('/api/platform-login', {
         method: 'POST',
@@ -86,8 +105,10 @@
     const user = { ...value.user };
     sync?.setPlatformIdentity?.(user, password);
     await sync?.refresh?.();
+    window.BOMExcel?.refreshProjection?.();
     state.editorByCategory={};state.editorVersionId=null;
     enterPlatform(user);
+    updateOwnRecovery(true);
   }
   function bindProtectedPlatformLogin() {
     document.querySelectorAll('[data-quick-login]').forEach(
@@ -153,7 +174,7 @@
     const response = await fetch(backupEndpoint(), {
         cache: 'no-store',
         ...options,
-        headers: { ...backupHeaders(password), ...(options.headers || {}) },
+        headers: { ...backupHeaders(password), ...options.headers },
       }),
       raw = await response.text();
     let value;
@@ -186,7 +207,7 @@
         if (mode === activeBackupMode || (mode === 'disk' && !isLocalBackup)) return;
         activeBackupMode = mode;
         if (isLocalBackup) sessionStorage.setItem('process-backup-mode', mode);
-        backupPage();
+        backupPage().catch(error => toast(error.message));
       };
     });
   }
@@ -551,22 +572,13 @@
     const tabs = document.querySelector('.master-tabs');
     const users = tabs?.querySelector('[data-tab="users"]');
     if (users) users.hidden = !canManage();
-    if (tabs && canManage() && !tabs.querySelector('#backup-tab')) {
-      const b = document.createElement('button');
-      b.id = 'backup-tab';
-      b.dataset.tab = 'backups';
-      b.className = 'tab master-tab';
-      b.textContent = '備份與回復';
-      b.onclick = () => window.ProcessDataTabs.select('backups',true);
-      tabs.appendChild(b);
-    }
     window.ProcessDataTabs?.bind();
     if (tabs && !document.querySelector('.admin-visibility-note')) {
       const note = document.createElement('p');
       note.className = `admin-visibility-note ${canManage() ? 'admin' : 'viewer'}`;
       note.textContent = canManage()
-        ? '目前身分：ADMIN｜可管理使用者、權限、本機硬碟與雲端備份。'
-        : '目前身分：員工公開查看｜使用者與權限、備份與回復僅限 ADMIN，因此不會顯示。';
+        ? '目前身分：ADMIN｜可管理使用者與權限。'
+        : '個人資料與密碼請開啟「我的帳號」。';
       tabs.after(note);
     }
   };
@@ -581,9 +593,8 @@
     if (tab === 'users' && canManage()) {
       const p = document.createElement('section');
       p.className = 'backup-panel';
-      p.innerHTML = `<h3>ADMIN 帳號管理</h3><p>帳號、密碼、角色與權限均由 ADMIN 在本平台管理，不需要綁定任何外部帳號。</p><button class="button ghost" id="open-user-backups">查閱整站備份與回復</button>`;
+      p.innerHTML = `<h3>ADMIN 帳號管理</h3><p>帳號、密碼、角色與權限均由 ADMIN 在本平台管理，不需要綁定任何外部帳號。</p>`;
       document.querySelector('#data-content').appendChild(p);
-      p.querySelector('#open-user-backups').onclick = backupPage;
       document
         .querySelector('#save-role-permissions')
         ?.addEventListener('click', () => applyPlatformIdentity());

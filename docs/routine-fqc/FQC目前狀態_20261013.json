@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-13",
+  "readAt": "2026-10-13T04:48:30.434Z",
+  "port": 3040,
+  "companyDate": "2026-10-13",
+  "companyTimezone": "Asia/Ho_Chi_Minh",
+  "branch": "codex/ipqc-ab-local",
+  "head": "8b182626085bb2aa1f3a216903c5b373ee82bc44",
+  "sharedStateRevision": 1198,
+  "routineRevision": 753,
+  "startDate": "2026-10-07",
+  "counts": {
+    "jobs": 26,
+    "documents": 99,
+    "cases": 20
+  },
+  "jobs": {
+    "unassigned": 0,
+    "unfinished": 0,
+    "overdue": 0,
+    "completion": {
+      "disposal": 8,
+      "waiver": 3,
+      "pass": 15
+    }
+  },
+  "documentStatuses": {
+    "approved": 83,
+    "cancelled": 16
+  },
+  "documentTypes": {
+    "plan": 34,
+    "initial": 17,
+    "retest": 20,
+    "correction": 8,
+    "disposal": 15,
+    "waiver": 5
+  },
+  "caseStatuses": {
+    "disposed": 10,
+    "waived": 4,
+    "closed": 6
+  },
+  "source": {
+    "activeId": "750b5060-92b6-4fe6-952e-83ca37dbe9ca",
+    "workingEqualsActive": true,
+    "pending": false,
+    "sourceRecords": 26,
+    "parsedTimeSources": 26,
+    "frequencyCounts": {
+      "semiannual": 4,
+      "monthly": 22
+    }
+  },
+  "qaIdentityPermissions": {
+    "view": true,
+    "edit": true,
+    "save": true,
+    "submit": true,
+    "withdraw": true,
+    "approve": true,
+    "return": true,
+    "history": true,
+    "settings": true,
+    "revoke": true,
+    "revise": true
+  },
+  "evidenceBaseline": {
+    "originalDocuments": 96,
+    "originalJobs": 25,
+    "originalCases": 19,
+    "expectedSyntheticAdditions": {
+      "documents": 3,
+      "jobs": 1,
+      "cases": 1
+    },
+    "preservationVerifiedPreviously": true
+  },
+  "syntheticAcceptanceNumbers": {
+    "initial": "FQC-RPT-20261013-0044",
+    "retest": "FQC-RTS-20261013-0045",
+    "case": "FQC-CA-00020"
+  }
+}

@@ -1,17 +1,18 @@
+import {withFixtureCleanup} from './fixture-cleanup.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import { initializeLocal, inspectMigrations } from './local-init.mjs';
-import { assertLocalMode, localPaths } from '../lib/local-runtime.mjs';
+import { assertLocalMode, localPaths, readLocalSession } from '../lib/local-runtime.mjs';
 import {readLocalState,writeLocalState}from'../lib/local-data.mjs';
 
 // All mutations are restricted to fresh, disposable fixtures, never the invoking DB.
 const source = process.cwd();
 const fixture = fs.mkdtempSync(path.join(os.tmpdir(), 'process-demo-init-fixture-'));
 let proxy;
-try {
-  for (const file of ['package.json', 'db/schema.ts', 'db/seed.json', 'lib/user-access.ts',
+await withFixtureCleanup(async () => {
+  for (const file of ['package.json', 'db/schema.ts', 'db/seed.json', 'lib/user-access.ts', 'public/process/access-policy.mjs',
     'drizzle/meta/_journal.json', ...fs.readdirSync('drizzle').filter(n => n.endsWith('.sql')).map(n => 'drizzle/' + n)]) {
     const destination = path.join(fixture, file);
     fs.mkdirSync(path.dirname(destination), { recursive: true }); fs.copyFileSync(file, destination);
@@ -36,7 +37,7 @@ try {
   const open = () => getPlatformProxy({ configPath: localPaths(fixture).config,
     persist: { path: path.join(localPaths(fixture).state, 'v3') }, remoteBindings: false, envFiles: [] });
   proxy = await open();
-  const row = await proxy.env.DB.prepare('SELECT revision, "values" FROM shared_state WHERE id=1').first();
+  const _row = await proxy.env.DB.prepare('SELECT revision, "values" FROM shared_state WHERE id=1').first();
   const read=()=>readLocalState({db:proxy.env.DB,bucket:proxy.env.STATE_ARCHIVE});
   const values = (await read()).values;
   assert.equal(JSON.parse(values.platformUsers).length, 3);
@@ -49,6 +50,14 @@ try {
   proxy = await open();
   let current = await read();
   assert.equal(JSON.stringify(current.values), JSON.stringify(values), 'startup overwrote existing fixture business state');
+  await proxy.dispose(); proxy = undefined;
+  const incomplete = path.join(localPaths(fixture).directory, 'development-package-incomplete.json');
+  fs.writeFileSync(incomplete, JSON.stringify({ fixture: true }), {flag:'wx'});
+  await assert.rejects(() => initializeLocal(fixture), /restore is incomplete/);
+  assert.throws(() => readLocalSession(fixture), /restore is incomplete/);
+  fs.unlinkSync(incomplete);
+  proxy = await open(); current = await read();
+  assert.equal(JSON.stringify(current.values), JSON.stringify(values), 'incomplete restore guard changed existing fixture data');
   const users = JSON.parse(values.platformUsers); users[0].authMode = 'platform';
   values.platformUsers = JSON.stringify(users);
   await writeLocalState({db:proxy.env.DB,bucket:proxy.env.STATE_ARCHIVE},await read(),values);
@@ -60,13 +69,13 @@ try {
   await proxy.dispose(); proxy = undefined;
   await assert.rejects(() => initializeLocal(fixture), /incomplete/);
   console.log('PASS: disposable Local D1/R2, exact existing migrations, constraints, remote/Production refusal, idempotence, business preservation and fail-closed conflicts');
-} catch {
-  console.error('FAIL: isolated Local initialization test (sensitive details suppressed)');
-  process.exitCode = 1;
-} finally {
+}, async () => {
   if (proxy) await proxy.dispose();
   const target = fs.realpathSync(fixture), parent = fs.realpathSync(os.tmpdir());
   if (path.dirname(target) !== parent || !path.basename(target).startsWith('process-demo-init-fixture-'))
     throw Error('Fixture cleanup target verification failed');
   fs.rmSync(target, { recursive: true, force: true });
-}
+}, async () => {
+  console.error('FAIL: isolated Local initialization test (sensitive details suppressed)');
+  process.exitCode = 1;
+});

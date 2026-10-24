@@ -8,7 +8,7 @@ const vm=require('node:vm');
  const state=await response.json();if(state.identity?.role!=='admin')throw Error('Expected existing local admin authority');
  const control=JSON.parse(state.values.masterDataControl),source=JSON.parse(fs.readFileSync('public/process/data/process-equipment-source.json','utf8'));
  if(control.versions.some(v=>v.scope==='PROCESS'&&v.status==='pending'))throw Error('A PROCESS review is pending; no data changed');
- const now=new Date().toISOString(),versions=control.versions.filter(v=>v.scope==='PROCESS');
+ const now=new Date().toISOString(),_versions=control.versions.filter(v=>v.scope==='PROCESS');
  const clone=v=>JSON.parse(JSON.stringify(v));
  let catalog=control.active.PROCESS,initialized=false;
  if(!catalog){

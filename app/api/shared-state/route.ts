@@ -1,14 +1,22 @@
+import {legacyJsonValueText,type JsonValue} from '@/lib/legacy-login-json';
+import type {LegacyMasterControl,LegacyMasterSnapshot,LegacyMasterCatalog,LegacyCodeRow,LegacyProcessCatalog,LegacyProcessEquipment,LegacyApprovalVersion} from '@/lib/legacy-master-types';
 import { env } from 'cloudflare:workers';
 import { mediaState, restoreMediaUpdates, writeReceipt } from '@/lib/state-media';
+import { backupStoredState } from '@/lib/process-state';
+import {DraftConflict,stableDraftJSON} from '@/lib/shared-draft';
+import {validateIPQCAssignments,legacyWorkspace} from '@/lib/process-ipqc';
+import {removedMasterStages,stageReferences} from '@/lib/master-stage-references';
+import {assertStageTemplateAvailable} from '@/lib/master-process-lock';
+import {assertProcessLinkAvailable} from '@/lib/master-stage-link';
 import {
   readState,
+  readPlatformUsers,
   encodeValues,
   identity,
   can,
   publicState,
   sameOrigin,
   allowedKey,
-  backupStoredState,
   scheduledBackup,
   parse,
   publicUntil,
@@ -16,7 +24,7 @@ import {
   responseHeaders as headers,
 } from '@/lib/process-state';
 
-const normalizeUserId = (value: unknown) => String(value || '').trim().toLowerCase();
+const normalizeUserId = (value: unknown) => legacyJsonValueText((value || '') as JsonValue).trim().toLowerCase();
 const processPresetKeys = [
   'entry',
   'manual',
@@ -45,11 +53,11 @@ const validProcessCatalog = (
     for (const item of items) {
       if (!item || typeof item !== 'object') return false;
       const template = item as Record<string, unknown>;
-      const id = String(template.id || '').trim();
-      const name = String(template.name || '').trim();
+      const id = legacyJsonValueText((template.id || '') as JsonValue).trim();
+      const name = legacyJsonValueText((template.name || '') as JsonValue).trim();
       if (!id || !name || ids.has(id)) return false;
       ids.add(id);
-      if (template.presetKey) presets.add(String(template.presetKey));
+      if (template.presetKey) presets.add(legacyJsonValueText((template.presetKey) as JsonValue));
       if (
         template.mediaItems !== undefined &&
         !Array.isArray(template.mediaItems)
@@ -57,11 +65,11 @@ const validProcessCatalog = (
         return false;
       if (template.equipment !== undefined) {
         if (!['machine-assembly', 'machine-setting'].includes(String(template.presetKey)) || !Array.isArray(template.equipment)) return false;
-        for (const e of template.equipment as any[]) {
+        for (const e of template.equipment as LegacyProcessEquipment[]) {
           if (!e || typeof e !== 'object' || typeof e.id !== 'string' || !e.id || equipmentIds.has(e.id) ||
             typeof e.name !== 'string' || !e.name.trim() || typeof e.number !== 'string' ||
             e.stageCode !== stage || e.line !== stage.split('-')[0] || e.kind !== template.presetKey ||
-            !Array.isArray(e.mediaItems) || e.mediaItems.some((p:any) => !p || typeof p.src !== 'string')) return false;
+            !Array.isArray(e.mediaItems) || e.mediaItems.some((p) => !p || typeof p.src !== 'string')) return false;
           equipmentIds.add(e.id);
         }
       }
@@ -71,7 +79,7 @@ const validProcessCatalog = (
 };
 const historicalUserReference = (values: Record<string, string>, userId: string) => {
   const identityFields = new Set(['creatorId','reviewerId','actorId','userId','submittedBy','createdBy','updatedBy','ownerId']);
-  const visit = (value: any, key = ''): boolean => {
+  const visit = (value: unknown, key = ''): boolean => {
     if (Array.isArray(value)) return value.some((item) => visit(item));
     if (!value || typeof value !== 'object')
       return identityFields.has(key) && normalizeUserId(value) === userId;
@@ -83,9 +91,9 @@ const historicalUserReference = (values: Record<string, string>, userId: string)
 };
 
 export async function GET(request: Request) {
-  const state = await readState(),
+  const state = await readState({deferHistory:true,deferDependencyHistory:true}),
     user = await identity(request, state);
-  if (!demoEnabled(request) && Date.now() >= publicUntil && user?.role !== 'admin')
+  if (!demoEnabled(request) && Date.now() >= publicUntil && user?.role !== 'admin' && user?.sessionType !== 'platform')
     return Response.json(
       { error: '公開檢視期限已結束' },
       { status: 403, headers },
@@ -96,14 +104,14 @@ export async function GET(request: Request) {
     console.error('[cloud-backup] scheduled snapshot failed', error);
   }
   return Response.json(
-    { ...(request.headers.get('X-Process-Media') === 'deferred-v1' ? await mediaState(state) : publicState(state)), identity: user, serverProtected: true, demoEnabled: demoEnabled(request) },
+    { ...(request.headers.get('X-Process-Media') === 'deferred-v1' ? await mediaState(state,user?.id) : publicState(state,user?.id)), identity: user, serverProtected: true, demoEnabled: demoEnabled(request) },
     { headers },
   );
 }
 export async function POST(request: Request) {
   if (!sameOrigin(request))
     return Response.json({ error: '來源不允許' }, { status: 403, headers });
-  const state = await readState(),
+  const state = await readState({deferHistory:true,deferDependencyHistory:true}),
     user = await identity(request, state);
   if (!user)
     return Response.json(
@@ -115,20 +123,23 @@ export async function POST(request: Request) {
       { error: '系統正在進行整站還原，暫停新增與修改資料。' },
       { status: 503, headers },
     );
-  let body: any;
+  let body: {updates?:Record<string,string|null>;baseRevision?:unknown};
   try {
     body = await request.json();
   } catch {
     return Response.json({ error: '資料格式錯誤' }, { status: 400, headers });
   }
   if (
+    !body ||
+    typeof body !== 'object' ||
+    Array.isArray(body) ||
     !body.updates ||
     Array.isArray(body.updates) ||
     typeof body.updates !== 'object'
   )
     return Response.json({ error: '資料格式錯誤' }, { status: 400, headers });
   if (body.baseRevision !== state.revision)
-    return Response.json(request.headers.get('X-Process-Media') === 'deferred-v1' ? await mediaState(state) : publicState(state), { status: 409, headers });
+    return Response.json(publicState(state,user.id), { status: 409, headers });
   const values = { ...state.values };
   for (const [key, value] of Object.entries(body.updates)) {
     if (!allowedKey(key) || !(value === null || typeof value === 'string'))
@@ -147,6 +158,26 @@ export async function POST(request: Request) {
       }
     }
     if (value === state.values[key]) continue;
+    if(key==='bomOverrides'&&state.values.bomMasterControl)
+      return Response.json({error:'WORKFLOW_V3_REQUIRED'},{status:409,headers});
+    if(state.values.processAuthoringControl&&(key==='approvalVersions'||key==='publishedProcess'||key.startsWith('processEditor:')))
+      return Response.json({error:'WORKFLOW_V3_REQUIRED'},{status:409,headers});
+    if(key==='qualityMasterControl'&&parse(state.values[key],null)?.libraries?.fqc?.workflow)
+      return Response.json({error:'WORKFLOW_V3_REQUIRED'},{status:409,headers});
+    const adoptedMaster=parse(state.values.masterDataControl,null);
+    if(adoptedMaster&&(key==='processMasterData'||key==='masterDataControl'&&
+      stableDraftJSON(parse(value as string,null)?.active?.PROCESS)!==stableDraftJSON(adoptedMaster.active?.PROCESS))){
+      try{assertProcessLinkAvailable(adoptedMaster);}catch(error){return Response.json({error:(error as {code?:unknown}).code,details:(error as {details?:unknown}).details},{status:409,headers});}
+    }
+    if(key==='masterDataControl'&&adoptedMaster?.workflowScopes){
+      const incoming=parse(value as string,null),scopes=Object.keys(adoptedMaster.workflowScopes);
+      if(!incoming||stableDraftJSON(incoming.workflowScopes)!==stableDraftJSON(adoptedMaster.workflowScopes)||scopes.some(scope=>
+        stableDraftJSON(incoming.active?.[scope])!==stableDraftJSON(adoptedMaster.active?.[scope])||
+        stableDraftJSON(incoming.versions?.filter((v:{scope:string})=>v.scope===scope))!==stableDraftJSON(adoptedMaster.versions.filter((v:{scope:string})=>v.scope===scope))))
+        return Response.json({error:'WORKFLOW_V3_REQUIRED'},{status:409,headers});
+    }
+    if(key==='processMasterData'&&adoptedMaster?.workflowScopes?.PROCESS)
+      return Response.json({error:'WORKFLOW_V3_REQUIRED'},{status:409,headers});
     if (['platformUsers','processCustomRoles','processRoleTemplateOverrides'].includes(key))
       return Response.json({error:'帳號與角色請使用管理介面的專用操作儲存'}, {status:403,headers});
     const required = [
@@ -183,7 +214,18 @@ export async function POST(request: Request) {
       return Response.json({error:'媒體讀取失敗，未儲存；請重試。'}, {status:503,headers});
     }
   }
-  const master = parse(values.masterDataControl, null);
+  try {
+    for(const key of Object.keys(body.updates)) {
+      if(key.startsWith('processEditor:')&&values[key])validateIPQCAssignments([legacyWorkspace(JSON.parse(values[key]))],state.values[key]?[legacyWorkspace(JSON.parse(state.values[key]))]:[],state.values);
+      if(key==='approvalVersions'&&values[key])for(const version of JSON.parse(values[key])) {
+        const previous=JSON.parse(state.values[key]||'[]').find((v:{id:string})=>v.id===version.id);
+        validateIPQCAssignments([legacyWorkspace(version)],previous?[legacyWorkspace(previous)]:[],state.values);
+      }
+    }
+  } catch(error) {
+    return Response.json({error:error instanceof DraftConflict?error.code:error instanceof Error?error.message:'IPQC_ASSIGNMENT_INVALID'},{status:error instanceof DraftConflict?error.status:422,headers});
+  }
+  const master:LegacyMasterControl|null = parse(values.masterDataControl, null);
   if (
     master &&
     (!master.active?.AB || !master.active?.C || !Array.isArray(master.versions))
@@ -193,15 +235,15 @@ export async function POST(request: Request) {
       { status: 400, headers },
     );
   if (master)
-    for (const scope of ['AB', 'C']) {
+    for (const scope of ['AB', 'C'] as const) {
       const catalog = master.active[scope];
       if (
         !Array.isArray(catalog.products) ||
         !Array.isArray(catalog.lines) ||
         catalog.products.some(
-          (p: any) => !p.code || !Array.isArray(p.stages),
+          (p) => !p.code || !Array.isArray(p.stages),
         ) ||
-        catalog.lines.some((l: any) => !l.code || !Array.isArray(l.stages))
+        catalog.lines.some((l) => !l.code || !Array.isArray(l.stages))
       )
         return Response.json(
           { error: '主資料結構不完整' },
@@ -209,9 +251,9 @@ export async function POST(request: Request) {
         );
     }
   const processStages = master
-    ? ['AB', 'C'].flatMap((scope) =>
-        master.active[scope].lines.flatMap((line: any) =>
-          line.stages.map((stage: any) => String(stage.code || '')),
+    ? (['AB', 'C'] as const).flatMap((scope) =>
+        master.active[scope].lines.flatMap((line) =>
+          line.stages.map((stage) => String(stage.code || '')),
         ),
       )
     : [];
@@ -225,7 +267,7 @@ export async function POST(request: Request) {
     );
   if (
     master?.versions?.some(
-      (version: any) =>
+      (version) =>
         version.scope === 'PROCESS' &&
         !validProcessCatalog(version.snapshot),
     )
@@ -234,8 +276,22 @@ export async function POST(request: Request) {
       { error: '流程資料版本結構不完整' },
       { status: 400, headers },
     );
-  const prior = parse(state.values.masterDataControl, null);
+  const prior:LegacyMasterControl|null = parse(state.values.masterDataControl, null);
   if (prior && master && JSON.stringify(prior) !== JSON.stringify(master)) {
+    const removedStages=new Set<string>();
+    for(const scope of ['AB','C'] as const)removedMasterStages(prior.active?.[scope],master.active?.[scope]).forEach(code=>removedStages.add(code));
+    for(const version of master.versions||[]){if(!['AB','C'].includes(version.scope)||!['draft','pending','approved'].includes(version.status))continue;
+      const old=prior.versions?.find((v:{id:string})=>v.id===version.id);
+      removedMasterStages(old?.snapshot||prior.active?.[version.scope],version.snapshot).forEach(code=>removedStages.add(code));}
+    const impact=stageReferences(state.values,[...removedStages]);
+    if(impact.total)return Response.json({error:'STAGE_IN_USE',details:impact},{status:409,headers});
+    try{
+      for(const scope of ['AB','C'] as const)assertStageTemplateAvailable(prior,prior.active?.[scope],master.active?.[scope]);
+      for(const version of master.versions||[]){if(!['AB','C'].includes(version.scope)||!['draft','pending','approved'].includes(version.status))continue;
+        const old=prior.versions?.find((v:{id:string})=>v.id===version.id);
+        assertStageTemplateAvailable(prior,old?.snapshot||prior.active?.[version.scope],version.snapshot);
+      }
+    }catch(error){if(error instanceof Error&&error.message==='PROCESS_TEMPLATE_SCOPE_BUSY')return Response.json({error:error.message,details:(error as {details?:unknown}).details},{status:409,headers});throw error;}
     const processScopeInitialization = Boolean(
       !prior.active?.PROCESS &&
         master.active?.PROCESS &&
@@ -253,37 +309,37 @@ export async function POST(request: Request) {
         { error: '只有主管核准才能變更生效資料' },
         { status: 403, headers },
       );
-    const removed = (a: any, b: any) =>
-      a.some((x: any) => !b.some((y: any) => y.code === x.code));
+    const removed = (a: LegacyCodeRow[], b: LegacyCodeRow[]) =>
+      a.some((x) => !b.some((y) => y.code === x.code));
     let deletion = false;
     for (const v of master.versions) {
-      const before = prior.versions.find((p: any) => p.id === v.id) || {
+      const before:{snapshot?:LegacyMasterSnapshot;status?:string} = prior.versions.find((p) => p.id === v.id) || {
         snapshot: prior.active[v.scope],
       };
       if (before?.snapshot && v.snapshot) {
         if (v.scope === 'PROCESS') {
-          const nextEquipment = new Set(Object.values(v.snapshot).flatMap((items:any) => items.flatMap((item:any) => (item.equipment || []).map((e:any) => e.id))));
-          deletion ||= Object.values(before.snapshot).some((items:any) => items.some((item:any) => (item.equipment || []).some((e:any) => !nextEquipment.has(e.id))));
-          deletion ||= Object.entries(before.snapshot).some(
-            ([stage, items]: [string, any]) =>
+          const nextEquipment = new Set(Object.values(v.snapshot).flatMap((items) => items.flatMap((item) => (item.equipment || []).map((e) => e.id))));
+          deletion ||= Object.values((before.snapshot as LegacyProcessCatalog)).some((items) => items.some((item) => (item.equipment || []).some((e) => !nextEquipment.has(e.id))));
+          deletion ||= Object.entries((before.snapshot as LegacyProcessCatalog)).some(
+            ([stage, items]) =>
               !Array.isArray(v.snapshot[stage]) ||
               items.some(
-                (item: any) =>
-                  !v.snapshot[stage].some((next: any) => next.id === item.id),
+                (item) =>
+                  !v.snapshot[stage].some((next) => next.id === item.id),
               ),
           );
         } else {
           deletion ||=
-            removed(before.snapshot.products || [], v.snapshot.products || []) ||
-            removed(before.snapshot.lines || [], v.snapshot.lines || []) ||
+            removed((before.snapshot as LegacyMasterCatalog).products || [], v.snapshot.products || []) ||
+            removed((before.snapshot as LegacyMasterCatalog).lines || [], v.snapshot.lines || []) ||
             removed(
-              (before.snapshot.lines || []).flatMap((l: any) => l.stages || []),
-              (v.snapshot.lines || []).flatMap((l: any) => l.stages || []),
+              ((before.snapshot as LegacyMasterCatalog).lines || []).flatMap((l) => l.stages || []),
+              (v.snapshot.lines || []).flatMap((l) => l.stages || []),
             );
           deletion ||=
-            (before.snapshot.products || []).some((p: any) => {
+            ((before.snapshot as LegacyMasterCatalog).products || []).some((p) => {
               const next = (v.snapshot.products || []).find(
-                (n: any) => n.code === p.code,
+                (n) => n.code === p.code,
               );
               return (
                 next &&
@@ -292,10 +348,10 @@ export async function POST(request: Request) {
                 )
               );
             }) ||
-            (before.snapshot.categoryGroups || []).some(
-              (g: any) =>
+            ((before.snapshot as LegacyMasterCatalog).categoryGroups || []).some(
+              (g) =>
                 !(v.snapshot.categoryGroups || []).some(
-                  (n: any) => n.line === g.line && n.name === g.name,
+                  (n) => n.line === g.line && n.name === g.name,
                 ),
             );
         }
@@ -314,7 +370,7 @@ export async function POST(request: Request) {
     if (
       deletion &&
       (!(await can(request, state, 'master.delete')) ||
-        prior.versions.some((v: any) => v.status === 'pending'))
+        prior.versions.some((v) => v.status === 'pending'))
     )
       return Response.json(
         { error: '無刪除權限，或仍有送審案件' },
@@ -322,8 +378,8 @@ export async function POST(request: Request) {
       );
   }
   if (values.processMasterData !== state.values.processMasterData) {
-    const before = parse(state.values.processMasterData, {}),
-      after = parse(values.processMasterData, {});
+    const before:LegacyProcessCatalog = parse(state.values.processMasterData, {}),
+      after:LegacyProcessCatalog = parse(values.processMasterData, {});
     if (
       master?.active?.PROCESS &&
       JSON.stringify(after) !== JSON.stringify(master.active.PROCESS)
@@ -332,19 +388,19 @@ export async function POST(request: Request) {
         { error: '流程資料必須先送審並由主管核准' },
         { status: 403, headers },
       );
-    const removed = Object.entries(before).some(([stage, items]: any) =>
+    const removed = Object.entries(before).some(([stage, items]) =>
       items.some(
-        (item: any) =>
-          !(after[stage] || []).some((next: any) => next.id === item.id),
+        (item) =>
+          !(after[stage] || []).some((next) => next.id === item.id),
       ),
     );
     const approvingProcessDeletion = Boolean(
       prior &&
         master &&
         (await can(request, state, 'approval.approve')) &&
-        master.versions.some((version: any) => {
+        master.versions.some((version) => {
           const previous = prior.versions.find(
-            (item: any) => item.id === version.id,
+            (item) => item.id === version.id,
           );
           return (
             version.scope === 'PROCESS' &&
@@ -359,7 +415,7 @@ export async function POST(request: Request) {
     if (
       removed &&
       (!(await can(request, state, 'master.delete')) ||
-        (prior?.versions?.some((v: any) => v.status === 'pending') &&
+        (prior?.versions?.some((v) => v.status === 'pending') &&
           !approvingProcessDeletion))
     )
       return Response.json(
@@ -368,8 +424,8 @@ export async function POST(request: Request) {
       );
   }
   if (values.approvalVersions !== state.values.approvalVersions) {
-    const before = parse(state.values.approvalVersions, []),
-      after = parse(values.approvalVersions, []);
+    const before:LegacyApprovalVersion[] = parse(state.values.approvalVersions, []),
+      after:LegacyApprovalVersion[] = parse(values.approvalVersions, []);
     if (!Array.isArray(after))
       return Response.json(
         { error: '版本資料格式錯誤' },
@@ -377,9 +433,9 @@ export async function POST(request: Request) {
       );
     if (
       after.some(
-        (v: any) =>
+        (v) =>
           v.status === 'approved' &&
-          before.find((p: any) => p.id === v.id)?.status !== 'approved',
+          before.find((p) => p.id === v.id)?.status !== 'approved',
       ) &&
       !(await can(request, state, 'approval.approve'))
     )
@@ -389,17 +445,17 @@ export async function POST(request: Request) {
       );
   }
   if (Object.prototype.hasOwnProperty.call(body.updates, 'platformUsers') && values.platformUsers) {
-    const users = parse(values.platformUsers, []),
-      old = parse(state.values.platformUsers, []);
+    const users = readPlatformUsers(values.platformUsers),
+      old = readPlatformUsers(state.values.platformUsers);
     if (!Array.isArray(users))
       return Response.json({ error: '使用者資料格式錯誤' }, { status: 400, headers });
-    const ids = users.map((u: any) => normalizeUserId(u.id));
+    const ids = users.map((u) => normalizeUserId(u.id));
     if (ids.some((id: string) => !id || !/^[a-z0-9._-]{1,80}$/.test(id)))
       return Response.json({ error: '帳號只可使用英文字母、數字、點、底線及連字號' }, { status: 400, headers });
     if (new Set(ids).size !== ids.length)
       return Response.json({ error: '英文帳號不分大小寫且不可重複' }, { status: 409, headers });
-    const normalized = users.map((u: any, index: number) => {
-      const id = ids[index], previous = old.find((o: any) => normalizeUserId(o.id) === id);
+    const normalized = users.map((u, index: number) => {
+      const id = ids[index], previous = old.find((o) => normalizeUserId(o.id) === id);
       return {
         ...u,
         id,
@@ -413,12 +469,12 @@ export async function POST(request: Request) {
         password: u.password || previous?.password,
       };
     });
-    if (normalized.some((u: any) => !u.name || !u.password))
+    if (normalized.some((u) => !u.name || !u.password))
       return Response.json({ error: '使用者姓名與密碼不可空白' }, { status: 400, headers });
-    if (!normalized.some((u: any) => u.role === 'admin' && u.enabled !== false))
+    if (!normalized.some((u) => u.role === 'admin' && u.enabled !== false))
       return Response.json({ error: '不可停用或刪除最後一位 ADMIN' }, { status: 409, headers });
-    const deleted = old.filter((u: any) => !normalized.some((n: any) => n.id === normalizeUserId(u.id)));
-    const protectedUser = deleted.find((u: any) => historicalUserReference(state.values, normalizeUserId(u.id)));
+    const deleted = old.filter((u) => !normalized.some((n) => n.id === normalizeUserId(u.id)));
+    const protectedUser = deleted.find((u) => historicalUserReference(state.values, normalizeUserId(u.id)));
     if (protectedUser)
       return Response.json({ error: `帳號 ${normalizeUserId(protectedUser.id)} 已有歷史紀錄，只能停用` }, { status: 409, headers });
     values.platformUsers = JSON.stringify(
@@ -429,26 +485,25 @@ export async function POST(request: Request) {
   // Treat an identical snapshot as a successful no-op so it does not create a
   // backup or consume a revision number on every polling cycle.
   if (Object.keys(values).length === Object.keys(state.values).length &&
-      Object.entries(values).every(([key, value]) => state.values[key] === value))
-    return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(state, request, body.updates) : publicState(state), { headers });
-  await backupStoredState(state.revision, '整站資料異動前保護備份', user.id);
+      Object.entries(values).every(([key, value]) => value === state.values[key]))
+    return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(state, request, body.updates) : publicState(state,user.id), { headers });
+  if (!await backupStoredState(state, '整站資料異動前保護備份', user.id))
+    return Response.json(publicState(await readState(),user.id), { status: 409, headers });
   const next = { revision: state.revision + 1, values };
   const result = await env.DB.prepare(
     'UPDATE shared_state SET revision=?,"values"=?,updated_at=? WHERE id=1 AND revision=?',
   )
     .bind(
       next.revision,
-      await encodeValues(values),
+      await encodeValues(values,state),
       new Date().toISOString(),
       state.revision,
     )
     .run();
-  if (!result.meta.changes) {
-    const current = await readState();
-    return Response.json(request.headers.get('X-Process-Media') === 'deferred-v1' ? await mediaState(current) : publicState(current), {
+  if (!result.meta.changes)
+    return Response.json(publicState(await readState(),user.id), {
       status: 409,
       headers,
     });
-  }
-  return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(next, request, body.updates) : publicState(next), { headers });
+  return Response.json(request.headers.get('X-Process-Receipt') === 'sha256' ? await writeReceipt(next, request, body.updates) : publicState(next,user.id), { headers });
 }

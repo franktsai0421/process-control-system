@@ -1,3 +1,4 @@
+const isolatedTestTarget_20261010=require('./require-isolated-test-target.cjs')();
 const fs=require('node:fs');
 const assert=require('node:assert/strict');
 const {chromium}=require(require('./browser-test-runtime.cjs').playwrightModule);
@@ -15,7 +16,7 @@ const {chromium}=require(require('./browser-test-runtime.cjs').playwrightModule)
   });
   const page=await context.newPage();page.setDefaultTimeout(30000);const errors=[];
   page.on('pageerror',e=>errors.push(e.message));page.on('dialog',dialog=>dialog.accept());
-  await page.goto('http://localhost:3000/process/?build=20260910-5800&manage=1&dataTab=process-master');
+  await page.goto((isolatedTestTarget_20261010+"/process/?build=20260910-5800&manage=1&dataTab=process-master"));
   await page.locator('[data-view=data]').click();await page.locator('[data-tab=process-master]').click();
   await page.locator('#process-master-new-draft').click();await page.evaluate(()=>ProcessEquipment.loadSource());
   await page.waitForFunction(()=>window.ProcessEquipment.entries(currentProcessMasterData()).length===190);

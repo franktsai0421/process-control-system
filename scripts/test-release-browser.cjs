@@ -4,7 +4,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||require('./browser-test-
  const browser=await chromium.launch({executablePath:require('./browser-test-runtime.cjs').browserExecutable,headless:true});
  try{
   const fixture=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'..','db','seed.json')));
-  fixture.values.platformUsers=JSON.stringify(JSON.parse(fixture.values.platformUsers).map(({password,...u})=>u));
+  fixture.values.platformUsers=JSON.stringify(JSON.parse(fixture.values.platformUsers).map(({password: _password,...u})=>u));
   fixture.serverProtected=true;fixture.demoEnabled=true;fixture.identity=null;
   const context=await browser.newContext(),page=await context.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));

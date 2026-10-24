@@ -95,11 +95,13 @@
       }catch(error){if(!dialog.isConnected)return;dialog.innerHTML=`<header><h2>${t('無法匯入 BOM','Không thể nhập BOM')}</h2></header><div class="master-dialog-body"><p>${t('本次未變更任何 BOM。','Không thay đổi BOM nào.')}</p><pre class="master-dialog-error">${h(error.message)}</pre></div><footer><button class="bom-quiet" data-import-close>${t('關閉','Đóng')}</button></footer>`;dialog.querySelector('[data-import-close]').onclick=()=>dialog.close();}
     });
   }
-  host.BOMExcel={parseRows,exportRows,workbook,workbookInfo,toolbar,bind};
-  if(typeof data!=='undefined'&&typeof readStore==='function'){
+  function refreshProjection(){
+    if(typeof data==='undefined'||typeof readStore!=='function')return;
     const saved=readStore(key,{});
     if(saved?.replaceAll&&saved?.data){Object.keys(data.bom).forEach(code=>delete data.bom[code]);Object.assign(data.bom,saved.data);}
     else Object.assign(data.bom,saved||{});
     refreshBomCounts();
   }
+  host.BOMExcel={parseRows,exportRows,workbook,workbookInfo,toolbar,bind,refreshProjection};
+  refreshProjection();
 })(typeof window==='undefined'?globalThis:window);

@@ -1,0 +1,257 @@
+{
+  "phase": 4,
+  "status": "PHOTO_WORKFLOWS_PASS_WITH_OPEN_GATES",
+  "isolation": "Synthetic SQLite and in-memory R2 with actual route handlers; loopback 6084; original 3000 not written",
+  "gui": [
+    {
+      "module": "fqc",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "alt": "T01.webp",
+        "complete": true,
+        "height": 1100,
+        "width": 1600
+      },
+      "submitted": true,
+      "approved": true
+    },
+    {
+      "module": "iqc-part",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "complete": true,
+        "height": 1650,
+        "width": 2400
+      },
+      "submitted": true,
+      "approved": true
+    },
+    {
+      "module": "iqc-method",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "complete": true,
+        "width": 3200,
+        "height": 2200
+      },
+      "profile": "fidelity",
+      "submitted": true,
+      "approved": true
+    },
+    {
+      "module": "ipqc-ab",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "complete": true,
+        "height": 600,
+        "width": 800
+      },
+      "submitted": true,
+      "approved": true
+    },
+    {
+      "module": "ipqc-c",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "complete": true,
+        "height": 1200,
+        "width": 800
+      },
+      "profile": "hd",
+      "submitted": true,
+      "approved": true
+    },
+    {
+      "module": "routine-equipment",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "width": 2400,
+        "height": 1650,
+        "complete": true
+      },
+      "categoryPhoto": true,
+      "submitted": true,
+      "approved": true
+    },
+    {
+      "module": "tooling",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "width": 1600,
+        "height": 1100,
+        "complete": true
+      },
+      "submitted": true,
+      "maker": "demo-rd",
+      "approved": true
+    },
+    {
+      "module": "process-master-template",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "width": 1600,
+        "height": 1100
+      },
+      "submitted": true,
+      "maker": "demo-rd",
+      "approved": true
+    },
+    {
+      "module": "process-equipment",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "width": 1600,
+        "height": 1100
+      },
+      "submitted": true,
+      "maker": "demo-rd",
+      "approved": true
+    },
+    {
+      "module": "process-common",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "width": 2400,
+        "height": 1650
+      },
+      "submitted": true,
+      "maker": "demo-rd",
+      "approved": true
+    },
+    {
+      "module": "process-product",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "width": 3200,
+        "height": 2200
+      },
+      "profile": "fidelity",
+      "submitted": true,
+      "maker": "demo-rd",
+      "approved": true
+    },
+    {
+      "module": "routine-fqc-report",
+      "upload": true,
+      "saved": true,
+      "reopened": true,
+      "submitted": true,
+      "approved": true,
+      "selfReviewConfirmed": true,
+      "followup": "待改善"
+    },
+    {
+      "module": "web-feedback",
+      "upload": true,
+      "paste": true,
+      "reopened": true,
+      "submitted": true,
+      "completed": true,
+      "approval": "not-applicable"
+    },
+    {
+      "module": "approved-dispatch-player-product-status",
+      "readback": true,
+      "common": {
+        "width": 2400,
+        "height": 1650
+      },
+      "product": {
+        "width": 3200,
+        "height": 2200
+      },
+      "activeVersion": 3
+    },
+    {
+      "module": "routine-fqc-evidence",
+      "profile": "fidelity",
+      "upload": true,
+      "saved": true,
+      "reopenedImage": {
+        "width": 3200,
+        "height": 2200,
+        "complete": true
+      },
+      "submitted": true,
+      "approved": true,
+      "selfReviewConfirmed": true
+    }
+  ],
+  "tests": {
+    "qualityPermissions": {
+      "status": "PASS",
+      "modules": 5,
+      "namedChecks": 100
+    },
+    "qualityFieldCAS": {
+      "status": "PASS",
+      "paths": 30
+    },
+    "unloadHandlerContract": {
+      "status": "PASS",
+      "cases": 8
+    },
+    "photoAPIReadback": {
+      "status": "PASS",
+      "bodies": 14,
+      "shaAndMIME": true,
+      "fidelityEvidenceBytesEqual": true
+    },
+    "mobile": {
+      "status": "PASS",
+      "outerFrame": [
+        390,
+        844
+      ],
+      "contentWidth": 375,
+      "selectorTouchHeight": 44,
+      "languages": [
+        "zh-Hant",
+        "vi"
+      ],
+      "horizontalPageOverflow": false
+    },
+    "fullLint": {
+      "status": "FAIL",
+      "files": 713,
+      "rules": 208,
+      "diagnostics": 1,
+      "remaining": "components/ui/spinner.tsx: jsx-a11y(prefer-tag-over-role)"
+    },
+    "nativeUnload": {
+      "status": "NOT_AVAILABLE",
+      "reason": "IAB navigation aborted; Chrome Ctrl+R follow-up interrupted when user stopped Computer Use. No native prompt/cancel/continue acceptance claimed."
+    }
+  },
+  "sourceIntegrity": {
+    "sourceRevision": 495,
+    "businessTablesUnchanged": true,
+    "backupRows": 100,
+    "r2MetadataUnchanged": true,
+    "r2Objects": 1726,
+    "retainedBodyHashesUnchanged": true,
+    "hashedBodies": 1155,
+    "hashedBytes": 310286234,
+    "originalPhotosReencoded": false,
+    "sourceBusinessWrites": false
+  },
+  "codexWithChatGPT": "DISABLED: tokens revoked, bridge stopped; explicit re-enable required",
+  "schemaOrDataModelChanges": false,
+  "deployment": false,
+  "limitations": [
+    "Synthetic GUI acceptance is not deployed D1/R2 runtime or service restart acceptance.",
+    "Physical iPhone, HEIC/animations and maximum-pixel memory stress not tested.",
+    "Full lint and native unload acceptance remain open."
+  ]
+}

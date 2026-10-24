@@ -1,0 +1,1417 @@
+[
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 14,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L1-01",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 15,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L1-02",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 19,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L1-06",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 24,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L1-11",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 25,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L1-12",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 26,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L1-13",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 35,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L1-22",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 36,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L1-23",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 37,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L1-24",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 38,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L1-25",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 39,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L2-01",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 42,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L2-04",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 45,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L3-03",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 46,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L4-01",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 48,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L4-03",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 49,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L4-04",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 50,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L5-01",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 52,
+    "category": "BOSEN",
+    "checkNo": "BOSEN-FQC-L5-03",
+    "rawValue": "103SM00012",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 53,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L1-01",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 54,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L1-02",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 55,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L1-03",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 56,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L1-04",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 60,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L1-08",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 62,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L1-10",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 67,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L1-15",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 68,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L1-16",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 69,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L1-17",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 70,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L1-18",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 71,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L2-01",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 72,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L2-02",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 75,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L3-01",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 78,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L3-04",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 79,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L4-01",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 80,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L4-02",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 81,
+    "category": "BOVESINH",
+    "checkNo": "BOVESINH-FQC-L5-01",
+    "rawValue": "104A10202",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 92,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L01",
+    "rawValue": "BRX1021CO3360-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 93,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L01",
+    "rawValue": "BRX1021CO3360-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 94,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L01",
+    "rawValue": "BRX1021CO3360-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 95,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L01",
+    "rawValue": "BRX1021CO3360-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 96,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L01",
+    "rawValue": "BRX1021CO3360-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 97,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L01",
+    "rawValue": "BRX1021CO3360-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 98,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L01",
+    "rawValue": "BRX1021CO3360-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 99,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L02",
+    "rawValue": "BRX1021CO3360-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 100,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L02",
+    "rawValue": "BRX1021CO3360-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 101,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L03",
+    "rawValue": "BRX1021CO3360-FQC-L03",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L03)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 102,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L04",
+    "rawValue": "BRX1021CO3360-FQC-L04",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L04)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 103,
+    "category": "BRX1021-CO3360",
+    "errorCode": "BRX1021CO3360-FQC-L04",
+    "rawValue": "BRX1021CO3360-FQC-L04",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 BRX1021-CO3360-FQC-LXX，實際為 BRX1021CO3360-FQC-L04)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 168,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 169,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 170,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 171,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 172,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 173,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 174,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 175,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 176,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 177,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 178,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 179,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 180,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 181,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 182,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 183,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 184,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 185,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 186,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 187,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 188,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 189,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 190,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 191,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L01",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 192,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L02",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 193,
+    "category": "DAUTUOICAY-RUAXE",
+    "errorCode": "DAUTUOICAYRUAXE-FQC-L02",
+    "rawValue": "DAUTUOICAYRUAXE-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 DAUTUOICAY-RUAXE-FQC-LXX，實際為 DAUTUOICAYRUAXE-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 312,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L1-01",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 312,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 313,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L1-02",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 313,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 314,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 315,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 316,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L1-05",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 316,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 317,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L1-06",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 317,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 318,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L1-07",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 318,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 319,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L1-08",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 319,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 320,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L1-09",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 320,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 321,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 322,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 323,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 324,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L2-01",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 324,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 325,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 326,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L2-03",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 326,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 327,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 328,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 329,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 330,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 331,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L03",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L03",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L03)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 332,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L03",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L03",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L03)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 333,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L03",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L03",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L03)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 334,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L3-04",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 334,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L03",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L03",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L03)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 335,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L3-05",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 335,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L03",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L03",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L03)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "UNRECOGNIZED_PRODUCT_CODE",
+    "sheet": "產品資料",
+    "row": 336,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "checkNo": "ONGHOICAOAPBRXCAOAP-FQC-L4-01",
+    "rawValue": "108BR4005",
+    "reason": "產品編號在 canonical products.json 找不到，但存在於 parts.json (kind: undefined)",
+    "decisionRequired": "需決定是否在匯入前將半成品/缺少產品補入產品主資料，或在覆蓋矩陣中納入顯示"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 336,
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "errorCode": "ONGHOICAOAPBRXCAOAP-FQC-L04",
+    "rawValue": "ONGHOICAOAPBRXCAOAP-FQC-L04",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 ONGHOI-CAOAP/BRX-CAOAP-FQC-LXX，實際為 ONGHOICAOAPBRXCAOAP-FQC-L04)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 357,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L01",
+    "rawValue": "PHAODIEM-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 358,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L01",
+    "rawValue": "PHAODIEM-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 359,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L01",
+    "rawValue": "PHAODIEM-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 360,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L01",
+    "rawValue": "PHAODIEM-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 361,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L01",
+    "rawValue": "PHAODIEM-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 362,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L01",
+    "rawValue": "PHAODIEM-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 363,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L02",
+    "rawValue": "PHAODIEM-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 364,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L02",
+    "rawValue": "PHAODIEM-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 365,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L02",
+    "rawValue": "PHAODIEM-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 366,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L02",
+    "rawValue": "PHAODIEM-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 367,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L02",
+    "rawValue": "PHAODIEM-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 368,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L02",
+    "rawValue": "PHAODIEM-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 369,
+    "category": "PHAODIEN",
+    "errorCode": "PHAODIEM-FQC-L02",
+    "rawValue": "PHAODIEM-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PHAODIEN-FQC-LXX，實際為 PHAODIEM-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 370,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L01",
+    "rawValue": "PVC2-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 371,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L01",
+    "rawValue": "PVC2-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 372,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L01",
+    "rawValue": "PVC2-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 373,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L01",
+    "rawValue": "PVC2-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 374,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L01",
+    "rawValue": "PVC2-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 375,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L01",
+    "rawValue": "PVC2-FQC-L01",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L01)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 376,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L02",
+    "rawValue": "PVC2-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 377,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L02",
+    "rawValue": "PVC2-FQC-L02",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L02)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 378,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L03",
+    "rawValue": "PVC2-FQC-L03",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L03)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 379,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L04",
+    "rawValue": "PVC2-FQC-L04",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L04)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 380,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L04",
+    "rawValue": "PVC2-FQC-L04",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L04)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 381,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L05",
+    "rawValue": "PVC2-FQC-L05",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L05)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 382,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L05",
+    "rawValue": "PVC2-FQC-L05",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L05)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "ERROR_CODE_PREFIX_DEVIATION",
+    "sheet": "產品資料",
+    "row": 383,
+    "category": "PVC(2)",
+    "errorCode": "PVC2-FQC-L05",
+    "rawValue": "PVC2-FQC-L05",
+    "reason": "錯誤代碼前綴與類別名稱不完全一致 (預期 PVC(2)-FQC-LXX，實際為 PVC2-FQC-L05)",
+    "decisionRequired": "保留來源合法編碼，後端唯讀自動接續時需依該類別既有前綴規則"
+  },
+  {
+    "type": "EMPTY_CATEGORY_IN_SHEET1",
+    "sheet": "產品類別",
+    "row": 28,
+    "category": "CONNECTOR",
+    "rawValue": "CONNECTOR",
+    "reason": "類別存在於工作表「產品類別」，但在「產品資料」中無任何檢查項目",
+    "decisionRequired": "需作為無項目的空類別保留於主資料中，待後續維護 FQC 標準"
+  },
+  {
+    "type": "EMPTY_CATEGORY_IN_SHEET1",
+    "sheet": "產品類別",
+    "row": 31,
+    "category": "DAUVESINH",
+    "rawValue": "DAUVESINH",
+    "reason": "類別存在於工作表「產品類別」，但在「產品資料」中無任何檢查項目",
+    "decisionRequired": "需作為無項目的空類別保留於主資料中，待後續維護 FQC 標準"
+  },
+  {
+    "type": "EMPTY_CATEGORY_IN_SHEET1",
+    "sheet": "產品類別",
+    "row": 34,
+    "category": "TECACLOAI",
+    "rawValue": "TECACLOAI",
+    "reason": "類別存在於工作表「產品類別」，但在「產品資料」中無任何檢查項目",
+    "decisionRequired": "需作為無項目的空類別保留於主資料中，待後續維護 FQC 標準"
+  },
+  {
+    "type": "EMPTY_CATEGORY_IN_SHEET1",
+    "sheet": "產品類別",
+    "row": 39,
+    "category": "YUTA",
+    "rawValue": "YUTA",
+    "reason": "類別存在於工作表「產品類別」，但在「產品資料」中無任何檢查項目",
+    "decisionRequired": "需作為無項目的空類別保留於主資料中，待後續維護 FQC 標準"
+  },
+  {
+    "type": "EMPTY_CATEGORY_IN_SHEET1",
+    "sheet": "產品類別",
+    "row": 40,
+    "category": "56464654",
+    "rawValue": "56464654",
+    "reason": "類別存在於工作表「產品類別」，但在「產品資料」中無任何檢查項目",
+    "decisionRequired": "需作為無項目的空類別保留於主資料中，待後續維護 FQC 標準"
+  }
+]

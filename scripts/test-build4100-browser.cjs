@@ -1,3 +1,4 @@
+const isolatedTestTarget_20261010=require('./require-isolated-test-target.cjs')();
 const fs=require('node:fs');
 const assert=require('node:assert/strict');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||require('./browser-test-runtime.cjs').playwrightModule);
@@ -7,7 +8,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||require('./browser-test-
  const context=await browser.newContext();const page=await context.newPage();
  page.setDefaultTimeout(6000);
  const seed=JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'..','db','seed.json'),'utf8'));
- const users=JSON.parse(seed.values.platformUsers).map(({password,...u})=>u);seed.values.platformUsers=JSON.stringify(users);
+ const users=JSON.parse(seed.values.platformUsers).map(({password: _password,...u})=>u);seed.values.platformUsers=JSON.stringify(users);
  seed.identity={id:'admin',role:'admin',name:'Test Admin'};seed.serverProtected=true;
  let conflict=false;
  await context.route('**/api/**',async route=>{
@@ -20,7 +21,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||require('./browser-test-
   return route.fulfill({status:403,json:{error:'Isolated test: writes blocked'}});
  });
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('http://localhost:3000/process/?build=20260909-4100&manage=1');
+ await page.goto((isolatedTestTarget_20261010+"/process/?build=20260909-4100&manage=1"));
  await page.waitForSelector('.nav-item[data-view="data"]',{state:'visible'});
  await page.locator('.nav-item[data-view="data"]').click();
  await page.getByRole('button',{name:'使用者與權限',exact:true}).click();
@@ -73,7 +74,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||require('./browser-test-
  const cdp=await context.newCDPSession(page);await cdp.send('Emulation.setTouchEmulationEnabled',{enabled:true,maxTouchPoints:1});
  await first.locator('.operation-move-handle').scrollIntoViewIfNeeded();const touchMove=await first.locator('.operation-move-handle').boundingBox(),touchBefore=await first.evaluate(e=>parseFloat(e.style.left));
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:touchMove.x+10,y:touchMove.y+10}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:touchMove.x+30,y:touchMove.y+20}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await page.waitForTimeout(450);assert.ok(await first.evaluate((e,x)=>parseFloat(e.style.left)>x,touchBefore));
- await link.scrollIntoViewIfNeeded();box=await link.boundingBox();let mobileEnd=await target.boundingBox();
+ await link.scrollIntoViewIfNeeded();box=await link.boundingBox();const mobileEnd=await target.boundingBox();
  const start={x:box.x+8,y:box.y+8},finish={x:mobileEnd.x+mobileEnd.width/2,y:mobileEnd.y+mobileEnd.height/2};
  assert.ok(finish.x<430,'touch target visible');
  await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[start]});

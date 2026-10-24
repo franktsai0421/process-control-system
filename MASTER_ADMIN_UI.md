@@ -1,3 +1,5 @@
+> Trạng thái: bản đọc hiện hành. Nguồn chính: [MASTER_ADMIN_UI.zh-TW.md](MASTER_ADMIN_UI.zh-TW.md). Bản dịch không thêm quy tắc riêng.
+
 [Tiếng Việt](MASTER_ADMIN_UI.md) | [繁體中文](MASTER_ADMIN_UI.zh-TW.md) | [English](MASTER_ADMIN_UI.en.md)
 
 # MASTER_ADMIN_UI

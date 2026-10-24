@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "distribution": "Private reference assets; excluded from Git source tree",
+  "assets": [
+    {
+      "path": "KD/ROUTINE/Copy of 檢具與測試設備管理框架_v1 22092026.xlsx",
+      "bytes": 9478732,
+      "sha256": "31b6e498d75f8cf215f0920ad6e017bba9ae976d5bf7bb4c2b92e5a115e55cd9",
+      "purpose": "Original equipment management reference; retain for provenance and acquisition",
+      "acquisition": "Request these original reference files separately from Frank; they are not in the V4 runtime data package. Distribution requires private Office/embedded/link/credential review; verify SHA256 before use."
+    },
+    {
+      "path": "KD/ROUTINE/原始設備Excel.xlsx",
+      "bytes": 9478677,
+      "sha256": "07f85af6965e987da5e598f73b2ca592a23a20243fb69ad05429628393b3b2d0",
+      "purpose": "Original equipment management reference; retain for provenance and acquisition",
+      "acquisition": "Request these original reference files separately from Frank; they are not in the V4 runtime data package. Distribution requires private Office/embedded/link/credential review; verify SHA256 before use."
+    }
+  ]
+}

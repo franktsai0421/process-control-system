@@ -1,3 +1,5 @@
+> Deprecated (2026-10-10): Tài liệu của giao diện cũ. Xem [đặc tả BOM hiện hành](docs/specs/current/BOM_REBUILD.md).
+
 [Tiếng Việt](BOM_SEARCH.md) | [繁體中文](BOM_SEARCH.zh-TW.md) | [English](BOM_SEARCH.en.md)
 
 # BOM_SEARCH

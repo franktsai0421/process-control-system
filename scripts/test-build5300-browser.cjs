@@ -1,3 +1,4 @@
+const isolatedTestTarget_20261010=require('./require-isolated-test-target.cjs')();
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
 const { chromium } = require(
@@ -43,7 +44,7 @@ const { chromium } = require(
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('dialog', (dialog) => dialog.accept());
     await page.goto(
-      'http://localhost:3000/process/?build=20260910-5300&manage=1',
+      (isolatedTestTarget_20261010+"/process/?build=20260910-5300&manage=1"),
     );
     await page.locator('[data-view=editor]').click();
     await page.locator('.operation-block').first().waitFor();
@@ -101,7 +102,7 @@ const { chromium } = require(
     await dialog.waitFor({ state: 'visible' });
     assert.equal(await checkbox.isChecked(), false);
     assert.equal(await checkbox.isDisabled(), true);
-    let usageText = await usage.innerText();
+    const usageText = await usage.innerText();
     assert.ok(usageText.includes('已使用於'), usageText);
     assert.ok(usageText.includes(fixture.otherNumber), usageText);
     assert.ok(usageText.includes(fixture.otherName), usageText);

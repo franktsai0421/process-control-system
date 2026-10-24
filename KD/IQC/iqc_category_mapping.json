@@ -1,0 +1,1169 @@
+{
+  "source": "IQC_CHUAN 的複本(2).xlsx / THONG_KE_IQC; confirm local workbook checksum and codes before importing",
+  "categories": [
+    {
+      "id": "hose",
+      "name_vi": "Ống và dây dẫn",
+      "label_zh": "管材與軟管"
+    },
+    {
+      "id": "head",
+      "name_vi": "Đầu xả nước và đầu phun",
+      "label_zh": "出水頭與噴頭"
+    },
+    {
+      "id": "fitting",
+      "name_vi": "Đầu nối, đai ốc và vít",
+      "label_zh": "接頭、螺帽與螺絲"
+    },
+    {
+      "id": "seal",
+      "name_vi": "Gioăng và vòng đệm",
+      "label_zh": "密封圈與墊片"
+    },
+    {
+      "id": "shell",
+      "name_vi": "Vỏ và nắp",
+      "label_zh": "外殼與蓋件"
+    },
+    {
+      "id": "valve",
+      "name_vi": "Phao, công tắc và chi tiết van",
+      "label_zh": "浮球、開關與閥內件"
+    },
+    {
+      "id": "fixture",
+      "name_vi": "Giá đỡ, móc và chi tiết cố định",
+      "label_zh": "支架、掛鉤與固定小件"
+    },
+    {
+      "id": "packing",
+      "name_vi": "Bao bì và ấn phẩm",
+      "label_zh": "包材與印刷品"
+    }
+  ],
+  "parts": [
+    {
+      "part_code": "3010109",
+      "source_name_vi": "HỘP CÔNG TẮC - STC",
+      "category_id": "shell",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3010202",
+      "source_name_vi": "PHAO (HDPE2)",
+      "category_id": "valve",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3010203",
+      "source_name_vi": "PHAO (YUTA)",
+      "category_id": "valve",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3010301",
+      "source_name_vi": "NẮP ONPAS CŨ",
+      "category_id": "shell",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3010305",
+      "source_name_vi": "NẮP ONPAS (M) 04-2013",
+      "category_id": "shell",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3010306",
+      "source_name_vi": "NẮP SANPO(M)13",
+      "category_id": "shell",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3010401",
+      "source_name_vi": "NẮP CÔNG TẮC",
+      "category_id": "shell",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3010502",
+      "source_name_vi": "NẮP PHAO HDPE2",
+      "category_id": "shell",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3010503",
+      "source_name_vi": "NẮP PHAO YUTA",
+      "category_id": "shell",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3010601",
+      "source_name_vi": "MIẾNG VÀNG ĐL",
+      "category_id": "valve",
+      "assignment_basis": "user_explicit"
+    },
+    {
+      "part_code": "3010701",
+      "source_name_vi": "KIM TỬ THÁP ĐL",
+      "category_id": "valve",
+      "assignment_basis": "user_explicit"
+    },
+    {
+      "part_code": "3010803",
+      "source_name_vi": "LÒ XO DÀI VN",
+      "category_id": "fixture",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3010902",
+      "source_name_vi": "TÁN VN",
+      "category_id": "fitting",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3011001",
+      "source_name_vi": "LONG ĐỀN VN",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3011101",
+      "source_name_vi": "MIẾNG LÒ XO ĐL",
+      "category_id": "fixture",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3011201",
+      "source_name_vi": "DÂY XỎ BÁNH XE",
+      "category_id": "fixture",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3011202",
+      "source_name_vi": "DÂY CHUỖI XỎ BÁNH XE",
+      "category_id": "fixture",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3011301",
+      "source_name_vi": "ỐC BẮT NẮP CÔNG TẮC VN",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3011401",
+      "source_name_vi": "ỐC TRẮNG VN",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3011501",
+      "source_name_vi": "SỐ 1 DL",
+      "category_id": "valve",
+      "assignment_basis": "user_explicit"
+    },
+    {
+      "part_code": "3011502",
+      "source_name_vi": "SỐ 2 DL",
+      "category_id": "valve",
+      "assignment_basis": "user_explicit"
+    },
+    {
+      "part_code": "3011701",
+      "source_name_vi": "ỐC ĐIỆN VN",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3011801",
+      "source_name_vi": "NÚT CÔNG TẮC",
+      "category_id": "valve",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3012001",
+      "source_name_vi": "ỐC DÀI VN",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3012101",
+      "source_name_vi": "BÁNH XE NHỰA VN",
+      "category_id": "valve",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3012301",
+      "source_name_vi": "ĐINH DÀI SẮT VN",
+      "category_id": "fixture",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3012501",
+      "source_name_vi": "TẤM ĐẨY DÀI INOX DL",
+      "category_id": "valve",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3012602",
+      "source_name_vi": "GIÁ L 06-2012",
+      "category_id": "fixture",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3012701",
+      "source_name_vi": "GIÁ ĐỠ CŨ",
+      "category_id": "fixture",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3012706",
+      "source_name_vi": "GIÁ ĐỠ (M) 2013",
+      "category_id": "fixture",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3012803",
+      "source_name_vi": "NẮP CAM + ĐINH",
+      "category_id": "shell",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3012902",
+      "source_name_vi": "ỐC ĐỒNG HCT",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3020111",
+      "source_name_vi": "ZOONG TAY SEN ABS",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3020112",
+      "source_name_vi": "ZOONG NẮP SEN",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3030101",
+      "source_name_vi": "DÂY SEN KG 16MM",
+      "category_id": "hose",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3030203",
+      "source_name_vi": "ĐẦU ABS (MÀU) CTY",
+      "category_id": "fitting",
+      "assignment_basis": "user_explicit"
+    },
+    {
+      "part_code": "3030204",
+      "source_name_vi": "ĐẦU ABS TRẮNG",
+      "category_id": "fitting",
+      "assignment_basis": "user_explicit"
+    },
+    {
+      "part_code": "3030301",
+      "source_name_vi": "MÓC HOA SEN",
+      "category_id": "fixture",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3030303",
+      "source_name_vi": "MÓC PVC TRẮNG",
+      "category_id": "fixture",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3030402",
+      "source_name_vi": "6 GÓC HOA SEN CTY (XI RỒI)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3030402B",
+      "source_name_vi": "6 GÓC HOA SEN CTY (CHƯA XI)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3030501",
+      "source_name_vi": "ỐC ĐỒNG 1 (HOA SEN)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3030502",
+      "source_name_vi": "ỐC ĐỒNG 2 (HOA SEN)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3030602",
+      "source_name_vi": "CHỤP HOA SEN INOX ĐÀI LOAN",
+      "category_id": "shell",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3030701",
+      "source_name_vi": "ZOONG 2 LỚP ĐL",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3030801",
+      "source_name_vi": "ỐC NHỰA 1",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3030802",
+      "source_name_vi": "ỐC NHỰA 2",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3030901",
+      "source_name_vi": "ĐẦU TRÒN",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3030902",
+      "source_name_vi": "ĐẦU MASSAGE",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3030909",
+      "source_name_vi": "ĐẦU SEN PHUN SƯƠNG M1",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3030911",
+      "source_name_vi": "ĐẦU SEN PHUN SƯƠNG M2 (CÓ LÕI LỌC)",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3030912",
+      "source_name_vi": "ĐẦU L1082",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3030913",
+      "source_name_vi": "ĐẦU L1083",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3030914",
+      "source_name_vi": "ĐẦU PS M3",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3030915",
+      "source_name_vi": "ĐẦU CAM L1094",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3030916",
+      "source_name_vi": "ĐẦU XANH L1094",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3030917",
+      "source_name_vi": "ĐẦU TÍM L1094",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3040101",
+      "source_name_vi": "ĐẦU TRÒN XI",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3040117",
+      "source_name_vi": "ĐẦU L1082i",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3040118",
+      "source_name_vi": "ĐẦU L1083I",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3040119",
+      "source_name_vi": "ĐẦU PS M3 INOX",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3040203",
+      "source_name_vi": "DT INOX 1.5M",
+      "category_id": "hose",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3040305",
+      "source_name_vi": "ĐẦU CHỤP ĐỒNG DT INOX",
+      "category_id": "fitting",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3040305A",
+      "source_name_vi": "ĐẦU CHỤP ĐỒNG THÔ (DT INOX)",
+      "category_id": "fitting",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3040305B",
+      "source_name_vi": "ĐẦU CHỤP ĐỒNG DT INOX (CHƯA XI)",
+      "category_id": "fitting",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3040401",
+      "source_name_vi": "6 GÓC DÂY TẮM INOX (XI RỒI)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3040401A",
+      "source_name_vi": "6 GÓC DÂY TẮM INOX (THÔ)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3040401B",
+      "source_name_vi": "6 GÓC DÂY TẮM INOX (CHƯA XI)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3040502",
+      "source_name_vi": "ỐC ĐỒNG RIN 2",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3040503",
+      "source_name_vi": "ỐC ĐỒNG RIN 1-2017",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3040601",
+      "source_name_vi": "ỐC NHỰA",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3040701",
+      "source_name_vi": "CHỤP DÂY TẮM INOX",
+      "category_id": "shell",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3040801",
+      "source_name_vi": "ZOONG 14MM VN(INOX) 2mm (pvc màu trắng)",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3040901",
+      "source_name_vi": "RUỘT DÂY PVC INOX KG",
+      "category_id": "hose",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3050103",
+      "source_name_vi": "ĐẦU 110XI",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050106",
+      "source_name_vi": "ĐẦU 114",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050108",
+      "source_name_vi": "ĐẦU 114X",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050109",
+      "source_name_vi": "ĐẦU 114X-XI",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050111",
+      "source_name_vi": "ĐẦU 114F",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050112",
+      "source_name_vi": "ĐẦU 114G",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050115",
+      "source_name_vi": "ĐẦU C132",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050121",
+      "source_name_vi": "ĐẦU C138",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050123",
+      "source_name_vi": "ĐẦU D139",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050124",
+      "source_name_vi": "ĐẦU D139I",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050201",
+      "source_name_vi": "MÓC VỆ SINH 114,114X",
+      "category_id": "fixture",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3050302",
+      "source_name_vi": "ĐẦU ABS 114",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050303",
+      "source_name_vi": "ĐẦU ABS 114X",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050306",
+      "source_name_vi": "ĐẦU ABS 114G XI",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050307A",
+      "source_name_vi": "ĐẦU CHỤP ĐỒNG XÁM BẠC (THÔ)",
+      "category_id": "fitting",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3050308",
+      "source_name_vi": "ĐẦU ABS VỆ SINH",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3050501",
+      "source_name_vi": "6 GÓC VỆ SINH CÓ CHỮ (XI RỒI)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3050602",
+      "source_name_vi": "ỐC NHỰA VS LƯỚI 9.5",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3050802",
+      "source_name_vi": "ZOONG 114X",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3050803",
+      "source_name_vi": "ZOONG 114X NHỎ",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3050804",
+      "source_name_vi": "ZOONG 6*1 mm",
+      "category_id": "seal",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3050805",
+      "source_name_vi": "ZOONG (18.4*12*3mm) (ZOONG LƯỚI)",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3050815",
+      "source_name_vi": "TY ĐỒNG 114X",
+      "category_id": "fitting",
+      "assignment_basis": "user_explicit"
+    },
+    {
+      "part_code": "3050821",
+      "source_name_vi": "SẮT FE",
+      "category_id": "fitting",
+      "assignment_basis": "user_explicit"
+    },
+    {
+      "part_code": "3051003",
+      "source_name_vi": "ỐC ĐỒNG 114GI-B2",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3051005",
+      "source_name_vi": "ỐC ĐỒNG 17.8",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3051006",
+      "source_name_vi": "ĐAI ỐC 19",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3051007",
+      "source_name_vi": "ỐC ĐỒNG XỊT VỆ SINH",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060101",
+      "source_name_vi": "DÂY ĐỒNG 14MM",
+      "category_id": "hose",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060103",
+      "source_name_vi": "DÂY PVC XÁM 14MM KG",
+      "category_id": "hose",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060104",
+      "source_name_vi": "DÂY INOX 14MM",
+      "category_id": "hose",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060105",
+      "source_name_vi": "DÂY INOX SỌC 14MM",
+      "category_id": "hose",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060108",
+      "source_name_vi": "DÂY INOX 13MM",
+      "category_id": "hose",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060121",
+      "source_name_vi": "DÂY PVC 14MM 2024",
+      "category_id": "hose",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060202",
+      "source_name_vi": "RUỘT DÂY ĐEN 14MM",
+      "category_id": "hose",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060301",
+      "source_name_vi": "6 GÓC DÂY XẢ CÓ CHỮ 14MM",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060301B",
+      "source_name_vi": "6 GÓC DÂY XẢ CÓ CHỮ 14MM CHƯA XI",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060304",
+      "source_name_vi": "6 GÓC LAVABO (CÓ CHỮ)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060304B",
+      "source_name_vi": "6 GÓC LAVABO (CÓ CHỮ)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060308",
+      "source_name_vi": "6 GÓC NHỰA",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060501",
+      "source_name_vi": "ỐC ĐỒNG 9.5",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060504",
+      "source_name_vi": "ỐC ĐỒNG SỌC 15MM",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060508",
+      "source_name_vi": "ỐC ĐỒNG 9.0",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060601",
+      "source_name_vi": "ỐC NHỰA 9.6",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060603",
+      "source_name_vi": "ỐC NHỰA (2)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060701",
+      "source_name_vi": "ZOONG BẰNG CAO SU 2mm ( ZOONG ĐEN)",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060705",
+      "source_name_vi": "ZOONG RĂNG DÀI THẤP A706-4 11.4*7.8*1.9(mm), AP-701",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060707",
+      "source_name_vi": "ZOONG CAM 2mm VN",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060714",
+      "source_name_vi": "ZOONG BẰNG CAO SU (ỐC NHỰA)",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3060805",
+      "source_name_vi": "CHỤP 15MM",
+      "category_id": "shell",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3060806",
+      "source_name_vi": "CHỤP INOX 14.2MM",
+      "category_id": "shell",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3060807",
+      "source_name_vi": "CHỤP LVB ĐỒNG",
+      "category_id": "shell",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3060814",
+      "source_name_vi": "CHỤP DX INOX (2) 15.5mm",
+      "category_id": "shell",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3060901",
+      "source_name_vi": "RĂNG DÀI LAVABO",
+      "category_id": "fitting",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3080123",
+      "source_name_vi": "ZOONG TRÒN 8*2mm",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3080129",
+      "source_name_vi": "ZOONG TRÒN 5*2mm",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3080203",
+      "source_name_vi": "DÂY TƯỚI CÂY XANH LÁ",
+      "category_id": "hose",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3080307",
+      "source_name_vi": "ĐẦU 7030",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3080349",
+      "source_name_vi": "ĐẦU 6030",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3080353",
+      "source_name_vi": "ĐẦU 3200 CAM",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "3080601",
+      "source_name_vi": "VỎ THÂN 1021 ( 58.3mm)",
+      "category_id": "shell",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3080601XI",
+      "source_name_vi": "VỎ THÂN 1021 DTC INOX XI RỒI",
+      "category_id": "shell",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3080602",
+      "source_name_vi": "TRỤC THÂN 1021",
+      "category_id": "fixture",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3080603",
+      "source_name_vi": "ỐC THÂN 1021",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3080605",
+      "source_name_vi": "TRỤC THÂN 1022",
+      "category_id": "fixture",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3080606",
+      "source_name_vi": "VỎ THÂN 1022",
+      "category_id": "shell",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3080607",
+      "source_name_vi": "ỐC THÂN 1023 ( 50mm)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3080608",
+      "source_name_vi": "TRỤC THÂN 1024",
+      "category_id": "fixture",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3080616",
+      "source_name_vi": "TRỤC 1021 DTC INOX XI RỒI",
+      "category_id": "fixture",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3100101",
+      "source_name_vi": "THÂN VP 1/2\"",
+      "category_id": "valve",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3100102",
+      "source_name_vi": "THÂN VP 3/4\"",
+      "category_id": "valve",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3100103",
+      "source_name_vi": "THÂN VP 1''",
+      "category_id": "valve",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3100201",
+      "source_name_vi": "6 GÓC VP 1/2\" (VAN PHAO)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3100202",
+      "source_name_vi": "6 GÓC VP 3/4\" (VAN PHAO)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3100203",
+      "source_name_vi": "6 GÓC VP 1\" (VAN PHAO)",
+      "category_id": "fitting",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3100302",
+      "source_name_vi": "PISTON VP 3/4''",
+      "category_id": "valve",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3100403",
+      "source_name_vi": "ZOONG VP 1''",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3100421",
+      "source_name_vi": "ZOONG PISTON VP 1/2''",
+      "category_id": "seal",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3100502",
+      "source_name_vi": "TY VAN PHAO 3/4''",
+      "category_id": "valve",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3100813",
+      "source_name_vi": "KIM CÀI",
+      "category_id": "fixture",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3990102",
+      "source_name_vi": "Ô VÊ 3 LY",
+      "category_id": "fixture",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3990103",
+      "source_name_vi": "Ô VÊ 6 LY",
+      "category_id": "fixture",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "3990105",
+      "source_name_vi": "ĐINH SẮT HOA SEN",
+      "category_id": "fixture",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "3990106",
+      "source_name_vi": "TẮC KÊ NHỰA 3 PHÂN",
+      "category_id": "fixture",
+      "assignment_basis": "name"
+    },
+    {
+      "part_code": "402CT007",
+      "source_name_vi": "HỘP ONPAS CŨ 13",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "402CT010",
+      "source_name_vi": "HỘP ONPAS(M)15",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "402CT011",
+      "source_name_vi": "HỘP SANPO (M)15",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "403CT004",
+      "source_name_vi": "NHÃN ĐH PHAO ĐIỆN OP (M)",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "403HS011",
+      "source_name_vi": "NHÃN BỘ SEN PS M2",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "403HS012",
+      "source_name_vi": "NHÃN SEN L1093",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "403HS013",
+      "source_name_vi": "NHÃN BỘ HS HIỆN ĐẠI",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "403HS014",
+      "source_name_vi": "NHÃN BỘ HS TĂNG ÁP",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "403VP003",
+      "source_name_vi": "NHÃN VAN PHAO (M)",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "403VP005",
+      "source_name_vi": "NHÃN VAN PHAO 3/4\"(2)ĐH",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "403VP006",
+      "source_name_vi": "NHÃN ĐỊNH HÌNH VP THÔNG MINH",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "403XX007",
+      "source_name_vi": "NHÃN RỬA XE",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "404XX001",
+      "source_name_vi": "TEM BẢO HÀNH 1 NĂM",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "404XX004",
+      "source_name_vi": "GIẤY THUYẾT MINH",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "406CT002",
+      "source_name_vi": "ĐỊNH HÌNH PHAO ĐIỆN(13)",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "406HS011",
+      "source_name_vi": "ĐỊNH HÌNH BỘ SEN PS M2",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "406HS012",
+      "source_name_vi": "ĐỊNH HÌNH SEN L1093",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "406HS016",
+      "source_name_vi": "ĐỊNH HÌNH BỘ SEN 24",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "406HS017",
+      "source_name_vi": "ĐẾ ĐỊNH HÌNH 24",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "406HS018",
+      "source_name_vi": "ĐỊNH HÌNH BỘ SEN M3",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "406VS003",
+      "source_name_vi": "ĐỊNH HÌNH VS LÕM",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "406VS005",
+      "source_name_vi": "ĐẾ ĐỊNH HÌNH VỆ SINH",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "407VD005",
+      "source_name_vi": "TÚI VRC LỚN",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "407VD006",
+      "source_name_vi": "TÚI VÒI RỬA CHÉN (13*44cm)",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "407VP002",
+      "source_name_vi": "TÚI VAN PHAO 1/2\"(13*35)",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "407VP004",
+      "source_name_vi": "TÚI VAN PHAO 3/4\"(13*37)",
+      "category_id": "packing",
+      "assignment_basis": "packaging_code_and_name"
+    },
+    {
+      "part_code": "6020105",
+      "source_name_vi": "MÓC TRẮNG GẮN CHUỖI",
+      "category_id": "fixture",
+      "assignment_basis": "review_from_name_and_product_context"
+    },
+    {
+      "part_code": "6090102",
+      "source_name_vi": "ĐẦU SEN L103",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    },
+    {
+      "part_code": "6090103",
+      "source_name_vi": "ĐẦU SEN L 106",
+      "category_id": "head",
+      "assignment_basis": "name_and_product_context"
+    }
+  ]
+}

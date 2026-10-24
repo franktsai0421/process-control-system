@@ -1,0 +1,1226 @@
+[
+  {
+    "category": "BORUAXE1021",
+    "canonicalProductCount": 9,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 8,
+    "uncoveredProducts": [
+      {
+        "code": "105B100081",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "8m"
+      },
+      {
+        "code": "105B100101",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "10m"
+      },
+      {
+        "code": "105B100121",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "12m"
+      },
+      {
+        "code": "105B100151",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "15m"
+      },
+      {
+        "code": "105B100201",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "20m"
+      },
+      {
+        "code": "105B100251",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "25m"
+      },
+      {
+        "code": "105B100301",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "30m"
+      },
+      {
+        "code": "105B100501",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "50m"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "BOSEN",
+    "canonicalProductCount": 36,
+    "coveredProductCount": 5,
+    "uncoveredProductCount": 31,
+    "uncoveredProducts": [
+      {
+        "code": "103S103101",
+        "name": "BỘ SEN DAY PVC L103 LN",
+        "specification": "1m5"
+      },
+      {
+        "code": "103S103201",
+        "name": "BỘ SEN DAY PVC L103 LĐ",
+        "specification": "1m5"
+      },
+      {
+        "code": "103S103204",
+        "name": "BỘ SEN L103 (NỐI ĐỒNG) LĐ",
+        "specification": "1.5M"
+      },
+      {
+        "code": "103S110101",
+        "name": "BỘ SEN DÂY PVC L100 XÁM 1.5M",
+        "specification": "NỐI ĐỒNG"
+      },
+      {
+        "code": "103S110102",
+        "name": "BỘ SEN DÂY PVC L100 XÁM 1.5M",
+        "specification": "LN"
+      },
+      {
+        "code": "103S110103",
+        "name": "BỘ SEN DÂY PVC L100 XÁM 1.5M",
+        "specification": "LD"
+      },
+      {
+        "code": "103S111101",
+        "name": "BỘ SEN DÂY PVC L100 XD 1.5M",
+        "specification": "-NỐI ĐỒNG"
+      },
+      {
+        "code": "103S111102",
+        "name": "BỘ SEN DÂY PVC L100 XD 1.5M",
+        "specification": "-LN"
+      },
+      {
+        "code": "103S111103",
+        "name": "BỘ SEN DÂY PVC L100 XD 1.5M",
+        "specification": "-LD"
+      },
+      {
+        "code": "103S112101",
+        "name": "BỘ SEN DÂY PVC L100 XL 1.5M",
+        "specification": "-NỐI ĐỒNG"
+      },
+      {
+        "code": "103S112102",
+        "name": "BỘ SEN DÂY PVC L100 XL 1.5M",
+        "specification": "-LN"
+      },
+      {
+        "code": "103S112103",
+        "name": "BỘ SEN DÂY PVC L100 XL 1.5M",
+        "specification": "-LD"
+      },
+      {
+        "code": "103S182204",
+        "name": "BỘ SEN DÂY PVC L1082N nối",
+        "specification": "đồng-1.5M-3 Nấc"
+      },
+      {
+        "code": "103S183204",
+        "name": "BỘ SEN DÂY PVC L1083 nối",
+        "specification": "đồng-1.5M-3 Nấc"
+      },
+      {
+        "code": "103S193101",
+        "name": "BỘ SEN DÂY PVC L1093 LN,",
+        "specification": "1m5"
+      },
+      {
+        "code": "103S193201",
+        "name": "BỘ SEN DÂY PVC L1093 LĐ,",
+        "specification": "1m5"
+      },
+      {
+        "code": "103S194101",
+        "name": "BỘ SEN CAM L1094 LN-1.5m",
+        "specification": ""
+      },
+      {
+        "code": "103S194111",
+        "name": "BỘ SEN XANH L1094 LN-1.5m",
+        "specification": ""
+      },
+      {
+        "code": "103S194121",
+        "name": "BỘ SEN TÍM L1094 LN-1.5m",
+        "specification": ""
+      },
+      {
+        "code": "103S194201",
+        "name": "BỘ SEN CAM L1094 LĐ-1.5m",
+        "specification": ""
+      },
+      {
+        "code": "103S194211",
+        "name": "BỘ SEN XANH L1094 LĐ-1.5m",
+        "specification": ""
+      },
+      {
+        "code": "103S194221",
+        "name": "BỘ SEN TÍM L1094 LĐ-1.5m",
+        "specification": ""
+      },
+      {
+        "code": "103S205201",
+        "name": "BỘ SEN DÂY INOX L105 4 NẤC",
+        "specification": "1m5"
+      },
+      {
+        "code": "103S209201",
+        "name": "BỘ SEN DÂY INOX L109 1 NẤC",
+        "specification": "1m5"
+      },
+      {
+        "code": "103S24B201",
+        "name": "BỘ SEN DÂY INOX L104B 3N",
+        "specification": "B 1m5"
+      },
+      {
+        "code": "103S282201",
+        "name": "BỘ SEN DÂY INOX L1082I 1.5M",
+        "specification": "- 3 Nấc"
+      },
+      {
+        "code": "103S283201",
+        "name": "BỘ SEN DÂY INOX L1083I 1.5M",
+        "specification": "- 3 Nấc"
+      },
+      {
+        "code": "103SM31101",
+        "name": "BỘ SEN PS M3 LN-1.5m",
+        "specification": ""
+      },
+      {
+        "code": "103SM32101",
+        "name": "BỘ SEN PS M3A LN-1.5m",
+        "specification": ""
+      },
+      {
+        "code": "103SM32201",
+        "name": "BỘ SEN PS M3A LĐ-1.5m",
+        "specification": ""
+      },
+      {
+        "code": "103SM32204",
+        "name": "BỘ SEN PS M3A Nối",
+        "specification": "đồng-1.5m"
+      }
+    ],
+    "externalProductCodes": [
+      "103SM00012"
+    ]
+  },
+  {
+    "category": "BOVESINH",
+    "canonicalProductCount": 18,
+    "coveredProductCount": 3,
+    "uncoveredProductCount": 15,
+    "uncoveredProducts": [
+      {
+        "code": "104A32201",
+        "name": "BỘ XỊT VS- PVC C132 LĐ",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A33201",
+        "name": "BỘ XỊT VS- INOX C133I LĐ",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A3801",
+        "name": "BỘ XỊT VS- PVC C138 LN",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A38203",
+        "name": "BỘ XỊT VS- PVC C138 Sữa LĐ",
+        "specification": "1m2 nối đồng"
+      },
+      {
+        "code": "104A39201",
+        "name": "BỘ XỊT VS- PVC D139 LĐ",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A39202",
+        "name": "BỘ XỊT VS- INOX D139I LĐ",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A4F101",
+        "name": "BỘ XỊT VS- PVC C114F LN",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A4F201",
+        "name": "BỘ XỊT VS- PVC C114F LĐ",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A4F202",
+        "name": "BỘ XỊT VS- INOX C114FI LĐ",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A4G101",
+        "name": "BỘ XỊT VS - PVC C114G LN",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A4G201",
+        "name": "BỘ XỊT VS- PVC C114G LĐ",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A4G202",
+        "name": "BỘ XỊT VS- INOX C114GI LĐ",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A4X101",
+        "name": "BỘ XỊT VS- PVC C114X LN",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A4X201",
+        "name": "BỘ XỊT VS- PVC C114X LĐ",
+        "specification": "1m2"
+      },
+      {
+        "code": "104A4X202",
+        "name": "BỘ XỊT VS- C114X XI INOX",
+        "specification": "1m2"
+      }
+    ],
+    "externalProductCodes": [
+      "104A10202"
+    ]
+  },
+  {
+    "category": "BRCINOX",
+    "canonicalProductCount": 3,
+    "coveredProductCount": 3,
+    "uncoveredProductCount": 0,
+    "uncoveredProducts": [],
+    "externalProductCodes": []
+  },
+  {
+    "category": "BRX1021-CO3360",
+    "canonicalProductCount": 6,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 5,
+    "uncoveredProducts": [
+      {
+        "code": "105B100083",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "8m- Nối 3360"
+      },
+      {
+        "code": "105B100104",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "10m - Nối 3360"
+      },
+      {
+        "code": "105B100123",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "12m - Nối 3360"
+      },
+      {
+        "code": "105B100154",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "15m - Nối 3360"
+      },
+      {
+        "code": "105B100204",
+        "name": "BỘ RX 1021 DÂY XANH LĐ",
+        "specification": "20m - Nối 3360"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "BTC3200",
+    "canonicalProductCount": 6,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 5,
+    "uncoveredProducts": [
+      {
+        "code": "105B320083",
+        "name": "BỘ TƯỚI CÂY 3200 CAM 8m",
+        "specification": "- co chuyển đổi"
+      },
+      {
+        "code": "105B320103",
+        "name": "BỘ TƯỚI CÂY 3200 CAM 10m",
+        "specification": "- co chuyển dổi"
+      },
+      {
+        "code": "105B320123",
+        "name": "BỘ TƯỚI CÂY 3200 CAM 12m",
+        "specification": "- co chuyển đổi"
+      },
+      {
+        "code": "105B320153",
+        "name": "BỘ TƯỚI CÂY 3200 CAM 15m",
+        "specification": "- co chuyển đổi"
+      },
+      {
+        "code": "105B320203",
+        "name": "BỘ TƯỚI CÂY 3200 CAM 20m",
+        "specification": "- co chuyển đổi"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "BTC6030",
+    "canonicalProductCount": 8,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 7,
+    "uncoveredProducts": [
+      {
+        "code": "105B600084",
+        "name": "BỘ TƯỚI CÂY 6030 8m",
+        "specification": "- 6 góc-CAM"
+      },
+      {
+        "code": "105B600104",
+        "name": "BỘ TƯỚI CÂY 6030 10m",
+        "specification": "- 6 góc-CAM"
+      },
+      {
+        "code": "105B600124",
+        "name": "BÔ TƯỚI CÂY 6030 12m",
+        "specification": "- 6 góc-CAM"
+      },
+      {
+        "code": "105B600154",
+        "name": "BỘ TƯỚI CÂY 6030 15m",
+        "specification": "- 6 góc-CAM"
+      },
+      {
+        "code": "105B600204",
+        "name": "BỘ TƯỚI CÂY 6030 20m",
+        "specification": "- 6 góc-CAM"
+      },
+      {
+        "code": "105B600254",
+        "name": "BỘ TƯỚI CÂY 6030 25m",
+        "specification": "- 6 góc-CAM"
+      },
+      {
+        "code": "105B600304",
+        "name": "BỘ TƯỚI CÂY 6030 30m",
+        "specification": "- 6 góc-CAM"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "BTCINOX",
+    "canonicalProductCount": 5,
+    "coveredProductCount": 5,
+    "uncoveredProductCount": 0,
+    "uncoveredProducts": [],
+    "externalProductCodes": []
+  },
+  {
+    "category": "BXBC",
+    "canonicalProductCount": 6,
+    "coveredProductCount": 6,
+    "uncoveredProductCount": 0,
+    "uncoveredProducts": [],
+    "externalProductCodes": []
+  },
+  {
+    "category": "DAUSEN",
+    "canonicalProductCount": 17,
+    "coveredProductCount": 4,
+    "uncoveredProductCount": 13,
+    "uncoveredProducts": [
+      {
+        "code": "103PD00A2",
+        "name": "ĐẦU SEN L100XD",
+        "specification": ""
+      },
+      {
+        "code": "103PD00A4",
+        "name": "ĐẦU SEN L100X",
+        "specification": ""
+      },
+      {
+        "code": "103PD01A1",
+        "name": "ĐẦU SEN L101A",
+        "specification": ""
+      },
+      {
+        "code": "103PD03A1",
+        "name": "ĐẦU SEN L103A",
+        "specification": ""
+      },
+      {
+        "code": "103PD06A1",
+        "name": "ĐẦU SEN XI L106A",
+        "specification": ""
+      },
+      {
+        "code": "103PD08A3",
+        "name": "ĐẦU SEN L1082N",
+        "specification": ""
+      },
+      {
+        "code": "103PD08A4",
+        "name": "ĐẦU SEN L1082I",
+        "specification": ""
+      },
+      {
+        "code": "103PD08A5",
+        "name": "ĐẦU SEN L1083",
+        "specification": ""
+      },
+      {
+        "code": "103PD09A6",
+        "name": "ĐẦU SEN L1094 - CAM",
+        "specification": ""
+      },
+      {
+        "code": "103PD09A7",
+        "name": "ĐẦU SEN L1094 - XANH",
+        "specification": ""
+      },
+      {
+        "code": "103PD09A8",
+        "name": "ĐẦU SEN L1094 - TÍM",
+        "specification": ""
+      },
+      {
+        "code": "103PDM007",
+        "name": "ĐẦU SEN PS M3",
+        "specification": ""
+      },
+      {
+        "code": "103PDM008",
+        "name": "ĐẦU SEN PS M3A",
+        "specification": ""
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "DAUTUOICAY-RUAXE",
+    "canonicalProductCount": 9,
+    "coveredProductCount": 7,
+    "uncoveredProductCount": 2,
+    "uncoveredProducts": [
+      {
+        "code": "105PPN006",
+        "name": "ĐẦU XỊT 1021",
+        "specification": ""
+      },
+      {
+        "code": "105PPN06",
+        "name": "ĐẦU 3200",
+        "specification": ""
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "DAYDANANG",
+    "canonicalProductCount": 9,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 8,
+    "uncoveredProducts": [
+      {
+        "code": "102TC20004",
+        "name": "DÂY DẪN ĐA NĂNG 2m",
+        "specification": ""
+      },
+      {
+        "code": "102VS000001",
+        "name": "DÂY VỆ SINH 114 LN",
+        "specification": "1.2M"
+      },
+      {
+        "code": "102VS000002",
+        "name": "DÂY VỆ SINH 114 LĐ",
+        "specification": "1.2M"
+      },
+      {
+        "code": "102VS00003",
+        "name": "DÂY VỆ SINH 114X LN",
+        "specification": "1.2M"
+      },
+      {
+        "code": "102VS00004",
+        "name": "DÂY VỆ SINH 114X LĐ",
+        "specification": "1.2M"
+      },
+      {
+        "code": "102VS00008",
+        "name": "DÂY VỆ SINH PVC 110-113 LĐ",
+        "specification": "1.5M"
+      },
+      {
+        "code": "102VS00009",
+        "name": "DÂY DẪN ĐA NĂNG LĐ",
+        "specification": "1.5M"
+      },
+      {
+        "code": "102VS00010",
+        "name": "DÂY DẪN ĐA NĂNG LĐ",
+        "specification": "1.2M"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "DCMG",
+    "canonicalProductCount": 1,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 0,
+    "uncoveredProducts": [],
+    "externalProductCodes": []
+  },
+  {
+    "category": "DTINOX",
+    "canonicalProductCount": 5,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 4,
+    "uncoveredProducts": [
+      {
+        "code": "102TC12003",
+        "name": "DÂY TẮM INOX 1.2m",
+        "specification": ""
+      },
+      {
+        "code": "102TC15003",
+        "name": "DÂY TẮM INOX 1.5m",
+        "specification": ""
+      },
+      {
+        "code": "102TC18003",
+        "name": "DÂY TẮM INOX 1.8m",
+        "specification": ""
+      },
+      {
+        "code": "102TC20003",
+        "name": "DÂY TẮM INOX 2m",
+        "specification": ""
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "DTLD",
+    "canonicalProductCount": 5,
+    "coveredProductCount": 5,
+    "uncoveredProductCount": 0,
+    "uncoveredProducts": [],
+    "externalProductCodes": []
+  },
+  {
+    "category": "DTLN",
+    "canonicalProductCount": 5,
+    "coveredProductCount": 5,
+    "uncoveredProductCount": 0,
+    "uncoveredProducts": [],
+    "externalProductCodes": []
+  },
+  {
+    "category": "INOX",
+    "canonicalProductCount": 17,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 16,
+    "uncoveredProducts": [
+      {
+        "code": "102XI03001",
+        "name": "DAY XẢ INOX TRẮNG 30cm",
+        "specification": ""
+      },
+      {
+        "code": "102XI04001",
+        "name": "DÂY XẢ INOX TRẮNG 40cm",
+        "specification": ""
+      },
+      {
+        "code": "102XI04502",
+        "name": "DÂY XẢ INOX TRẮNG 45cm",
+        "specification": ""
+      },
+      {
+        "code": "102XI05001",
+        "name": "DÂY XẢ INOX TRẮNG 50cm",
+        "specification": ""
+      },
+      {
+        "code": "102XI06001",
+        "name": "DÂY XẢ INOX TRẮNG 60cm",
+        "specification": ""
+      },
+      {
+        "code": "102XI08001",
+        "name": "DÂY XẢ INOX TRẮNG 80cm",
+        "specification": ""
+      },
+      {
+        "code": "102XI10001",
+        "name": "DÂY XẢ INOX TRẮNG 1m",
+        "specification": ""
+      },
+      {
+        "code": "102XI12001",
+        "name": "DÂY XẢ INOX TRẮNG 1.2m",
+        "specification": ""
+      },
+      {
+        "code": "102XI15001",
+        "name": "DÂY XẢ INOX TRẮNG 1.5m",
+        "specification": ""
+      },
+      {
+        "code": "102XI18001",
+        "name": "DAY XẢ INOX TRẮNG 1.8m",
+        "specification": ""
+      },
+      {
+        "code": "102XI20001",
+        "name": "DÂY XẢ INOX TRẮNG 2m",
+        "specification": ""
+      },
+      {
+        "code": "3060101",
+        "name": "DÂY ĐỒNG 14MM",
+        "specification": "待補"
+      },
+      {
+        "code": "3060104",
+        "name": "DÂY INOX 14MM KG",
+        "specification": "待補"
+      },
+      {
+        "code": "3060105",
+        "name": "DÂY SỌC 14MM KG",
+        "specification": "待補"
+      },
+      {
+        "code": "3060108",
+        "name": "DÂY INOX 13MM",
+        "specification": "待補"
+      },
+      {
+        "code": "3060114",
+        "name": "DÂY INOX 10MM",
+        "specification": "待補"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "KETUOICAY",
+    "canonicalProductCount": 6,
+    "coveredProductCount": 2,
+    "uncoveredProductCount": 4,
+    "uncoveredProducts": [
+      {
+        "code": "105K320210",
+        "name": "KÊ ỐNG JY1302-3200 CAM 20m-co",
+        "specification": "chuyen doi"
+      },
+      {
+        "code": "105K320251",
+        "name": "KÊ ỐNG JY1302-3200 CAM 25m-co",
+        "specification": "chuyen doi"
+      },
+      {
+        "code": "105K320307",
+        "name": "KÊ ỐNG JY1301-3200 CAM 30m-co",
+        "specification": "chuyen doi"
+      },
+      {
+        "code": "105K320308",
+        "name": "KÊ ỐNG JY1302-3200 CAM 30m-co",
+        "specification": "chuyen doi"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "LOCRAC",
+    "canonicalProductCount": 6,
+    "coveredProductCount": 3,
+    "uncoveredProductCount": 3,
+    "uncoveredProducts": [
+      {
+        "code": "110CH060",
+        "name": "Lọc rác chống hôi 2\", 100x100mm",
+        "specification": ""
+      },
+      {
+        "code": "110CH090",
+        "name": "Lọc rác chống hôi 3\", 150x150mm",
+        "specification": ""
+      },
+      {
+        "code": "110TC061",
+        "name": "Thoát nước sân thượng vuông 2\" -",
+        "specification": "100x100mm"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "LVB",
+    "canonicalProductCount": 3,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 2,
+    "uncoveredProducts": [
+      {
+        "code": "102XL05001",
+        "name": "DÂY XẢ LAVABO TRẮNG 50cm",
+        "specification": ""
+      },
+      {
+        "code": "102XL06001",
+        "name": "DÂY XẢ LAVABO TRẮNG 60cm",
+        "specification": ""
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "ONGHOI-CAOAP/BRX-CAOAP",
+    "canonicalProductCount": 7,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 6,
+    "uncoveredProducts": [
+      {
+        "code": "108HV5005",
+        "name": "ỐNG HƠI CA CAM 8.5/200KG 5M",
+        "specification": ""
+      },
+      {
+        "code": "108HV5008",
+        "name": "ỐNG HƠI CA CAM 8.5/200KG 8M",
+        "specification": ""
+      },
+      {
+        "code": "108HV5015",
+        "name": "ỐNG HƠI CA CAM 8.5/200KG 15M",
+        "specification": ""
+      },
+      {
+        "code": "108HV5020",
+        "name": "ỐNG HƠI CA CAM 8.5/200KG 20M",
+        "specification": ""
+      },
+      {
+        "code": "108HV5025",
+        "name": "ỐNG HƠI CA CAM 8.5/200KG 25M",
+        "specification": ""
+      },
+      {
+        "code": "108HV5030",
+        "name": "ỐNG HƠI CA CAM 8.5/200KG 30M",
+        "specification": ""
+      }
+    ],
+    "externalProductCodes": [
+      "108BR4005",
+      "108HC120"
+    ]
+  },
+  {
+    "category": "ONGINOX",
+    "canonicalProductCount": 5,
+    "coveredProductCount": 5,
+    "uncoveredProductCount": 0,
+    "uncoveredProducts": [],
+    "externalProductCodes": []
+  },
+  {
+    "category": "ONGXOAN",
+    "canonicalProductCount": 6,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 5,
+    "uncoveredProducts": [
+      {
+        "code": "108XC206",
+        "name": "ỐNG XOẮN PU 5x8mm 6M",
+        "specification": ""
+      },
+      {
+        "code": "108XC209",
+        "name": "ỐNG XOẮN PU 5x8mm 9M",
+        "specification": ""
+      },
+      {
+        "code": "108XC212",
+        "name": "ỐNG XOẮN PU 5x8mm 12M",
+        "specification": ""
+      },
+      {
+        "code": "108XC215",
+        "name": "ỐNG XOẮN PU 5*8mm 15M",
+        "specification": ""
+      },
+      {
+        "code": "108XC220",
+        "name": "ỐNG XOẮN PU 5x8mm 20M",
+        "specification": ""
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "PHAODIEN",
+    "canonicalProductCount": 6,
+    "coveredProductCount": 5,
+    "uncoveredProductCount": 1,
+    "uncoveredProducts": [
+      {
+        "code": "101CTP020",
+        "name": "Phao điện OTOFIL",
+        "specification": ""
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "PVC(2)",
+    "canonicalProductCount": 7,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 6,
+    "uncoveredProducts": [
+      {
+        "code": "102XT04004",
+        "name": "DÂY XẢ PVC TRẮNG ỐC",
+        "specification": "NHỰA 40CM"
+      },
+      {
+        "code": "102XT04504",
+        "name": "DÂY XẢ PVC TRẮNG ỐC",
+        "specification": "NHỰA 45CM"
+      },
+      {
+        "code": "102XT05004",
+        "name": "DÂY XẢ PVC TRẮNG ỐC",
+        "specification": "NHỰA 50CM"
+      },
+      {
+        "code": "102XT06004",
+        "name": "DAY XẢ PVC TRẮNG ỐC",
+        "specification": "NHỰA 60CM"
+      },
+      {
+        "code": "102XT08004",
+        "name": "DÂY XẢ PVC TRẮNG ỐC",
+        "specification": "NHỰA 80CM"
+      },
+      {
+        "code": "102XT10004",
+        "name": "DÂY XẢ PVC TRẮNG ỐC",
+        "specification": "NHỰA 1M"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "PVCLD",
+    "canonicalProductCount": 11,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 10,
+    "uncoveredProducts": [
+      {
+        "code": "102XT03002",
+        "name": "DÂY XẢ PVC TRẮNG LĐ",
+        "specification": "30CM"
+      },
+      {
+        "code": "102XT04002",
+        "name": "DÂY XẢ PVC TRẮNG LĐ",
+        "specification": "40CM"
+      },
+      {
+        "code": "102XT05002",
+        "name": "DÂY XẢ PVC TRẮNG LĐ",
+        "specification": "50CM"
+      },
+      {
+        "code": "102XT06002",
+        "name": "DÂY XẢ PVC TRẮNG LĐ",
+        "specification": "60CM"
+      },
+      {
+        "code": "102XT08002",
+        "name": "DÂY XẢ PVC TRẮNG LĐ",
+        "specification": "80CM"
+      },
+      {
+        "code": "102XT10002",
+        "name": "DÂY XẢ PVC TRẮNG LĐ",
+        "specification": "1M"
+      },
+      {
+        "code": "102XT12002",
+        "name": "DÂY XẢ PVC TRẮNG LĐ",
+        "specification": "1.2M"
+      },
+      {
+        "code": "102XT15002",
+        "name": "DÂY XẢ PVC TRẮNG LĐ",
+        "specification": "1.5M"
+      },
+      {
+        "code": "102XT18002",
+        "name": "DÂY XẢ PVC TRẮNG LĐ",
+        "specification": "1.8M"
+      },
+      {
+        "code": "102XT20002",
+        "name": "DÂY XẢ PVC TRẮNG LĐ",
+        "specification": "2M"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "PVCLN",
+    "canonicalProductCount": 11,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 10,
+    "uncoveredProducts": [
+      {
+        "code": "102XT03001",
+        "name": "DÂY XẢ PVC TRẮNG LN",
+        "specification": "30CM"
+      },
+      {
+        "code": "102XT04001",
+        "name": "DÂY XẢ PVC TRẮNG LN",
+        "specification": "40CM"
+      },
+      {
+        "code": "102XT05001",
+        "name": "DÂY XẢ PVC TRẮNG LN",
+        "specification": "50CM"
+      },
+      {
+        "code": "102XT06001",
+        "name": "DÂY XẢ PVC TRẮNG LN",
+        "specification": "60CM"
+      },
+      {
+        "code": "102XT08001",
+        "name": "DÂY XẢ PVC TRẮNG LN",
+        "specification": "80CM"
+      },
+      {
+        "code": "102XT10001",
+        "name": "DÂY XẢ PVC TRẮNG LN",
+        "specification": "1M"
+      },
+      {
+        "code": "102XT12001",
+        "name": "DÂY XẢ PVC TRẮNG LN",
+        "specification": "1.2M"
+      },
+      {
+        "code": "102XT15001",
+        "name": "DÂY XẢ PVC TRẮNG LN",
+        "specification": "1.5M"
+      },
+      {
+        "code": "102XT18001",
+        "name": "DÂY XẢ PVC TRẮNG LN",
+        "specification": "1.8M"
+      },
+      {
+        "code": "102XT20001",
+        "name": "DÂY XẢ PVC TRẮNG LN",
+        "specification": "2M"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "SOC",
+    "canonicalProductCount": 11,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 10,
+    "uncoveredProducts": [
+      {
+        "code": "102XS03001",
+        "name": "DÂY XẢ INOX SỌC 14MM",
+        "specification": "30cm"
+      },
+      {
+        "code": "102XS04001",
+        "name": "DÂY XẢ INOX SỌC 14MM",
+        "specification": "40cm"
+      },
+      {
+        "code": "102XS05001",
+        "name": "DÂY XẢ INOX SỌC 14MM",
+        "specification": "50cm"
+      },
+      {
+        "code": "102XS06001",
+        "name": "DÂY XẢ INOX SỌC 14MM",
+        "specification": "60cm"
+      },
+      {
+        "code": "102XS08001",
+        "name": "DÂY XẢ INOX SỌC 14MM",
+        "specification": "80cm"
+      },
+      {
+        "code": "102XS10001",
+        "name": "DÂY XẢ INOX SỌC 14MM",
+        "specification": "1m"
+      },
+      {
+        "code": "102XS12001",
+        "name": "DÂY XẢ INOX SỌC 14MM",
+        "specification": "1.2m"
+      },
+      {
+        "code": "102XS15001",
+        "name": "DÂY XẢ INOX SỌC 14MM",
+        "specification": "1.5m"
+      },
+      {
+        "code": "102XS18001",
+        "name": "DÂY XẢ INOX SỌC 14MM",
+        "specification": "1.8m"
+      },
+      {
+        "code": "102XS20001",
+        "name": "DAY XẢ INOX SỌC 14MM",
+        "specification": "2m"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "VANPHAODONG",
+    "canonicalProductCount": 5,
+    "coveredProductCount": 2,
+    "uncoveredProductCount": 3,
+    "uncoveredProducts": [
+      {
+        "code": "107P1027",
+        "name": "VAN PHAO ONPAS (có tanlơ) 3/4\"",
+        "specification": ""
+      },
+      {
+        "code": "107P1034",
+        "name": "VAN PHAO ONPAS (co tanlơ) 1\"",
+        "specification": ""
+      },
+      {
+        "code": "107P1D02",
+        "name": "VAN PHAO CS ĐỊNH HÌNH 3/4\"",
+        "specification": "BANH LỚN"
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "VANPHAONHUA",
+    "canonicalProductCount": 3,
+    "coveredProductCount": 3,
+    "uncoveredProductCount": 0,
+    "uncoveredProducts": [],
+    "externalProductCodes": []
+  },
+  {
+    "category": "VOIDONG",
+    "canonicalProductCount": 2,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 1,
+    "uncoveredProducts": [
+      {
+        "code": "103VD2027",
+        "name": "VÒI ĐỒNG NHỎ 3/4\"",
+        "specification": ""
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "VOINHUA",
+    "canonicalProductCount": 9,
+    "coveredProductCount": 4,
+    "uncoveredProductCount": 5,
+    "uncoveredProducts": [
+      {
+        "code": "103VN0005",
+        "name": "VOI NHUA ST 6300-C 27 MAU",
+        "specification": "CAM"
+      },
+      {
+        "code": "103VN0008",
+        "name": "VOI LVB XI PL8191C",
+        "specification": ""
+      },
+      {
+        "code": "103VN0010",
+        "name": "VOI CU DOI XI PL6192C",
+        "specification": ""
+      },
+      {
+        "code": "103VN0011",
+        "name": "VOI RC NHUA PL9191W - C nhỏ,",
+        "specification": "MAU CAM"
+      },
+      {
+        "code": "103VN0014",
+        "name": "VOI RC XI PL9391C trung",
+        "specification": ""
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "XADONG",
+    "canonicalProductCount": 5,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 4,
+    "uncoveredProducts": [
+      {
+        "code": "102XD05001",
+        "name": "DÂY XẢ ĐỒNG 50cm",
+        "specification": ""
+      },
+      {
+        "code": "102XD06001",
+        "name": "DÂY XẢ ĐỒNG 60cm",
+        "specification": ""
+      },
+      {
+        "code": "102XD08001",
+        "name": "DÂY XẢ ĐỒNG 80cm",
+        "specification": ""
+      },
+      {
+        "code": "102XD10001",
+        "name": "DÂY XẢ ĐỒNG 1m",
+        "specification": ""
+      }
+    ],
+    "externalProductCodes": []
+  },
+  {
+    "category": "XETUOICAY",
+    "canonicalProductCount": 1,
+    "coveredProductCount": 1,
+    "uncoveredProductCount": 0,
+    "uncoveredProducts": [],
+    "externalProductCodes": []
+  }
+]

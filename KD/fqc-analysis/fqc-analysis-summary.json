@@ -1,0 +1,52 @@
+{
+  "analyzedAt": "2026-09-21T07:10:45.298Z",
+  "excelFile": {
+    "path": "data-import\\FQC\\FQC標準 FQC-C TRIL 1.xlsx",
+    "sizeBytes": 67272,
+    "sha256": "5BC8CC4B55C4194DA08E18E4F9E75CE65D4FB50967B2A0BB2F861B5845FCF257"
+  },
+  "sheets": {
+    "產品資料": {
+      "rowCount": 509,
+      "dataRowCount": 508,
+      "mergesCount": 290,
+      "columnsCount": 18,
+      "headers": [
+        "產品類別\nLoại sản phẩm",
+        "錯誤代碼 Mã lỗi",
+        "錯誤代碼名稱 Tên mã lỗi",
+        "FQC檢查編號\nMã kiểm tra FQC",
+        "檢查項目\nHạng mục kiểm tra",
+        "檢查方式敘述 Mô tả các phương pháp kiểm tra",
+        "檢查方式圖片         Hình ảnh phương pháp kiểm tra",
+        "檢查工具(照片)\nCông cụ kiểm tra (Photo)",
+        "是否加入季檢查列表\nCó đưa vào danh sách kiểm tra hàng quý không",
+        "包含產品\nSản phẩm áp dụng",
+        "是否啟用\nCó kích hoạt không",
+        "版本\nPhiên bản",
+        "版本變更時間 Thời gian thay đổi phiên bản",
+        "版本變更原因Lý do thay đổi phiên bản",
+        "Người tạo\n建立者",
+        "備註 GHI CHÚ",
+        "未建立產品 Chưa có sản phẩm nào được thành lập.",
+        "FQC錯誤代碼使用比例 Tỷ lệ sử dụng mã lỗi FQC"
+      ]
+    },
+    "產品類別": {
+      "rowCount": 40,
+      "dataRowCount": 39,
+      "categoriesCount": 39
+    }
+  },
+  "statistics": {
+    "totalCategoriesInSheet1": 34,
+    "totalCategoriesInSheet2": 39,
+    "totalErrorCodes": 164,
+    "totalCheckItems": 508,
+    "uniqueCheckNos": 508,
+    "duplicateCheckNosCount": 0,
+    "embeddedImagesCount": 0,
+    "distinctToolsCount": 66,
+    "distinctProductCodesReferenced": 89
+  }
+}

@@ -1,3 +1,4 @@
+import {withFixtureCleanupSync} from './fixture-cleanup.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
@@ -14,7 +15,7 @@ let phase='start';
 const run=(cwd,args,input)=>spawnSync('git',args,{cwd,input,encoding:'utf8',env:environment,windowsHide:true});
 const ok=(cwd,args)=>{phase='git-'+args[0];const p=run(cwd,args);assert.equal(p.status,0);return p.stdout.trim();};
 const node=(cwd,file,args=[])=>{phase='setup';const p=spawnSync(process.execPath,[file,...args],{cwd,encoding:'utf8',env:environment,windowsHide:true});if(p.status!==0)phase+='-'+(p.stderr.match(/stage=([a-z-]+)/)?.[1]||'unknown');return p;};
-try{
+withFixtureCleanupSync(() => {
  fs.mkdirSync(work);ok(fixture,['init','--bare',remote]);ok(work,['init','-b','main']);
  for(const file of ['.githooks/pre-push','scripts/main-push-guard.mjs','scripts/collaboration-setup.mjs']){fs.mkdirSync(path.dirname(path.join(work,file)),{recursive:true});fs.copyFileSync(path.join(source,file),path.join(work,file));}
  fs.chmodSync(path.join(work,'.githooks/pre-push'),0o755);
@@ -49,5 +50,4 @@ try{
  ok(fixture,['clone',remote,path.join(fixture,'second-clone')]);
  assert.equal(ok(path.join(fixture,'second-clone'),['rev-parse','HEAD']),ok(work,['rev-parse','HEAD']));
  console.log('PASS: Windows-compatible local-bare push refusal, branch push, main target/delete refusal, clone/fetch/pull/commit, Unicode paths, idempotent setup and existing-hook preservation; no GitHub main push.');
-}catch(error){console.error(JSON.stringify({passed:false,phase,errorType:error.name,details:'Sensitive details suppressed'}));process.exitCode=1;}
-finally{const target=fs.realpathSync(fixture),parent=fs.realpathSync(os.tmpdir());if(path.dirname(target)!==parent||!path.basename(target).startsWith('process-main-guard-'))throw Error('Fixture cleanup verification failed');fs.rmSync(target,{recursive:true,force:true});}
+}, () => {const target=fs.realpathSync(fixture),parent=fs.realpathSync(os.tmpdir());if(path.dirname(target)!==parent||!path.basename(target).startsWith('process-main-guard-'))throw Error('Fixture cleanup verification failed');fs.rmSync(target,{recursive:true,force:true});}, (error) => {console.error(JSON.stringify({passed:false,phase,errorType:error.name,details:'Sensitive details suppressed'}));process.exitCode=1;});

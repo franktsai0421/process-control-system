@@ -57,6 +57,9 @@ next-env.d.ts
 /log/
 /tmp/
 /diagnostics/
+/Temp/
+__pycache__/
+*.pyc
 /test-results/
 /_local-auth-backups/
 /data/local/
@@ -65,3 +68,9 @@ next-env.d.ts
 /.local-backups/
 /.sites-runtime/
 /data/.canonical-*/
+
+# Private offline snapshot update journals, backups and security overlays
+/.process-update/
+
+# Offline full-snapshot SDK staging; contains private local storage.
+/.u1s/

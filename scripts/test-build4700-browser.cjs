@@ -1,3 +1,4 @@
+const isolatedTestTarget_20261010=require('./require-isolated-test-target.cjs')();
 const fs = require('node:fs');
 const assert = require('node:assert/strict');
 const { chromium } = require(
@@ -18,7 +19,7 @@ const { chromium } = require(
     page.setDefaultTimeout(8000);
     const seed = JSON.parse(fs.readFileSync(require('node:path').join(__dirname,'..','db','seed.json'), 'utf8'));
     seed.values.platformUsers = JSON.stringify(
-      JSON.parse(seed.values.platformUsers).map(({ password, ...user }) => user),
+      JSON.parse(seed.values.platformUsers).map(({ password: _password, ...user }) => user),
     );
     seed.identity = { id: 'admin', role: 'admin', name: 'Fixture' };
     seed.serverProtected = true;
@@ -36,7 +37,7 @@ const { chromium } = require(
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('dialog', (dialog) => dialog.accept());
-    await page.goto('http://localhost:3000/process/?build=20260910-4700&manage=1');
+    await page.goto((isolatedTestTarget_20261010+"/process/?build=20260910-4700&manage=1"));
     await page.locator('[data-view=editor]').click();
     await page.locator('.operation-block').first().waitFor();
 
@@ -48,7 +49,7 @@ const { chromium } = require(
       );
       const route = routeFor(product.code).stages;
       const stages = {};
-      route.forEach((stageCode, index) => {
+      route.forEach((stageCode, _index) => {
         stages[stageCode] = [
           {
             id: `QA-${stageCode}`,

@@ -12,3 +12,15 @@ export const sharedState = sqliteTable('shared_state', {
   values: text('values').notNull(),
   updatedAt: text('updated_at').notNull(),
 });
+
+export const webFeedbackStore = sqliteTable('web_feedback_store', {
+  id: integer('id').primaryKey().notNull(),
+  revision: integer('revision').notNull(),
+  payload: text('payload').notNull(),
+});
+
+export const processRevokedSessions = sqliteTable('process_revoked_sessions', {
+  tokenDigest: text('token_digest').primaryKey().notNull(),
+  expiresAt: integer('expires_at').notNull(),
+  revokedAt: integer('revoked_at').notNull(),
+});

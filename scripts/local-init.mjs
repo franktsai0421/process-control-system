@@ -1,3 +1,4 @@
+import {acquireLocalStorageLease} from '../lib/local-storage-lease.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -5,22 +6,23 @@ import vm from 'node:vm';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { createDemoUsers, demoIdentities, isDemoUser } from '../lib/demo-identities.mjs';
-import { assertLocalMode, localPaths, localWorkerConfig, readLocalSession, LocalSetupError, localFailureMessage, configureOfflineLocal } from '../lib/local-runtime.mjs';
+import { assertLocalMode, localWorkerConfig, readLocalSession, LocalSetupError, localFailureMessage, configureOfflineLocal } from '../lib/local-runtime.mjs';
 import { verifyLocalSchema } from '../lib/local-schema.mjs';
 import { installLocalNetworkGuard } from '../lib/local-network-guard.mjs';
 import {readPackage,materialize,serialize,sha256,stable} from '../lib/canonical-data.mjs';
-import {encodeLocalValues}from'../lib/local-snapshot.mjs';
+import {encodeLocalValues,decodeLocalSnapshot}from'../lib/local-snapshot.mjs';
 import {importWebImages,hydrateWebImages,validateImageTransition} from '../lib/canonical-images.mjs';
 
 // Load existing Drizzle definitions rather than duplicating table definitions.
 export function loadTypeScript(root, relative) {
-  const require = createRequire(path.join(root, 'package.json'));
+  const filename = path.resolve(root, relative);
+  const require = createRequire(filename);
   const ts = require('typescript');
   const code = ts.transpileModule(fs.readFileSync(path.join(root, relative), 'utf8'),
     { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 } }).outputText;
-  const module = { exports: {} };
-  vm.runInNewContext(code, { module, exports: module.exports, require }, { filename: relative });
-  return module.exports;
+  const compiledModule = { exports: {} };
+  vm.runInNewContext(code, { module: compiledModule, exports: compiledModule.exports, require, crypto:crypto.webcrypto, TextEncoder }, { filename });
+  return compiledModule.exports;
 }
 
 export function inspectMigrations(root) {
@@ -49,8 +51,13 @@ export function inspectMigrations(root) {
 
 export async function initializeLocal(root, args = [], environment = process.env) {
   assertLocalMode(args, environment);
+  const storageLease = acquireLocalStorageLease(root);
+  let storageMayRelease = true;
+  try {
   const schema = inspectMigrations(root);
   const paths = configureOfflineLocal(root);
+  if (fs.existsSync(path.join(paths.directory, 'development-package-incomplete.json')))
+    throw new LocalSetupError('Development package restore is incomplete; automatic startup refused');
   installLocalNetworkGuard(root);
   fs.mkdirSync(paths.directory, { recursive: true });
   const lock = path.join(paths.directory, 'initializing.lock');
@@ -62,6 +69,7 @@ export async function initializeLocal(root, args = [], environment = process.env
     fs.writeFileSync(paths.config, JSON.stringify(config, null, 2));
     // Explicit config and false remoteBindings prevent auto-discovery or remote access.
     const { getPlatformProxy } = createRequire(path.join(root,'package.json'))('wrangler');
+    storageMayRelease = false;
     proxy = await getPlatformProxy({ configPath: paths.config,
       persist: { path: path.join(paths.state, 'v3') }, remoteBindings: false, envFiles: [] });
     const db = proxy.env.DB;
@@ -94,6 +102,8 @@ export async function initializeLocal(root, args = [], environment = process.env
       // Existing business state is never overwritten or re-seeded.
       const stored = JSON.parse(row.values);
       let values = stored;
+      const prepared = stored.__processRecords || stored.__processChunks ? await decodeLocalSnapshot(proxy.env.STATE_ARCHIVE, stored) : null;
+      if (prepared) values = prepared.values;
       if (stored.__processR2) {
         const reference = stored.__processR2;
         if (!/^snapshots\/[a-f0-9]{64}\.json$/.test(reference.key)) throw new LocalSetupError('Invalid Local snapshot reference');
@@ -118,7 +128,7 @@ export async function initializeLocal(root, args = [], environment = process.env
       const hydrated=hydrateWebImages(values,canonical.domains.assets);
       if(JSON.stringify(hydrated)!==JSON.stringify(values)){
         const change=await db.prepare('UPDATE shared_state SET revision=?, "values"=?, updated_at=? WHERE id=1 AND revision=? AND "values"=?')
-          .bind(row.revision+1,await encodeLocalValues(proxy.env.STATE_ARCHIVE,hydrated,{forceR2:!!stored.__processR2}),new Date().toISOString(),row.revision,row.values).run();
+          .bind(row.revision+1,await encodeLocalValues(proxy.env.STATE_ARCHIVE,hydrated,{forceR2:!!stored.__processR2,...prepared}),new Date().toISOString(),row.revision,row.values).run();
         if(change.meta.changes!==1)throw new LocalSetupError('Local revision conflict while resolving canonical images');
       }
     }
@@ -128,9 +138,10 @@ export async function initializeLocal(root, args = [], environment = process.env
     console.log('Local initialization verified: existing migrations, passwordless demo accounts, remote bindings disabled.');
     console.log(`Local canonical images: ${images.imported} imported, ${images.present} already present, ${images.tombstones} tombstones.`);
   } finally {
-    if (proxy) await proxy.dispose();
+    if (proxy) { await proxy.dispose(); storageMayRelease = true; }
     fs.rmdirSync(lock);
   }
+  } finally { if (storageMayRelease) storageLease.release(); }
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
