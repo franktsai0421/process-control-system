@@ -34,4 +34,4 @@ import { chromium } from 'playwright';
   console.log('Categories count:', cats.length, cats);
 
   await browser.close();
-})();
+})().catch(error => { console.error(error); process.exitCode = 1; });

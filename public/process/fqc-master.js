@@ -1,4 +1,12 @@
 (function (host) {
+  const displayDraftError = error => window.sharedDraftErrorMessage?.(error) ?? (typeof error === 'string' ? error : error?.message || String(error ?? ''));
+  // FormData yields native strings/Files; preserve the historical File tag conversion.
+  function nativeFormValueText(value) {
+    if (typeof value === 'string') return value;
+    if (value === null) return '';
+    return Object.prototype.toString.call(value);
+  }
+
   const STORAGE = 'qualityMasterControl';
   const dbKeys = ['fqc', 'iqc', 'ipqc', 'routineReports'];
   const h = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
@@ -11,7 +19,7 @@
   function adopt(result){if(!result.control)return;const wasOpen=!selected()||['draft','pending'].includes(selected()?.status);ensureControl().libraries.fqc=result.control;if(wasOpen)ui.selectedVersionId=result.control.versions.find(v=>['draft','pending'].includes(v.status))?.id||result.control.activeVersionId||'';syncBase=clone(result.control.workflow?.working||selected()?.snapshot||{errors:[],items:[]});syncGeneration=result.control.workflow?.generation||null;}
   async function loadShared(isCurrent=()=>true){const r=await transport().read();if(isCurrent())adopt(r);return r;}
   function changes(base,next){const patches=[],guards=[];for(const collection of ['errors','items'])for(const row of next[collection]){const old=base[collection].find(r=>r.id===row.id);if(!old){patches.push({op:'insert',path:[collection],value:row});continue;}
-    for(const field of sharedFields[collection])if(row[field]!==undefined&&JSON.stringify(row[field])!==JSON.stringify(old[field])&&!(row[field]===''&&old[field]==null)){const path=[collection,{id:row.id},field];patches.push({op:'set',path,value:row[field]});if(!['name','description','reason','note'].includes(field))guards.push({path,value:old[field]});}
+    for(const field of sharedFields[collection])if(row[field]!==undefined&&JSON.stringify(row[field])!==JSON.stringify(old[field])&&!(row[field]===''&&old[field]==null)){const path=[collection,{id:row.id},field];patches.push({op:'set',path,value:row[field]});guards.push({path,value:old[field]});}
   }return{patches,guards};}
   async function sharedAction(action,detail={}){if(ui.saving)throw Error('OPERATION_IN_PROGRESS');ui.saving=true;
     // A request must become visibly busy before its first await. Do not rebuild
@@ -49,6 +57,15 @@
       const json = await res.json().catch(() => ({}));
       if (!res.ok) throw Error(json.error || `HTTP ${res.status}`);
       const activeVersionId = json.control?.activeVersionId;
+      const emptyControl = json.control;
+      if (res.status === 200 && emptyControl?.schemaVersion === 1 && activeVersionId === null &&
+          Array.isArray(emptyControl.versions) && emptyControl.versions.length === 0 &&
+          Array.isArray(emptyControl.issues) && emptyControl.reservedMarks &&
+          typeof emptyControl.reservedMarks === 'object' && !Array.isArray(emptyControl.reservedMarks)) {
+        equipmentCache = { activeVersionId: null, equipment: [], categories: [], subcategories: [], groups: [], issues: emptyControl.issues };
+        equipmentLoadError = null;
+        return equipmentCache;
+      }
       const ver = json.control?.versions?.find(v => v.id === activeVersionId && v.status === 'approved');
       if (!ver) throw Error(isVi() ? 'Không tìm thấy phiên bản thiết bị đang có hiệu lực' : '找不到目前生效的檢具版本');
       equipmentCache = {
@@ -85,8 +102,26 @@
     // new exclusion rule here: all imported Local equipment currently retains pending verification.
     return '';
   }
+  let masterCatalogCache = null, masterCatalogActor = '', masterCatalogSequence = 0;
+  async function loadMasterCatalog(isCurrent = () => true) {
+    const owner = identity()?.id, sequence = ++masterCatalogSequence;
+    masterCatalogCache = null; masterCatalogActor = '';
+    if (!owner) throw Error('LOGIN_REQUIRED');
+    const client = window.createSharedDraftClient({ endpoint: '/api/master/workflow?scope=AB&caseMetadata=1', legacyArchive: true, actorId: owner, headers: () => window.ProcessSync?.platformHeaders?.() || { 'Content-Type': 'application/json' } });
+    const result = await client.read();
+    if (!isCurrent()) return null;
+    if (identity()?.id !== owner) throw Error('ACCOUNT_CHANGED_REOPEN_REQUIRED');
+    if (sequence !== masterCatalogSequence) throw Error('MASTER_CATALOG_READ_SUPERSEDED');
+    const current = result.control, active = Array.isArray(current?.versions) ? current.versions.filter(version => version && version.id === current.activeVersionId && version.status === 'approved') : [];
+    const snapshot = active.length === 1 ? active[0].snapshot : null;
+    if (result.permissions?.view !== true || typeof current?.activeVersionId !== 'string' || !current.activeVersionId || !snapshot ||
+        !Array.isArray(snapshot.products) || !Array.isArray(snapshot.lines) || !Array.isArray(snapshot.categoryGroups))
+      throw Error(isVi() ? 'Không thể đọc danh mục AB đang có hiệu lực' : '無法讀取目前生效的 AB 主檔');
+    masterCatalogCache = clone(snapshot); masterCatalogActor = owner;
+    return masterCatalogCache;
+  }
   function catalog() {
-    const active = read('masterDataControl', null)?.active || {};
+    const active = masterCatalogActor === identity()?.id && masterCatalogCache ? { AB: masterCatalogCache } : {};
     const comparisonReady = Array.isArray(active.AB?.products);
     const baseProducts = comparisonReady ? active.AB.products : [];
     const productMap = new Map(baseProducts.map(item => [item.code, {
@@ -144,7 +179,16 @@
   function editable() { const version = selected(); return version?.status === 'draft' ? version : null; }
   function approved() { return library().versions.find(version => version.id === library().activeVersionId) || null; }
   function statusLabel(status) { return (isVi() ? { draft:'Bản nháp', pending:'Đang chờ quản lý duyệt', approved:'Đã duyệt', superseded:'Lịch sử đã duyệt' } : { draft:'草稿', pending:'主管審核中', approved:'已核准', superseded:'歷史核准' })[status] || status; }
-  function lastEdit(version) { return [...(version?.history||[])].reverse().find(event=>!['submitted','approved','revision-requested','withdrawn'].includes(event.action)); }
+  function displayScalar(...values) {
+    for(const value of values){if(typeof value==='string'&&value.trim())return value;if(typeof value==='number'&&Number.isFinite(value))return String(value);}
+    return '';
+  }
+  function reviewActor(version) { return displayScalar(version?.reviewedBy,version?.reviewerName,version?.reviewerId); }
+  function historyDisplay(event) {
+    const labels=isVi()?{submit:'Gửi duyệt',approved:'Đã duyệt',returned:'Đã trả lại',withdrawn:'Đã rút'}:{submit:'送出審核',approved:'已核准',returned:'已發回',withdrawn:'已撤回'};
+    return {label:displayScalar(event?.label,labels[event?.action],event?.action),actor:displayScalar(event?.actorName,event?.actor),note:typeof event?.comment==='string'?event.comment:displayScalar(event?.note)};
+  }
+  function lastEdit(version) { return [...(version?.history||[])].reverse().find(event=>!['submit','submitted','approved','returned','revision-requested','withdrawn'].includes(event.action)); }
   function record(version, action, label, note = '') { const who = actor(); version.history ||= []; version.history.push({ action, label, note, actor: who.name, actorId: who.id, at: now() }); version.updatedAt = now(); version.updatedBy = who.id; version.revision = (version.revision || 0) + 1; }
   async function persist(message = '草稿已儲存') {
     if(library().workflow||selected()?.status==='draft')return sharedAction('apply');
@@ -178,7 +222,7 @@
   const canWithdrawDraft=()=>!!identity()&&(window.sharedDraftPermissionAllowed?.(sharedClient,'withdraw')??(typeof window.hasPermission==='function'?window.hasPermission('view:data')||window.hasPermission('approval.withdraw'):identity()?.role==='admin'));
   async function beginDraft() {
     if (!canEditDraft()) return toast('沒有編輯 FQC 草稿權限');
-    try{return await sharedAction('begin');}catch(error){toast(error.message);return;}
+    try{return await sharedAction('begin');}catch(error){toast(displayDraftError(error));return;}
   }
   async function submitDraft() {
     const version = editable(); if (!version) return;
@@ -186,12 +230,12 @@
       const reason=await window.VersionDraftUI.confirmSubmit(window.VersionDraftUI.reasonFor(version,library().workflow), 'FQC');if(!reason)return;
 
       await sharedAction('submit',{savedId:saved.id,reason});return;
-    }catch(error){toast(error.message);return;}
+    }catch(error){toast(displayDraftError(error));return;}
   }
   async function withdrawDraft() {
     const version = selected();
     if (!version || version.status !== 'pending') return;
-    if(library().workflow){try{const answer=await window.VersionDraftUI.confirmReview({action:'withdraw',scope:'FQC · '+version.id});if(answer)await sharedAction('withdraw',{caseId:version.id,...answer});}catch(error){toast(error.message);}return;}
+    if(library().workflow){try{const answer=await window.VersionDraftUI.confirmReview({action:'withdraw',scope:'FQC · '+version.id});if(answer)await sharedAction('withdraw',{caseId:version.id,...answer});}catch(error){toast(displayDraftError(error));}return;}
     const user = identity();
     if (!user || (user.role !== 'admin' && user.id !== version.submittedBy && user.id !== version.creatorId)) {
       return toast(isVi() ? 'Không có quyền rút hồ sơ' : '沒有解除送審權限');
@@ -203,11 +247,11 @@
     try {
       await persist(isVi() ? 'FQC đã rút hồ sơ, tiếp tục sửa' : 'FQC 已解除送審，恢復草稿可編輯');
     } catch (err) {
-      toast(err.message);
+      toast(displayDraftError(err));
     }
   }
   function effectiveProducts(category) { return catalog().products.filter(product => product.category === category); }
-  function filteredCategories(version) {
+  function filteredCategories(_version) {
     const cats = catalog().categories;
     return cats.filter(item => !ui.line || item.line === ui.line).sort((a, b) => a.name.localeCompare(b.name));
   }
@@ -424,7 +468,7 @@
             <div class="fqc-problem-item">
               <div class="fqc-problem-item-info">
                 <b>${h(p.target)}</b>
-                <p>${h(p.message)}</p>
+                <p>${h(p.id === 'runtime-error' ? displayDraftError(p.message) : p.message)}</p>
                 ${p.advice ? `<small style="color:#03543f">💡 ${h(p.advice)}</small>` : ''}
               </div>
               ${p.action === 'fix' ? `
@@ -483,12 +527,12 @@
         <div>
           <small>FQC MASTER CONTROL</small>
           <h2>FQC - ${h(version.number)} <span class="master-status fqc-status ${h(version.status)}">${h(statusLabel(version.status))}</span></h2>
-          <p>${isVi()?'Người sửa cuối':'最後編輯'}：${h(lastEdit(version)?.actor || version.creatorName || '—')} · ${formatDate(lastEdit(version)?.at || version.createdAt)}<br>${isVi()?'Đang có hiệu lực':'目前生效'}：${h(approved()?.number || (isVi()?'Chưa có':'尚無'))}${version.submittedBy?`<br>${isVi()?'Người gửi':'送審者'}：${h(version.submittedBy)} · ${formatDate(version.submittedAt)}`:''}${version.reviewerId?`<br>${isVi()?'Người duyệt':'確認／發回者'}：${h(version.reviewerName || version.reviewerId)} · ${formatDate(version.reviewedAt)}`:''}</p>
+          <p>${isVi()?'Người sửa cuối':'最後編輯'}：${h(displayScalar(historyDisplay(lastEdit(version)).actor,version.creatorName)||'—')} · ${formatDate(lastEdit(version)?.at || version.createdAt)}<br>${isVi()?'Đang có hiệu lực':'目前生效'}：${h(approved()?.number || (isVi()?'Chưa có':'尚無'))}${version.submittedBy?`<br>${isVi()?'Người gửi':'送審者'}：${h(version.submittedBy)} · ${formatDate(version.submittedAt)}`:''}${reviewActor(version)?`<br>${isVi()?'Người duyệt':'確認／發回者'}：${h(reviewActor(version))} · ${formatDate(version.reviewedAt)}`:''}</p>
         </div>
         <div class="master-version-actions fqc-version-actions">
           <div class="fqc-version-select-wrap">
             <label>選擇版本／草稿</label>
-            <select id="fqc-version">${versions().map(item => `<option value="${h(item.id)}" ${item.id === version.id ? 'selected' : ''}>${h(item.number)} · ${h(statusLabel(item.status))} · ${h(lastEdit(item)?.actor || item.creatorName || '')} · ${formatDate(lastEdit(item)?.at || item.createdAt)}</option>`).join('')}</select>
+            <select id="fqc-version">${versions().map(item => `<option value="${h(item.id)}" ${item.id === version.id ? 'selected' : ''}>${h(item.number)} · ${h(statusLabel(item.status))} · ${h(displayScalar(historyDisplay(lastEdit(item)).actor,item.creatorName))} · ${formatDate(lastEdit(item)?.at || item.createdAt)}</option>`).join('')}</select>
           </div>
           ${version.status === 'approved' && canEditDraft() ? '<button class="button signal" id="fqc-begin">開始修改／刪除資料</button>' : ''}
           ${canEdit ? `<button class="button ghost" id="fqc-save" ${ui.saving ? 'disabled' : ''}>${ui.saving ? '儲存中…' : '儲存草稿'}</button><button class="button signal" id="fqc-submit">送出主管審核</button>` : ''}
@@ -496,7 +540,7 @@
         </div>
       </section>
       ${problemsCardHTML(version, 'error')}${problemsCardHTML(version)}
-      <details class="master-history fqc-activity"><summary>${isVi()?'Lịch sử thao tác':'歷史操作'} · ${(version.history||[]).length}</summary>${(version.history||[]).slice().reverse().map(event=>`<p>${h(event.label)} · ${h(event.actor)} · ${formatDate(event.at)} ${event.note?h(event.note):''}</p>`).join('') || `<p>${isVi()?'Chưa có thao tác':'尚無操作紀錄'}</p>`}</details>
+      <details class="master-history fqc-activity"><summary>${isVi()?'Lịch sử thao tác':'歷史操作'} · ${(version.history||[]).length}</summary>${(version.history||[]).slice().reverse().map(event=>{const entry=historyDisplay(event);return `<p>${h(entry.label)} · ${h(entry.actor)} · ${formatDate(event.at)} ${entry.note?h(entry.note):''}</p>`;}).join('') || `<p>${isVi()?'Chưa có thao tác':'尚無操作紀錄'}</p>`}</details>
       <section class="master-toolbar fqc-toolbar">
         <div class="field">
           <label>線別</label>
@@ -624,9 +668,9 @@
       </section>
     </section>`;
     bindEvents();
-    if(library().workflow){const flow=library().workflow,bar=document.createElement('section');bar.className='master-version-bar';bar.innerHTML=`<p id="fqc-shared-status" role="status">${h(ui.lastError||`${isVi()?'Bản nháp chung toàn bộ FQC':'FQC 全庫共用草稿'} · ${flow.saved&&JSON.stringify(flow.saved.content)===JSON.stringify(flow.working)?(isVi()?'Đã lưu':'已儲存'):(isVi()?'Chưa lưu':'尚未儲存')} · ${isVi()?'Người lưu':'儲存者'}: ${flow.saved?.actor.name||'—'}`)}</p><button id="fqc-cases" class="button ghost">${isVi()?'Hồ sơ gửi duyệt':'送審案件'}</button>${transport().hasUnknown()?'<button id="fqc-check-result">'+(isVi()?'Kiểm tra kết quả':'查詢前次結果')+'</button>':''}`;hostElement.querySelector('#fqc-page').prepend(bar);
-      bar.querySelector('#fqc-cases').onclick=()=>window.openSharedDraftHistory({client:transport(),editable:()=>!!editable()&&identity()?.role==='admin',onApplied:async r=>{adopt(r);render();}}).catch(e=>toast(e.message));
-      bar.querySelector('#fqc-check-result')?.addEventListener('click',async()=>{try{await transport().resolveUnknown();await loadShared();render();}catch(e){toast(e.message);}});
+    if(library().workflow){const flow=library().workflow,bar=document.createElement('section');bar.className='master-version-bar';bar.innerHTML=`<p id="fqc-shared-status" role="status">${h(ui.lastError ? displayDraftError(ui.lastError) : `${isVi()?'Bản nháp chung toàn bộ FQC':'FQC 全庫共用草稿'} · ${flow.saved&&JSON.stringify(flow.saved.content)===JSON.stringify(flow.working)?(isVi()?'Đã lưu':'已儲存'):(isVi()?'Chưa lưu':'尚未儲存')} · ${isVi()?'Người lưu':'儲存者'}: ${flow.saved?.actor.name||'—'}`)}</p><button id="fqc-cases" class="button ghost">${isVi()?'Hồ sơ gửi duyệt':'送審案件'}</button>${transport().hasUnknown()?'<button id="fqc-check-result">'+(isVi()?'Kiểm tra kết quả':'查詢前次結果')+'</button>':''}`;hostElement.querySelector('#fqc-page').prepend(bar);
+      bar.querySelector('#fqc-cases').onclick=()=>window.openSharedDraftHistory({client:transport(),editable:()=>!!editable()&&identity()?.role==='admin',onApplied:async r=>{adopt(r);render();}}).catch(e=>toast(displayDraftError(e)));
+      bar.querySelector('#fqc-check-result')?.addEventListener('click',async()=>{try{await transport().resolveUnknown();await loadShared();render();}catch(e){toast(displayDraftError(e));}});
     }
     const matrix = hostElement.querySelector('.fqc-matrix-scroll');
     if (matrix) { matrix.scrollLeft = scroll.x; matrix.scrollTop = scroll.y; }
@@ -654,7 +698,7 @@
     });
     root.querySelector('#fqc-begin')?.addEventListener('click', beginDraft);
     root.querySelector('#fqc-begin-empty')?.addEventListener('click', beginDraft);
-    root.querySelector('#fqc-save')?.addEventListener('click', async () => { try { await sharedAction('save'); } catch (error) { toast(error.message); } });
+    root.querySelector('#fqc-save')?.addEventListener('click', async () => { try { await sharedAction('save'); } catch (error) { toast(displayDraftError(error)); } });
     root.querySelector('#fqc-submit')?.addEventListener('click', submitDraft);
     root.querySelector('#fqc-withdraw')?.addEventListener('click', withdrawDraft);
     root.querySelector('#fqc-approval')?.addEventListener('click', () => { state.approvalTab = 'quality'; navigate('approval'); });
@@ -718,7 +762,7 @@
       if (item.products) item.products = clone(item.productRefs);
       record(version, 'item-products-updated', `${item.checkNo} · ${code} · ${included ? '加入' : '移除'}`);
       try { await persist(isVi() ? 'Đã lưu liên kết sản phẩm' : '產品關聯已儲存'); }
-      catch (error) { toast(error.message); }
+      catch (error) { toast(displayDraftError(error)); }
     });
     root.querySelectorAll('[data-add-existing]').forEach(button => button.onclick = () => openExistingModal(button.dataset.addExisting));
     root.querySelectorAll('[data-add-new-product]').forEach(button => button.onclick = () => openItemModal('', button.dataset.addNewProduct));
@@ -745,7 +789,10 @@
     const max = Math.max(0, ...same.map(item => Number(item.checkNo.match(/-(\d+)$/)?.[1]) || 0)); return `${prefix}${String(max + 1).padStart(2, '0')}`;
   }
   function isVi() {
-    return document.documentElement.lang === 'vi' || localStorage.getItem('processUILanguage') === 'vi';
+    const tabLanguage = String(document.documentElement.lang || '').toLowerCase();
+    if (tabLanguage === 'vi') return true;
+    if (tabLanguage === 'zh' || tabLanguage.startsWith('zh-')) return false;
+    return localStorage.getItem('processUILanguage') === 'vi';
   }
   function clearModalErrors(overlay) {
     overlay.querySelectorAll('.fqc-field.has-error').forEach(f => f.classList.remove('has-error'));
@@ -771,12 +818,12 @@
     if (input) input.focus();
   }
   function showModalAlert(overlay, type, message) {
-    const alertEl = overlay.querySelector('.fqc-modal-alert');
+    const displayMessage = type === 'error' ? displayDraftError(message) : message; const alertEl = overlay.querySelector('.fqc-modal-alert');
     if (alertEl) {
-      alertEl.textContent = message;
+      alertEl.textContent = displayMessage;
       alertEl.className = `fqc-modal-alert ${type}`;
     }
-    toast(message);
+    toast(displayMessage);
   }
   function modal(inner) { const overlay = document.createElement('div'); overlay.className = 'fqc-modal-overlay'; overlay.innerHTML = `<div class="fqc-modal" role="dialog" aria-modal="true">${inner}</div>`; document.body.append(overlay); document.body.classList.add('fqc-modal-open'); sharedClient?.gatePermissions?.(); return overlay; }
   function closeModal(overlay) { overlay.remove(); document.body.classList.remove('fqc-modal-open'); }
@@ -804,7 +851,7 @@
     overlay.querySelector('form').onsubmit = async event => {
       event.preventDefault();
       clearModalErrors(overlay);
-      const form = new FormData(event.target), name = String(form.get('name') || '').trim();
+      const form = new FormData(event.target), name = nativeFormValueText(form.get('name') || '').trim();
       if (!name) {
         showModalFieldError(overlay, 'name', vi ? 'Vui lòng nhập tên lỗi' : '請輸入錯誤名稱');
         return;
@@ -874,7 +921,7 @@
     overlay.querySelectorAll('[data-close]').forEach(button => button.onclick = () => closeModal(overlay));
     overlay.querySelector('#fqc-picker-retry').onclick = () => {
       closeModal(overlay);
-      openEquipmentPickerModal(currentSelectedId, onSelect);
+      openEquipmentPickerModal(currentSelectedId, onSelect).catch(error => toast(displayDraftError(error)));
     };
   }
 
@@ -1182,10 +1229,13 @@
   }
 
   function openItemModal(id = '', preselectCode = '', focusRule = false) {
+    const formActor=identity(),formActorId=formActor?.id,formGeneration=library().workflow?.generation,formVersionId=editable()?.id;
+    const formCurrent=()=>overlay.isConnected&&identity()===formActor&&formActor?.id===formActorId&&library().workflow?.generation===formGeneration&&editable()?.id===formVersionId;
+    const assertFormCurrent=()=>{if(!formCurrent())throw Error('DEPENDENCY_CHANGED_RECONFIRM');if(library().workflow?.pendingId||transport().permission('edit')===false)throw Error('PENDING_OR_PERMISSION_LOCKED');};
     const version = editable(), errors = errorRows(version, categoryName(version)), items = version.snapshot.items, existing = items.find(item => item.id === id), error = errors.find(item => item.id === (existing?.errorId || ui.selectedErrorId)) || errors[0]; if (!error) return;
     const productCodes = new Set(existing?.productCodes || []); if (preselectCode) productCodes.add(preselectCode);
     const products = effectiveProducts(error.category), checkNo = existing?.checkNo || nextCheckNo(error, items);
-    let currentMedia = clone(existing?.mediaItems || []).map(m => ({ ...m, id: m.id || (`fqc-media:${crypto.randomUUID()}`), note: m.note || '' }));
+    const currentMedia = clone(existing?.mediaItems || []).map(m => ({ ...m, id: m.id || (`fqc-media:${crypto.randomUUID()}`), note: m.note || '' }));
     const initialMediaJSON=JSON.stringify(currentMedia),initialEquipmentId=existing?.equipmentId||'';
     const vi = isVi();
     const currentRule = existing ? getItemRule(existing) : { cadence: 'none' };
@@ -1454,17 +1504,18 @@
 
     overlay.querySelector('#fqc-file-input').onchange = async e => {
       const files = [...(e.target.files || [])];
-      for (const file of files) {
-        const src = await fileData(file);
-        currentMedia.push({
-          id: `fqc-media:${crypto.randomUUID()}`,
-          name: file.name,
-          type: file.type,
-          src,
-          note: ''
-        });
-      }
-      renderPhotoList();
+      try {
+        for (const source of files) {
+          assertFormCurrent();
+          const file = await window.ProcessPhotoUpload.prepare(source);
+          assertFormCurrent();
+          const src = await fileData(file);
+          assertFormCurrent();
+          currentMedia.push({ id: `fqc-media:${crypto.randomUUID()}`, name: file.name, type: file.type, src, note: '' });
+          renderPhotoList();
+        }
+      } catch(error) { showModalAlert(overlay,'error',error.message||String(error)); }
+      finally { e.target.value=''; }
     };
 
     overlay.querySelectorAll('input[name="toolType"]').forEach(r => {
@@ -1484,7 +1535,7 @@
           selectedEqId = chosenEq.id;
           container.innerHTML = selectedEqCardHTML(selectedEq);
           bindEqCardActions();
-        });
+        }).catch(error => toast(displayDraftError(error)));
       });
       container.querySelector('#fqc-change-eq-trigger')?.addEventListener('click', () => {
         openEquipmentPickerModal(selectedEqId, (chosenEq) => {
@@ -1492,7 +1543,7 @@
           selectedEqId = chosenEq.id;
           container.innerHTML = selectedEqCardHTML(selectedEq);
           bindEqCardActions();
-        });
+        }).catch(error => toast(displayDraftError(error)));
       });
       container.querySelector('#fqc-clear-eq-trigger')?.addEventListener('click', () => {
         selectedEq = null;
@@ -1517,8 +1568,9 @@
     overlay.querySelector('form').onsubmit = async event => {
       event.preventDefault();
       clearModalErrors(overlay);
+      try { assertFormCurrent(); } catch(error) { showModalAlert(overlay,'error',error.message); return; }
       const form = new FormData(event.target);
-      const name = String(form.get('name') || '').trim();
+      const name = nativeFormValueText(form.get('name') || '').trim();
       if (!name) {
         showModalFieldError(overlay, 'name', vi ? 'Vui lòng nhập tên hạng mục kiểm tra' : '請輸入檢查項目名稱');
         return;
@@ -1554,15 +1606,15 @@
       }
 
       // 檢查規則驗證
-      const ruleCadence = String(form.get('ruleCadence') || 'none');
-      const batchKind = String(form.get('batchKind') || 'aql');
-      const aqlValue = String(form.get('aqlValue') || '').trim();
-      const fixedCount = String(form.get('fixedCount') || '').trim();
-      const batchQuantity = String(form.get('batchQuantity') || '').trim();
+      const ruleCadence = nativeFormValueText(form.get('ruleCadence') || 'none');
+      const batchKind = nativeFormValueText(form.get('batchKind') || 'aql');
+      const aqlValue = nativeFormValueText(form.get('aqlValue') || '').trim();
+      const fixedCount = nativeFormValueText(form.get('fixedCount') || '').trim();
+      const batchQuantity = nativeFormValueText(form.get('batchQuantity') || '').trim();
       const customBatchText = typeof form.get('customBatchText') === 'string' ? form.get('customBatchText').trim() : '';
       const customBatchValue = typeof form.get('customBatchValue') === 'string' ? form.get('customBatchValue').trim() : '';
-      const timeFrequency = String(form.get('timeFrequency') || 'monthly');
-      const customTimeText = String(form.get('customTimeText') || '').trim();
+      const timeFrequency = nativeFormValueText(form.get('timeFrequency') || 'monthly');
+      const customTimeText = nativeFormValueText(form.get('customTimeText') || '').trim();
 
       let finalRule = { cadence: ruleCadence };
 
@@ -1612,7 +1664,7 @@
 
       const selectedProducts = form.getAll('product').map(String);
       const isEnabled = Boolean(form.get('enabled'));
-      const note = String(form.get('note') || '');
+      const note = nativeFormValueText(form.get('note') || '');
       const reason = existing?.reason || '';
 
       const beforeSave = clone(version);
@@ -1620,7 +1672,7 @@
       const value = version.snapshot.items.find(row=>row.id===existing?.id) || { id: `fqc-item:${crypto.randomUUID()}`, checkNo, isDeleted: false };
       Object.assign(value, {
         errorId: selectedError.id, category: selectedError.category, line: selectedError.line, name,
-        description: String(form.get('description') || ''),
+        description: nativeFormValueText(form.get('description') || ''),
         tool: finalTool,
         equipmentId: finalEqId,
         equipmentSnapshot: finalEqSnapshot,
@@ -1648,7 +1700,7 @@
       record(version, existing ? 'item-updated' : 'item-created', `${existing ? '修改' : '新增'}檢查項目 ${checkNo}`, note);
       try {
         await persist();
-        closeModal(overlay);
+        if(formCurrent())closeModal(overlay);
       } catch (error) {
         Object.keys(version).forEach(key => delete version[key]);
         Object.assign(version, beforeSave);
@@ -1873,7 +1925,7 @@
         return;
       }
 
-      let addedCount = 0;
+      let _addedCount = 0;
       checkedIds.forEach(itemId => {
         const item = version.snapshot.items.find(it => it.id === itemId);
         if (!item) return;
@@ -1887,7 +1939,7 @@
             name: product.name || '',
             specification: product.specification || ''
           });
-          addedCount++;
+          _addedCount++;
         }
       });
 
@@ -1905,9 +1957,18 @@
     if (!error) return;
     if (itemRows(version, error.category, id).length) return toast(isVi() ? 'Vui lòng xóa hoặc chuyển các hạng mục con trước' : '請先刪除或移轉所屬子項目');
     if (!confirm(isVi() ? `Xác nhận xóa mã lỗi ${error.code} - ${error.name}?` : `確定從草稿刪除錯誤代碼 ${error.code} · ${error.name}？`)) return;
+    const beforeSave = clone(version);
     error.isDeleted = true;
     record(version, 'error-deleted', `刪除錯誤代碼 ${error.code}`, '');
-    try { await persist(isVi() ? 'Mã lỗi đã xóa trong bản nháp' : '錯誤代碼已於草稿刪除'); } catch (err) { toast(err.message); }
+    try {
+      await persist(isVi() ? 'Mã lỗi đã xóa trong bản nháp' : '錯誤代碼已於草稿刪除');
+    } catch (err) {
+      Object.keys(version).forEach(key => delete version[key]);
+      Object.assign(version, beforeSave);
+      if(!library().workflow)localStorage.setItem(STORAGE, JSON.stringify(control));
+      render();
+      toast(displayDraftError(err));
+    }
   }
   async function deleteItem(id) {
     const version = editable(), item = version?.snapshot?.items.find(value => value.id === id);
@@ -1923,7 +1984,7 @@
       Object.assign(version, beforeSave);
       if(!library().workflow)localStorage.setItem(STORAGE, JSON.stringify(control));
       render();
-      toast(err.message);
+      toast(displayDraftError(err));
     }
   }
   function bind(element) {
@@ -1933,7 +1994,7 @@
     ensureControl();
     hostElement.innerHTML=html();
     const current=()=>sequence===mountSequence&&hostElement===element&&fqcTabIsActive();
-    loadShared(current).then(()=>{if(!current())return;render();pollShared();return loadEquipmentCatalog();}).then(()=>{if(current()&&!hostElement.contains(document.activeElement))render();}).catch(error=>{if(!current())return;hostElement.innerHTML=`<section class="fqc-page"><p role="alert">${h(error.message)}</p><button id="fqc-load-retry">${isVi()?'Tải lại':'重新載入'}</button></section>`;hostElement.querySelector('#fqc-load-retry').onclick=()=>bind(hostElement);});
+    loadShared(current).then(async()=>{if(!current())return;await loadMasterCatalog(current);if(!current())return;render();pollShared();return loadEquipmentCatalog();}).then(()=>{if(current()&&!hostElement.contains(document.activeElement))render();}).catch(error=>{if(!current())return;hostElement.innerHTML=`<section class="fqc-page"><p role="alert">${h(error.message)}</p><button id="fqc-load-retry">${isVi()?'Tải lại':'重新載入'}</button></section>`;hostElement.querySelector('#fqc-load-retry').onclick=()=>bind(hostElement);});
   }
   function fqcTabIsActive() {
     const content = document.querySelector('#data-content');
@@ -1950,7 +2011,7 @@
     return `<section class="quality-review"><div class="review-list"><h3>FQC · ${isVi()?'Chờ duyệt':'待確認'} ${pending.length}</h3>${[...pending,...(current?[current]:[])].map(caseButton).join('') || `<p>${isVi()?'Chưa có hồ sơ FQC':'目前沒有 FQC 審核紀錄'}</p>`}${history.length?`<details><summary>${isVi()?'Lịch sử':'歷史版本'} · ${history.length}</summary>${history.map(caseButton).join('')}</details>`:''}</div><div id="quality-review-detail" class="review-detail"></div></section>`;
   }
   function bindReview(panel) {
-    if(!library().workflow)loadShared().then(()=>{if(panel.isConnected&&library().workflow)refreshReviewUI(panel);}).catch(e=>toast(e.message));
+    if(!library().workflow)loadShared().then(()=>{if(panel.isConnected&&library().workflow)refreshReviewUI(panel);}).catch(e=>toast(displayDraftError(e)));
     panel.querySelectorAll('[data-quality-review]').forEach(button => button.onclick = () => {
       const version = library().versions.find(item => item.id === button.dataset.qualityReview);
       if (!version) return;
@@ -1963,11 +2024,11 @@
 
       detail.innerHTML = `
         <h3>FQC ${h(version.number)} · ${h(statusLabel(version.status))}</h3>
-        <p>錯誤代碼：${before.errors.length} → ${after.errors.filter(item => !item.isDeleted).length}<br>檢查項目：${before.items.length} → ${after.items.filter(item => !item.isDeleted).length}</p>
+        <p>${isVi()?'Mã lỗi':'錯誤代碼'}：${before.errors.filter(item => !item.isDeleted).length} → ${after.errors.filter(item => !item.isDeleted).length}<br>${isVi()?'Hạng mục kiểm tra':'檢查項目'}：${before.items.filter(item => !item.isDeleted).length} → ${after.items.filter(item => !item.isDeleted).length}</p>
         <div class="quality-diff">
-          ${[...(version.history || [])].reverse().map(item => `<p><b>${h(item.label)}</b><span>${item.note ? h(item.note) + ' · ' : ''}${h(item.actor)} · ${formatDate(item.at)}</span></p>`).join('')}
+          ${[...(version.history || [])].reverse().map(item => {const entry=historyDisplay(item);return `<p><b>${h(entry.label)}</b><span>${entry.note ? h(entry.note) + ' · ' : ''}${h(entry.actor)} · ${formatDate(item.at)}</span></p>`;}).join('')}
         </div>
-        ${version.reviewedAt?`<p>${isVi()?'Người duyệt':'確認者'}：${h(version.reviewerName || version.reviewerId || '—')} · ${formatDate(version.reviewedAt)}${version.reviewComment?`<br>${isVi()?'Ý kiến':'審核意見'}：${h(version.reviewComment)}`:''}</p>`:''}
+        ${version.reviewedAt?`<p>${isVi()?'Người duyệt':'確認者'}：${h(reviewActor(version)||'—')} · ${formatDate(version.reviewedAt)}${version.reviewComment?`<br>${isVi()?'Ý kiến':'審核意見'}：${h(version.reviewComment)}`:''}</p>`:''}
         ${canReview?`<label>${isVi()?'Ý kiến duyệt (không bắt buộc)':'審核意見（選填）'}<textarea id="quality-review-comment" rows="3"></textarea></label>`:''}
         <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap;">
           ${canReview ? `
@@ -1992,7 +2053,7 @@
           await persist('FQC 版本已發回修改');
           void window.RoutineEquipmentUI?.reconcilePendingReplacements?.();
           refreshReviewUI(panel);
-        } catch (err) { toast(err.message); }
+        } catch (err) { toast(displayDraftError(err)); }
       });
 
       detail.querySelector('#quality-approve')?.addEventListener('click', async () => {
@@ -2011,7 +2072,7 @@
           await persist('FQC 版本已核准生效');
           void window.RoutineEquipmentUI?.reconcilePendingReplacements?.();
           refreshReviewUI(panel);
-        } catch (err) { toast(err.message); }
+        } catch (err) { toast(displayDraftError(err)); }
       });
 
       detail.querySelector('#quality-withdraw')?.addEventListener('click', async () => {
@@ -2024,7 +2085,7 @@
           await persist('FQC 已解除送審，恢復草稿可編輯');
           void window.RoutineEquipmentUI?.reconcilePendingReplacements?.();
           refreshReviewUI(panel);
-        } catch (err) { toast(err.message); }
+        } catch (err) { toast(displayDraftError(err)); }
       });
     });
     panel.querySelector('[data-quality-review]')?.click();
@@ -2045,7 +2106,7 @@
     const answer=await window.VersionDraftUI.confirmReview({action:action==='return'?'reject':action,scope:'FQC · '+version.id,reason:panel.querySelector('#quality-review-comment')?.value||'',selfReview:action!=='withdraw'&&c?.actor.id===identity()?.id});
     if(!answer)return;
     await sharedAction(action,{caseId:version.id,...answer});refreshReviewUI(panel);
-  }catch(error){toast(error.message);}}
+  }catch(error){toast(displayDraftError(error));}}
 
   function pendingCount() { return ensureControl().libraries.fqc.versions.filter(version => version.status === 'pending').length; }
   host.FQCMasterUI = { html, bind, reviewHTML, bindReview, pendingCount, get control() { return ensureControl(); } };
@@ -2056,10 +2117,11 @@
       if (!eqId) return refs;
       const ctrl = ensureControl();
       const lib = ctrl.libraries?.fqc;
-      if (!lib) return refs;
+      if (!Array.isArray(lib?.versions)) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
       const activeVerId = lib.activeVersionId;
-      (lib.versions || []).forEach(v => {
-        const items = v.snapshot?.items || [];
+      lib.versions.forEach(v => {
+        if (!Array.isArray(v?.snapshot?.items)) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
+        const items = v.snapshot.items;
         const errors = v.snapshot?.errors || [];
         const errorMap = new Map(errors.map(e => [e.id, e]));
         items.forEach(it => {

@@ -125,7 +125,7 @@
         月檢查: item.isMonthly ? 'YES' : 'NO', 季檢查: item.isQuarterly ? 'YES' : 'NO', 年檢查: item.isYearly ? 'YES' : 'NO',
         自訂檢查週期: item.isCustomPeriod ? 'YES' : 'NO', 自訂週期內容: item.customPeriodText || '',
         包含產品: (item.productCodes || []).join(','), 啟用: item.isEnabled ? 'YES' : 'NO',
-        圖片JSON: JSON.stringify((item.mediaItems || []).map(({ src, ...media }) => media)),
+        圖片JSON: JSON.stringify((item.mediaItems || []).map(({ src: _src, ...media }) => media)),
         變更理由: item.reason || '', 備註: item.note || '',
       };
     })), '檢查項目');

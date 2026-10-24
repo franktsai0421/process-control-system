@@ -9,6 +9,10 @@
     "製程中控平台":"Cổng điều hành quy trình",
     "請輸入由 ADMIN 建立的平台帳號與密碼。":"Đăng nhập bằng tài khoản do ADMIN tạo.",
     "請使用由 ADMIN 建立的平台帳號與密碼。":"Đăng nhập bằng tài khoản do ADMIN tạo.",
+    "此網站未開啟公開示範登入":"Trang web này chưa bật đăng nhập dùng thử công khai",
+    "配件組裝":"Lắp ráp phụ kiện",
+    "工段選單與後台產線同步；所有已發送產品都會顯示，不適用此工段時會明確標示。":"Danh sách công đoạn đồng bộ với cấu hình chuyền trong phần quản trị; tất cả sản phẩm đã gửi đều được hiển thị và được ghi rõ khi công đoạn này không áp dụng.",
+    "請從發送介面選擇最多三項產品。":"Vui lòng chọn tối đa ba sản phẩm trong giao diện điều phối.",
     "主要功能":"Chức năng chính",
     "目前身分：ADMIN｜可管理使用者與權限。":"Vai trò hiện tại: ADMIN | Có thể quản lý người dùng và quyền.",
     "個人資料與密碼請開啟「我的帳號」。":"Mở Tài khoản của tôi để xem thông tin và đổi mật khẩu.",
@@ -56,17 +60,17 @@
     "請填寫英文字母或數字帳號，可使用點、底線及連字號":"Nhập tài khoản bằng chữ Latin hoặc số; có thể dùng dấu chấm, gạch dưới và gạch nối.",
     "角色管理":"Quản lý vai trò", "建立 User":"Tạo người dùng", "User 列表與個別設定":"Danh sách và thiết lập người dùng",
     "跟隨角色":"Theo vai trò", "自訂權限":"Quyền tùy chỉnh", "恢復跟隨角色":"Khôi phục quyền theo vai trò",
-    "權限模式":"Chế độ phân quyền", "選擇角色":"Chọn vai trò", "角色名稱":"Tên vai trò", "儲存角色":"Lưu vai trò",
+    "權限模式":"Chế độ phân quyền",  "角色名稱":"Tên vai trò", "儲存角色":"Lưu vai trò",
     "刪除角色":"Xóa vai trò", "＋ 建立角色":"＋ Tạo vai trò", "顯示示範身分":"Hiển thị tài khoản dùng thử",
-    "可使用產線":"Dây chuyền được phép", "可進入頁面":"Trang được phép", "可執行操作":"Thao tác được phép",
+    "可使用產線":"Dây chuyền được phép",  "可執行操作":"Thao tác được phép",
     "多數 User 使用「跟隨角色」；只有特殊需求才使用「自訂權限」。":"Nên dùng quyền theo vai trò; chỉ tùy chỉnh quyền cho trường hợp đặc biệt.",
     "自訂權限只影響此 User":"Quyền tùy chỉnh chỉ áp dụng cho người dùng này", "帳號、姓名或角色":"Tài khoản, tên hoặc vai trò",
-    "刪除 User":"Xóa người dùng", "⠿ 移動":"⠿ Di chuyển", "↗ 連線":"↗ Kết nối", "復原位置":"Khôi phục vị trí",
-    "流程設定":"Thiết lập quy trình", "產品與 BOM":"Sản phẩm và BOM", "人員與設備":"Nhân sự và thiết bị",
+    "刪除 User":"Xóa người dùng", "⠿ 移動":"⠿ Di chuyển", "↗ 連線":"↗ Kết nối",
+    "流程設定":"Thiết lập quy trình",
     "作業說明、完成標準與媒體":"Hướng dẫn, tiêu chuẩn và nội dung đa phương tiện", "作業說明照片或影片 · 可多選":"Ảnh hoặc video hướng dẫn · Có thể chọn nhiều",
-    "作業說明媒體":"Nội dung hướng dẫn", "產品補充媒體":"Nội dung bổ sung theo sản phẩm", "作業照片":"Ảnh thao tác", "機器照片":"Ảnh máy", "產品照片":"Ảnh sản phẩm", "產品照片設定":"Cài đặt ảnh sản phẩm", "產品內容":"Nội dung sản phẩm", "照片與影片":"Ảnh và video", "查看產品專屬流程與照片":"Xem quy trình và ảnh riêng của sản phẩm",
-    "本方塊被選取":"Đã chọn trong ô này", "其他方塊":"Ô khác", "查看":"Xem", "影片":"Video", "自訂流程":"Quy trình tùy chỉnh",
-    "作業說明與完成標準":"Hướng dẫn và tiêu chuẩn hoàn thành", "照片與影片":"Ảnh và video",
+    "作業說明媒體":"Nội dung hướng dẫn", "產品補充媒體":"Nội dung bổ sung theo sản phẩm", "作業照片":"Ảnh thao tác", "機器照片":"Ảnh máy", "產品照片":"Ảnh sản phẩm", "產品照片設定":"Cài đặt ảnh sản phẩm", "產品內容":"Nội dung sản phẩm",  "查看產品專屬流程與照片":"Xem quy trình và ảnh riêng của sản phẩm",
+    "本方塊被選取":"Đã chọn trong ô này", "其他方塊":"Ô khác",
+
     "製程標準播放系統":"Hệ thống hiển thị tiêu chuẩn quy trình","製":"SX","製程":"Quy trình",
     "製程中控":"Điều hành quy trình","製程中控系統":"Hệ thống điều hành quy trình","品質管理":"Quản lý chất lượng","品質管理系統":"Hệ thống quản lý chất lượng","品質系統":"Hệ thống chất lượng","中控系統":"Hệ thống điều hành","模具設備":"Thiết bị khuôn","檢具與測試設備":"Dưỡng kiểm và thiết bị thử","選擇系統":"Chọn hệ thống","總覽":"Tổng quan","生產總覽":"Tổng quan sản xuất","系統管理員":"Quản trị hệ thống",
     "產線播放台":"Màn hình chuyền","發送介面":"Điều phối","產品製程狀態":"Trạng thái quy trình",
@@ -76,7 +80,7 @@
     "選擇示範身分":"Chọn vai trò dùng thử","全部功能與使用者管理":"Toàn bộ chức năng và quản lý người dùng",
     "版本確認與製程檢視":"Duyệt phiên bản và xem quy trình","製程編輯與送審":"Chỉnh sửa và gửi duyệt",
     "或輸入帳號密碼":"Hoặc nhập tài khoản và mật khẩu","產線設備直接播放":"Thiết bị chuyền phát trực tiếp",
-    "進入工段播放":"Mở màn hình công đoạn","線別":"Chuyền","公段":"Công đoạn","工段":"Công đoạn","標準搜尋":"Tìm tiêu chuẩn","品質報告":"Báo cáo chất lượng","例行檢查":"Kiểm tra định kỳ","例行報告資料庫":"Cơ sở dữ liệu báo cáo định kỳ","品質管理系統基本框架":"Khung cơ bản của hệ thống quản lý chất lượng","功能建置中":"Chức năng đang được xây dựng",
+    "進入工段播放":"Mở màn hình công đoạn","線別":"Chuyền","公段":"Công đoạn","標準搜尋":"Tìm tiêu chuẩn","品質報告":"Báo cáo chất lượng","例行檢查":"Kiểm tra định kỳ","例行報告資料庫":"Cơ sở dữ liệu báo cáo định kỳ","品質管理系統基本框架":"Khung cơ bản của hệ thống quản lý chất lượng","功能建置中":"Chức năng đang được xây dựng",
     "使用者與平台權限":"Người dùng và quyền hệ thống","建立使用者":"Tạo người dùng","姓名":"Họ tên","角色範本":"Mẫu vai trò",
     "完整使用者管理":"Quản lý người dùng đầy đủ","查看帳號狀態、角色繼承、個別設定與最終有效權限。":"Xem trạng thái tài khoản, quyền kế thừa, thiết lập riêng và quyền hiệu lực cuối cùng.","登入頁顯示示範身分":"Hiển thị vai trò mẫu tại trang đăng nhập","初始密碼":"Mật khẩu ban đầu","啟用中":"Đang hoạt động","已停用":"Đã vô hiệu hóa","帳號啟用":"Kích hoạt tài khoản","繼承角色設定":"Kế thừa thiết lập vai trò","最終有效權限":"Quyền hiệu lực cuối cùng","可用產線":"Chuyền được phép dùng","可進入頁面":"Trang được phép truy cập","個別設定":"Thiết lập riêng","儲存修改":"Lưu thay đổi","重設密碼":"Đặt lại mật khẩu","新密碼":"Mật khẩu mới","確認重設":"Xác nhận đặt lại",
     "製程人員":"Nhân viên quy trình","人員":"Nhân viên","主管":"Quản lý","RD 主管":"Quản lý RD",
@@ -92,8 +96,8 @@
     "建立／重新送審":"Tạo / Gửi duyệt lại","由舊版建立修訂":"Tạo bản sửa đổi từ phiên bản cũ","查看全部線別":"Xem tất cả chuyền",
     "查看 BOM／設備／IPQC":"Xem BOM / thiết bị / IPQC","查看操作照片／影片":"Xem ảnh / video thao tác",
     "功能入口":"Lối vào chức năng","資料範圍":"Phạm vi dữ liệu","快速套用角色規則":"Áp dụng nhanh mẫu vai trò",
-    "全選／清除":"Chọn tất cả / Bỏ chọn","全選":"Chọn tất cả","清除":"Bỏ chọn","儲存權限":"Lưu quyền","儲存成功":"Đã lưu thành công",
-    "版本紀錄":"Lịch sử phiên bản","歷史版本":"Phiên bản trước","目前工作內容":"Nội dung đang làm việc",
+    "全選／清除":"Chọn tất cả / Bỏ chọn","清除":"Bỏ chọn","儲存權限":"Lưu quyền","儲存成功":"Đã lưu thành công",
+    "版本紀錄":"Lịch sử phiên bản","目前工作內容":"Nội dung đang làm việc",
     "草稿 · 未送審":"Bản nháp · Chưa gửi","主管審核中":"Quản lý đang duyệt","已確認":"Đã duyệt","已核准":"Đã phê duyệt",
     "歷史核准":"Bản đã phê duyệt trước","歷史版本":"Phiên bản trước","待修改":"Cần chỉnh sửa","退回修改":"Trả lại để chỉnh sửa","要求修改":"Yêu cầu chỉnh sửa",
     "最新版":"Mới nhất","產線使用":"Đang dùng trên chuyền","目前核准":"Đang được phê duyệt","待確認":"Chờ duyệt",
@@ -102,13 +106,13 @@
     "BOM 與操作流程完整":"BOM và hướng dẫn thao tác đầy đủ","BOM 未使用完":"BOM chưa phân bổ hết","缺少操作流程":"Thiếu hướng dẫn thao tác",
     "確認歷史":"Lịch sử duyệt","確認版本":"Duyệt phiên bản","解除確認":"Hủy phê duyệt","返回確認":"Hoàn tác phê duyệt","主管返回確認":"Quản lý hoàn tác phê duyệt","解除送審，繼續修改":"Rút hồ sơ và tiếp tục sửa",
     "進入編輯台修改":"Mở để chỉnh sửa","要求建立修改版本":"Yêu cầu tạo phiên bản sửa đổi","以此版本建立修訂":"Tạo bản sửa đổi từ phiên bản này",
-    "建立新版本草稿":"Tạo bản nháp phiên bản mới","送出主管審核":"Gửi quản lý duyệt","儲存草稿":"Lưu bản nháp",
+    "建立新版本草稿":"Tạo bản nháp phiên bản mới","儲存草稿":"Lưu bản nháp",
     "建立第一版草稿":"Tạo bản nháp đầu tiên","展開⌄":"Mở rộng⌄","收合⌃":"Thu gọn⌃","展開":"Mở rộng","收合":"Thu gọn",
     "產品類型（PDF）":"Loại sản phẩm (PDF)","選擇線別":"Chọn chuyền","工段流程":"Quy trình công đoạn","工段流程編輯":"Chỉnh sửa quy trình công đoạn","整理全部工段":"Sắp xếp mọi công đoạn",
     "比對版本（預設上一版）":"So sánh phiên bản (mặc định: bản trước)","兩個版本內容相同":"Hai phiên bản có nội dung giống nhau","範例版本確認完成":"Phiên bản mẫu đã được duyệt",
     "自動整理":"Tự động sắp xếp","新增流程":"Thêm bước","畫布縮放":"Thu phóng sơ đồ","重設":"Đặt lại","方塊密度":"Mật độ thẻ","精簡":"Gọn","標準":"Tiêu chuẩn","建立連線":"Tạo liên kết","復原位置":"Khôi phục vị trí","移動":"Di chuyển","基本資料":"Thông tin cơ bản","產品與 BOM":"Sản phẩm và BOM","人員與設備":"Nhân sự và thiết bị","作業說明與完成標準":"Hướng dẫn và tiêu chuẩn hoàn thành","照片與影片":"Ảnh và video",
     "單一流程內容":"Nội dung một bước","流程編號（自動產生）":"Mã bước (tự động)","流程編號（自訂；已使用的號碼不顯示）":"Mã bước (tùy chỉnh; số đã dùng sẽ không hiển thị)","後台流程資料":"Dữ liệu bước từ hệ thống",
-    "自訂流程":"Bước tùy chỉnh","流程名稱":"Tên bước","作業方式":"Phương thức thao tác","人工流程":"Thao tác thủ công",
+    "自訂流程":"Bước tùy chỉnh","作業方式":"Phương thức thao tác","人工流程":"Thao tác thủ công",
     "機器流程":"Thao tác bằng máy","建議操作人數":"Số người đề xuất","人工組裝建議人數":"Số người lắp ráp đề xuất",
     "後台設備":"Thiết bị hệ thống","請選擇機器":"Chọn máy","適用產品":"Sản phẩm áp dụng","稍後設定產品":"Chọn sản phẩm sau",
     "BOM 零件分配":"Phân bổ linh kiện BOM","操作照片或影片":"Ảnh hoặc video thao tác","操作照片或影片 · 可多選":"Ảnh/video thao tác · Có thể chọn nhiều",
@@ -117,14 +121,14 @@
     "完成並建立下一步":"Hoàn tất và tạo bước tiếp theo","完成一個步驟與標準後，才能建立下一個":"Hoàn tất nội dung và tiêu chuẩn của bước hiện tại để tạo bước tiếp theo","指定產品的補充操作流程":"Hướng dẫn bổ sung theo sản phẩm",
     "專用補充流程":"Hướng dẫn bổ sung riêng","專用備註":"Ghi chú riêng","搜尋產品編號或名稱":"Tìm mã hoặc tên sản phẩm",
     "拖曳方塊調整位置":"Kéo thẻ để đổi vị trí","箭頭依流程編號連接":"Mũi tên nối theo thứ tự bước",
-    "產品類別":"Nhóm sản phẩm","產品編號／名稱":"Mã / tên sản phẩm","尚未上傳操作照片":"Chưa tải ảnh thao tác",
+    "產品編號／名稱":"Mã / tên sản phẩm","尚未上傳操作照片":"Chưa tải ảnh thao tác",
     "BOM 零件":"Linh kiện BOM","點擊展開":"Bấm để mở","放大":"Phóng to","案件狀態":"Trạng thái hồ sơ","確認前檢查":"Kiểm tra trước duyệt","產線目前使用":"Chuyền đang dùng","完整，可確認":"Đầy đủ, có thể duyệt","使用機器":"Máy sử dụng","設備":"Thiết bị","照片":"Ảnh","人工":"Thủ công","機器":"Máy",
     "操作照片":"Ảnh thao tác","共用操作":"Thao tác chung","尚未指定設備":"Chưa chỉ định thiết bị","尚未指定產品":"Chưa chỉ định sản phẩm",
     "產線播放內容監控":"Giám sát nội dung hiển thị trên chuyền","監控線別":"Chuyền giám sát","監控公段":"Công đoạn giám sát",
     "全螢幕":"Toàn màn hình","退出全螢幕":"Thoát toàn màn hình","正在此線發送":"đang được gửi trên chuyền này",
     "此線尚未發送產品":"Chưa có sản phẩm được gửi đến chuyền này","已核准版本":"Phiên bản đã phê duyệt",
     "發送產品":"Gửi sản phẩm","目前發送":"Đang phát","選擇產品":"Chọn sản phẩm","發送至產線":"Gửi đến chuyền",
-    "產品資料":"Dữ liệu sản phẩm","設備資料":"Dữ liệu thiết bị","流程資料":"Dữ liệu quy trình","使用者管理":"Quản lý người dùng",
+    "產品資料":"Dữ liệu sản phẩm","設備資料":"Dữ liệu thiết bị","使用者管理":"Quản lý người dùng",
     "產品與產線":"Sản phẩm và chuyền","AB 產線與類別":"Chuyền và nhóm AB","C 產線與類別":"Chuyền và nhóm C","BOM 資料":"Dữ liệu BOM","產線與工段":"Chuyền và công đoạn","使用者與權限":"Người dùng và quyền",
     "備份與回復":"Sao lưu và khôi phục","備份與還原":"Sao lưu và khôi phục","整站備份與還原":"Sao lưu và khôi phục toàn bộ hệ thống","方式一":"Phương thức 1","方式二":"Phương thức 2","本機硬碟完整備份":"Sao lưu đầy đủ vào ổ cứng máy chủ","雲端資料備份":"Sao lưu dữ liệu đám mây","只有 ADMIN 可以查閱備份":"Chỉ ADMIN được xem bản sao lưu","重新載入":"Tải lại",
     "目前備份路徑":"Đường dẫn sao lưu hiện tại","最近成功備份":"Lần sao lưu thành công gần nhất","下次預定備份":"Lần sao lưu kế tiếp","本週自動備份":"Sao lưu tự động tuần này","磁碟剩餘空間":"Dung lượng đĩa còn trống","最近失敗原因":"Lỗi gần nhất","備份資料夾":"Thư mục sao lưu","伺服器自動備份路徑":"Đường dẫn sao lưu tự động trên máy chủ","選擇資料夾":"Chọn thư mục","保留天數":"Số ngày lưu giữ","自動備份":"Sao lưu tự động","啟用每週自動備份":"Bật sao lưu tự động hằng tuần","越南時間":"Giờ Việt Nam","儲存設定":"Lưu cài đặt","驗證並儲存設定":"Kiểm tra và lưu thiết lập","立即備份":"Sao lưu ngay","重新掃描":"Quét lại",
@@ -136,8 +140,8 @@
     "產品分類與製程路線已合併":"Đã hợp nhất phân loại sản phẩm và tuyến quy trình","重新匯入 PDF / Excel":"Nhập lại PDF / Excel",
     "產品分類不採用 Excel":"Phân loại sản phẩm không dùng Excel","PDF 產品類別":"Loại sản phẩm PDF","產品編號":"Mã sản phẩm","產品名稱":"Tên sản phẩm",
     "規格":"Quy cách","製程路線":"Tuyến quy trình","成功對應":"đã đối chiếu thành công","待建立":"Chưa thiết lập",
-    "早安，生產管理中心":"Chào buổi sáng, trung tâm quản lý sản xuất","第一班":"Ca 1",
-    "PDF 產品分類":"Phân loại sản phẩm PDF","產品分類":"Phân loại sản phẩm","產品類別":"Loại sản phẩm",
+    "早安，生產管理中心":"Chào buổi sáng, trung tâm quản lý sản xuất",
+    "PDF 產品分類":"Phân loại sản phẩm PDF","產品分類":"Phân loại sản phẩm",
     "BOM 對應產品":"Sản phẩm có BOM","成品製程路線":"Tuyến quy trình thành phẩm","半成品製程":"Quy trình bán thành phẩm",
     "已完成":"Đã hoàn tất",
     "三條產線已建立，產品會依 Master SKU 自動帶出線別與製程。":"Đã thiết lập ba chuyền sản xuất; sản phẩm sẽ tự động nạp chuyền và quy trình theo Master SKU.",
@@ -146,9 +150,9 @@
     "快速操作":"Thao tác nhanh","發送新製程":"Gửi quy trình mới","編輯 BORUAXE 流程":"Chỉnh sửa quy trình BORUAXE",
     "查看匯入資料":"Xem dữ liệu đã nhập","開啟產線電視畫面":"Mở màn hình TV của chuyền",
     "匯入資料":"Nhập dữ liệu","匯入 Excel":"Nhập Excel","匯出 Excel":"Xuất Excel","搜尋產品":"Tìm sản phẩm","新增產品":"Thêm sản phẩm","新增後台流程":"Thêm quy trình hệ thống","儲存流程資料":"Lưu dữ liệu quy trình",
-    "六個標準流程":"Sáu quy trình chuẩn","每個工段都使用相同六種流程；建立方塊時自動帶入照片，之後仍可在方塊內自由更換。":"Mỗi công đoạn dùng cùng sáu quy trình; ảnh được tự động đưa vào khi tạo thẻ và vẫn có thể thay đổi tự do trong thẻ.","流程與照片資料":"Dữ liệu quy trình và ảnh","六個標準流程會保留；也可新增自己的流程。這裡匯入或匯出會包含全部工段、全部流程與所有照片。":"Sáu quy trình chuẩn luôn được giữ lại; bạn cũng có thể thêm quy trình riêng. Nhập hoặc xuất tại đây bao gồm tất cả công đoạn, quy trình và ảnh.","完整備份格式":"Định dạng sao lưu đầy đủ","JSON 檔包含本頁全部工段、流程名稱與照片；匯入前會先請你確認。":"Tệp JSON chứa tất cả công đoạn, tên quy trình và ảnh trên trang này; hệ thống sẽ hỏi xác nhận trước khi nhập.","匯出全部流程資料":"Xuất toàn bộ dữ liệu quy trình","匯入全部流程資料":"Nhập toàn bộ dữ liệu quy trình","儲存全部流程資料":"Lưu toàn bộ dữ liệu quy trình","全部流程資料已儲存":"Đã lưu toàn bộ dữ liệu quy trình","全部流程資料與照片已匯出":"Đã xuất toàn bộ dữ liệu quy trình và ảnh","全部流程資料與照片已匯入":"Đã nhập toàn bộ dữ liệu quy trình và ảnh","匯入會取代目前所有工段的流程資料與照片，確定繼續？":"Nhập sẽ thay thế dữ liệu quy trình và ảnh hiện tại của tất cả công đoạn. Bạn có chắc muốn tiếp tục?","此匯入檔版本較新，請先更新系統後再匯入。":"Tệp nhập này dùng phiên bản mới hơn; vui lòng cập nhật hệ thống trước khi nhập.","這不是有效的流程資料匯出檔。":"Đây không phải tệp xuất dữ liệu quy trình hợp lệ.","自訂流程 · 自動帶入方塊":"Quy trình riêng · Tự động đưa vào thẻ","標準流程 · 自動帶入方塊":"Quy trình chuẩn · Tự động đưa vào thẻ","流程名稱":"Tên quy trình","新流程":"Quy trình mới","此帳號沒有匯入或匯出權限。":"Tài khoản này không có quyền nhập hoặc xuất.","請先填寫流程名稱":"Vui lòng nhập tên quy trình","自動帶入方塊":"Tự động đưa vào thẻ","此流程尚未設定照片":"Quy trình này chưa có ảnh","上傳或加入更多照片":"Tải lên hoặc thêm ảnh","照片會自動壓縮；建立方塊時一起帶入。":"Ảnh sẽ tự động được nén và đưa vào khi tạo thẻ.","儲存六種流程照片":"Lưu ảnh của sáu quy trình","六種流程資料已儲存":"Đã lưu dữ liệu sáu quy trình","自動帶入流程照片，可在方塊內更換":"Tự động đưa ảnh quy trình vào; có thể thay đổi trong thẻ","含預設照片":"Có ảnh mặc định","進站":"Vào trạm","出站":"Ra trạm","人工檢查":"Kiểm tra thủ công","機器組裝":"Lắp ráp bằng máy","機器設定":"Cài đặt máy","移除照片":"Xóa ảnh",
-    "製程編輯台可用流程":"Quy trình dùng trong trình chỉnh sửa","這裡建立的流程會在主管核准後，提供製程編輯台新增方塊使用。六個標準流程會保留，也可在草稿中增加自己的流程。":"Quy trình tạo tại đây chỉ được dùng để thêm thẻ trong trình chỉnh sửa sau khi quản lý phê duyệt. Sáu quy trình chuẩn được giữ lại và có thể thêm quy trình riêng trong bản nháp.","流程資料 Excel 格式":"Định dạng Excel dữ liệu quy trình","包含全部工段、流程與照片；匯入只能在草稿進行，送審並由主管核准後才套用到製程編輯台。":"Bao gồm toàn bộ công đoạn, quy trình và ảnh; chỉ nhập vào bản nháp và chỉ áp dụng cho trình chỉnh sửa sau khi gửi và được quản lý phê duyệt.","先儲存草稿，再送主管審核；核准前不會影響製程編輯台。":"Lưu bản nháp trước rồi gửi quản lý duyệt; trước khi phê duyệt sẽ không ảnh hưởng đến trình chỉnh sửa.","唯讀查閱；製程編輯台目前使用已核准版本。":"Chỉ xem; trình chỉnh sửa hiện dùng phiên bản đã phê duyệt.","目前生效":"Đang có hiệu lực","選擇版本／草稿":"Chọn phiên bản / bản nháp","版本紀錄與操作歷程":"Lịch sử phiên bản và thao tác","流程資料草稿已儲存":"Đã lưu bản nháp dữ liệu quy trình","流程資料已送主管確認":"Đã gửi dữ liệu quy trình cho quản lý xác nhận","已解除送審，可繼續修改流程資料":"Đã rút hồ sơ; có thể tiếp tục sửa dữ liệu quy trình","請先建立新版本草稿再匯入 Excel":"Hãy tạo bản nháp phiên bản mới trước khi nhập Excel","這不是流程資料 Excel 匯出檔。":"Đây không phải tệp Excel xuất dữ liệu quy trình.","此 Excel 版本較新，請先更新系統後再匯入。":"Phiên bản Excel này mới hơn; hãy cập nhật hệ thống trước khi nhập.","Excel 缺少「流程資料」工作表。":"Excel thiếu trang tính “Dữ liệu quy trình”.","Excel 匯入會取代目前流程資料草稿內所有工段、流程與照片，確定繼續？":"Nhập Excel sẽ thay thế toàn bộ công đoạn, quy trình và ảnh trong bản nháp hiện tại. Tiếp tục?","全部流程資料與照片已匯出為 Excel":"Đã xuất toàn bộ dữ liệu quy trình và ảnh sang Excel","全部流程資料與照片已匯入草稿":"Đã nhập toàn bộ dữ liệu quy trình và ảnh vào bản nháp","流程資料已有草稿或正在主管審核中":"Dữ liệu quy trình đã có bản nháp hoặc đang chờ quản lý duyệt","已建立可修改的流程資料草稿":"Đã tạo bản nháp dữ liệu quy trình có thể chỉnh sửa","送審前需修正":"Cần sửa trước khi gửi duyệt","項流程資料問題":"vấn đề dữ liệu quy trình","流程資料":"Dữ liệu quy trình",
-    "產品類別管理":"Quản lý nhóm sản phẩm","線別與工段管理":"Quản lý chuyền và công đoạn","新增產品類別名稱":"Tên nhóm sản phẩm mới","加入類別":"Thêm nhóm","新增工段":"Thêm công đoạn","主資料版本確認":"Duyệt phiên bản dữ liệu chính","建立主資料草稿":"Tạo bản nháp dữ liệu chính","送出主資料確認":"Gửi duyệt dữ liệu chính","確認主資料版本":"Duyệt phiên bản dữ liệu chính","儲存主資料草稿":"Lưu bản nháp dữ liệu chính","刪除警告":"Cảnh báo xóa","產品類別":"Nhóm sản phẩm","單位":"Đơn vị","操作":"Thao tác",
+    "六個標準流程":"Sáu quy trình chuẩn","每個工段都使用相同六種流程；建立方塊時自動帶入照片，之後仍可在方塊內自由更換。":"Mỗi công đoạn dùng cùng sáu quy trình; ảnh được tự động đưa vào khi tạo thẻ và vẫn có thể thay đổi tự do trong thẻ.","流程與照片資料":"Dữ liệu quy trình và ảnh","六個標準流程會保留；也可新增自己的流程。這裡匯入或匯出會包含全部工段、全部流程與所有照片。":"Sáu quy trình chuẩn luôn được giữ lại; bạn cũng có thể thêm quy trình riêng. Nhập hoặc xuất tại đây bao gồm tất cả công đoạn, quy trình và ảnh.","完整備份格式":"Định dạng sao lưu đầy đủ","JSON 檔包含本頁全部工段、流程名稱與照片；匯入前會先請你確認。":"Tệp JSON chứa tất cả công đoạn, tên quy trình và ảnh trên trang này; hệ thống sẽ hỏi xác nhận trước khi nhập.","匯出全部流程資料":"Xuất toàn bộ dữ liệu quy trình","匯入全部流程資料":"Nhập toàn bộ dữ liệu quy trình","儲存全部流程資料":"Lưu toàn bộ dữ liệu quy trình","全部流程資料已儲存":"Đã lưu toàn bộ dữ liệu quy trình","全部流程資料與照片已匯出":"Đã xuất toàn bộ dữ liệu quy trình và ảnh","全部流程資料與照片已匯入":"Đã nhập toàn bộ dữ liệu quy trình và ảnh","匯入會取代目前所有工段的流程資料與照片，確定繼續？":"Nhập sẽ thay thế dữ liệu quy trình và ảnh hiện tại của tất cả công đoạn. Bạn có chắc muốn tiếp tục?","此匯入檔版本較新，請先更新系統後再匯入。":"Tệp nhập này dùng phiên bản mới hơn; vui lòng cập nhật hệ thống trước khi nhập.","這不是有效的流程資料匯出檔。":"Đây không phải tệp xuất dữ liệu quy trình hợp lệ.","自訂流程 · 自動帶入方塊":"Quy trình riêng · Tự động đưa vào thẻ","標準流程 · 自動帶入方塊":"Quy trình chuẩn · Tự động đưa vào thẻ","流程名稱":"Tên quy trình","此帳號沒有匯入或匯出權限。":"Tài khoản này không có quyền nhập hoặc xuất.","請先填寫流程名稱":"Vui lòng nhập tên quy trình","自動帶入方塊":"Tự động đưa vào thẻ","此流程尚未設定照片":"Quy trình này chưa có ảnh","上傳或加入更多照片":"Tải lên hoặc thêm ảnh","照片會自動壓縮；建立方塊時一起帶入。":"Ảnh sẽ tự động được nén và đưa vào khi tạo thẻ.","儲存六種流程照片":"Lưu ảnh của sáu quy trình","六種流程資料已儲存":"Đã lưu dữ liệu sáu quy trình","自動帶入流程照片，可在方塊內更換":"Tự động đưa ảnh quy trình vào; có thể thay đổi trong thẻ","含預設照片":"Có ảnh mặc định","進站":"Vào trạm","出站":"Ra trạm","人工檢查":"Kiểm tra thủ công","機器設定":"Cài đặt máy","移除照片":"Xóa ảnh",
+    "製程編輯台可用流程":"Quy trình dùng trong trình chỉnh sửa","這裡建立的流程會在主管核准後，提供製程編輯台新增方塊使用。六個標準流程會保留，也可在草稿中增加自己的流程。":"Quy trình tạo tại đây chỉ được dùng để thêm thẻ trong trình chỉnh sửa sau khi quản lý phê duyệt. Sáu quy trình chuẩn được giữ lại và có thể thêm quy trình riêng trong bản nháp.","流程資料 Excel 格式":"Định dạng Excel dữ liệu quy trình","包含全部工段、流程與照片；匯入只能在草稿進行，送審並由主管核准後才套用到製程編輯台。":"Bao gồm toàn bộ công đoạn, quy trình và ảnh; chỉ nhập vào bản nháp và chỉ áp dụng cho trình chỉnh sửa sau khi gửi và được quản lý phê duyệt.","先儲存草稿，再送主管審核；核准前不會影響製程編輯台。":"Lưu bản nháp trước rồi gửi quản lý duyệt; trước khi phê duyệt sẽ không ảnh hưởng đến trình chỉnh sửa.","唯讀查閱；製程編輯台目前使用已核准版本。":"Chỉ xem; trình chỉnh sửa hiện dùng phiên bản đã phê duyệt.","目前生效":"Đang có hiệu lực","流程資料草稿已儲存":"Đã lưu bản nháp dữ liệu quy trình","流程資料已送主管確認":"Đã gửi dữ liệu quy trình cho quản lý xác nhận","已解除送審，可繼續修改流程資料":"Đã rút hồ sơ; có thể tiếp tục sửa dữ liệu quy trình","請先建立新版本草稿再匯入 Excel":"Hãy tạo bản nháp phiên bản mới trước khi nhập Excel","這不是流程資料 Excel 匯出檔。":"Đây không phải tệp Excel xuất dữ liệu quy trình.","此 Excel 版本較新，請先更新系統後再匯入。":"Phiên bản Excel này mới hơn; hãy cập nhật hệ thống trước khi nhập.","Excel 缺少「流程資料」工作表。":"Excel thiếu trang tính “Dữ liệu quy trình”.","Excel 匯入會取代目前流程資料草稿內所有工段、流程與照片，確定繼續？":"Nhập Excel sẽ thay thế toàn bộ công đoạn, quy trình và ảnh trong bản nháp hiện tại. Tiếp tục?","全部流程資料與照片已匯出為 Excel":"Đã xuất toàn bộ dữ liệu quy trình và ảnh sang Excel","全部流程資料與照片已匯入草稿":"Đã nhập toàn bộ dữ liệu quy trình và ảnh vào bản nháp","流程資料已有草稿或正在主管審核中":"Dữ liệu quy trình đã có bản nháp hoặc đang chờ quản lý duyệt","已建立可修改的流程資料草稿":"Đã tạo bản nháp dữ liệu quy trình có thể chỉnh sửa","送審前需修正":"Cần sửa trước khi gửi duyệt","項流程資料問題":"vấn đề dữ liệu quy trình","流程資料":"Dữ liệu quy trình",
+    "產品類別管理":"Quản lý nhóm sản phẩm","線別與工段管理":"Quản lý chuyền và công đoạn","新增產品類別名稱":"Tên nhóm sản phẩm mới","加入類別":"Thêm nhóm","新增工段":"Thêm công đoạn","主資料版本確認":"Duyệt phiên bản dữ liệu chính","建立主資料草稿":"Tạo bản nháp dữ liệu chính","送出主資料確認":"Gửi duyệt dữ liệu chính","確認主資料版本":"Duyệt phiên bản dữ liệu chính","儲存主資料草稿":"Lưu bản nháp dữ liệu chính","刪除警告":"Cảnh báo xóa","產品類別":"Nhóm sản phẩm","操作":"Thao tác",
     "通知":"Thông báo","開啟選單":"Mở menu","目前配置":"Cấu hình hiện tại","名稱":"Tên","人數":"Số người","方式":"Phương thức",
     "產品":"Sản phẩm","產品補充":"Bổ sung sản phẩm","操作步驟":"Các bước thao tác","流程連線":"Liên kết quy trình",
     "新增":"Thêm","移除":"Xóa","變更":"Thay đổi","未變更":"Không đổi","無":"Không có",
@@ -165,7 +169,7 @@
     "生產":"Sản xuất","管理":"Quản lý","中心":"Trung tâm","產線":"Chuyền","自動":"Tự động","帶出":"Điền tự động","適用":"Áp dụng","可複選":"Có thể chọn nhiều",
     "成品":"Thành phẩm","半成品":"Bán thành phẩm","配件":"Phụ kiện","組裝":"Lắp ráp","零件":"Linh kiện","加工":"Gia công",
     "即時":"Thời gian thực","路線":"Tuyến","連結":"Liên kết","快速":"Nhanh","發送":"Gửi","編輯":"Chỉnh sửa","匯入":"Nhập","開啟":"Mở",
-    "電視畫面":"Màn hình TV","資料":"Dữ liệu","筆":"bản ghi","個產品類別":"loại sản phẩm","個工段":"công đoạn","組產品":"nhóm sản phẩm","個":"mục","步":"bước","準備":"Chuẩn bị","工段":"Công đoạn","人":"người","已":"Đã","會依":"Theo","條":"dòng","與":" và ","員":"viên",
+    "電視畫面":"Màn hình TV","資料":"Dữ liệu","筆":"bản ghi","個產品類別":"loại sản phẩm","個工段":"công đoạn","個":"mục","步":"bước","準備":"Chuẩn bị","工段":"Công đoạn","人":"người","已":"Đã","會依":"Theo","條":"dòng","與":" và ","員":"viên",
     "全部":"tất cả","授權線":"chuyền được cấp quyền","比對":"so sánh","重新":"lại","舊版":"phiên bản cũ","修訂":"bản sửa đổi","影片":"video",
     "人操作":"người vận hành","已選":"Đã chọn","可選":"có thể chọn","組產品":"nhóm sản phẩm","未分配":"chưa phân bổ",
     "固定資產":"Tài sản cố định","機器編號":"Mã máy","設備建議":"Đề xuất thiết bị","定額／用量":"Định mức / số lượng",
@@ -282,16 +286,41 @@
     ["已使用","Đã dùng"],["未使用","Chưa dùng"],["未送審","Chưa gửi"],["已送審","Đã gửi"],["待確認","Chờ duyệt"]
   ].sort((a,b) => b[0].length - a[0].length);
 
+  const playerStageLabels = new Map([
+    ["A-CUT","裁切備料","Chuẩn bị cắt"],
+    ["A-ASSY","成品組裝","Lắp ráp thành phẩm"],
+    ["A-CRIMP","接頭壓合","Ép đầu nối"],
+    ["A-PACKING","包裝作業","Đóng gói"],
+    ["A-FINAL","最終檢驗","Kiểm tra cuối"],
+    ["B-ASSY","配件組裝","Lắp ráp phụ kiện"],
+    ["B-PACKING","包裝作業","Đóng gói"],
+    ["B-FINAL","最終檢驗","Kiểm tra cuối"],
+    ["B-PHAO","浮球組裝","Lắp ráp phao"],
+    ["B-HCT","HCT 作業","Thao tác HCT"],
+    ["C-PREP","原料準備","Chuẩn bị nguyên liệu"],
+    ["C-TIEN","車削加工","Gia công tiện"],
+    ["C-RUA","清洗作業","Rửa"],
+    ["C-GIACONG","二次加工","Gia công thứ cấp"],
+    ["C-FINAL","最終檢驗","Kiểm tra cuối"],
+    ["C-CHI","編線作業","Quấn chỉ"],
+    ["C-INOX","不鏽鋼加工","Gia công INOX"],
+    ["C-PVC","PVC 成型","Tạo hình PVC"],
+    ["C-KHOAN","鑽孔作業","Khoan"],
+    ["C-MAI","研磨作業","Mài"],
+    ["C-DANHBONG","拋光作業","Đánh bóng"],
+  ].flatMap(([code,name,vi]) => [[code+' · '+name,code+' · '+vi],[code[0]+' 線 · '+name,'Chuyền '+code[0]+' · '+vi]]));
+
   const translationRules = [...phrases, ...exact.entries()].sort((a,b) => b[0].length - a[0].length);
   let language = localStorage.getItem(STORAGE_KEY) === "zh" ? "zh" : "vi";
   let applying = false;
-  let observer;
+
   const textMemory = new WeakMap();
   const attrMemory = new WeakMap();
 
   function translate(source) {
     const issueText=String(source).trim();
     let match;
+    if((match=String(source).match(/^(\s*)(\d+)\/(\d+) 項產品包含此工段(\s*)$/)))return match[1]+match[2]+'/'+match[3]+' sản phẩm có công đoạn này'+match[4];
     if((match=issueText.match(/^(缺少適用流程|BOM 未分配)：(\d+)$/)))return (match[1]==='缺少適用流程'?'Thiếu quy trình áp dụng':'BOM chưa phân bổ')+': '+match[2];
     if((match=issueText.match(/^(前往建立連線|前往補寫作業說明|前往填寫基本資料|前往分配 BOM|前往建立流程)(?: · (.+))?$/))){const labels={'前往建立連線':'Đi đến tạo liên kết','前往補寫作業說明':'Đi đến bổ sung hướng dẫn','前往填寫基本資料':'Đi đến điền thông tin cơ bản','前往分配 BOM':'Đi đến phân bổ BOM','前往建立流程':'Đi đến tạo quy trình'};return labels[match[1]]+(match[2]?' · '+match[2]:'');}
     if(issueText.startsWith('前往修正 · '))return issueText.replace('前往修正','Đi đến sửa');
@@ -326,6 +355,7 @@
     const leading = source.match(/^\s*/)?.[0] || "";
     const trailing = source.match(/\s*$/)?.[0] || "";
     const core = source.slice(leading.length, source.length - trailing.length || undefined);
+    if (playerStageLabels.has(core)) return leading + playerStageLabels.get(core) + trailing;
     if (exact.has(core)) return leading + exact.get(core) + trailing;
     let result = core;
     translationRules.forEach(([from,to]) => { result = result.split(from).join(to); });
@@ -353,7 +383,7 @@
   function applyAttributes(element) {
     if (skipped(element)) return;
     const attrs = ["placeholder","title","aria-label","alt"];
-    let memory = attrMemory.get(element) || {};
+    const memory = attrMemory.get(element) || {};
     attrs.forEach(attr => {
       if (!element.hasAttribute?.(attr)) return;
       const current = element.getAttribute(attr);
@@ -380,7 +410,7 @@
       applyAttributes(root);
       const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, {acceptNode:node=>node.nodeType===Node.ELEMENT_NODE&&node.matches('script,style,[data-i18n-skip],textarea,[contenteditable="true"]')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
       let node;
-      while ((node = walker.nextNode())) node.nodeType === Node.TEXT_NODE ? applyText(node) : applyAttributes(node);
+      while ((node = walker.nextNode())) if (node.nodeType === Node.TEXT_NODE) { applyText(node); } else { applyAttributes(node); }
     }
     const nextLanguage = language === "vi" ? "vi" : "zh-Hant";
     if (document.documentElement.lang !== nextLanguage) document.documentElement.lang = nextLanguage;
@@ -429,7 +459,7 @@
   const originalAlert = window.alert.bind(window);
   window.alert = message => originalAlert(language === "vi" ? translate(String(message)) : message);
 
-  observer = new MutationObserver(mutations => {
+  const observer = new MutationObserver(mutations => {
     if (applying) return;
     const roots=new Set();
     for(const mutation of mutations){for(const node of mutation.addedNodes)if(node.isConnected&&!skipped(node))roots.add(node);if(mutation.type==='characterData'&&mutation.target.isConnected&&!skipped(mutation.target))roots.add(mutation.target);}

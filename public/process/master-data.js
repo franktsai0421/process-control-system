@@ -1,4 +1,5 @@
 (function () {
+  const displayDraftError = error => window.sharedDraftErrorMessage?.(error) ?? (typeof error === 'string' ? error : error?.message || String(error ?? ''));
   const STORAGE = 'masterDataControl',
     clone = (value) => JSON.parse(JSON.stringify(value));
   const now = () => new Date().toISOString(),
@@ -150,11 +151,11 @@
   }
   async function beginDraft() {
     try{await shared.execute(state.masterScope,'begin');sharedLoaded.add(state.masterScope);render();}
-    catch(error){toast(error.message);}
+    catch(error){toast(displayDraftError(error));}
     return;
   }
   async function saveDraft() {
-    try{await shared.execute(state.masterScope,'save');toast(document.documentElement.lang==='vi'?'Đã lưu toàn bộ nội dung đã đồng bộ.':'已儲存全員已同步內容。');render();}catch(error){toast(error.message);}
+    try{await shared.execute(state.masterScope,'save');toast(document.documentElement.lang==='vi'?'Đã lưu toàn bộ nội dung đã đồng bộ.':'已儲存全員已同步內容。');render();}catch(error){toast(displayDraftError(error));}
   }
   function validateCatalog(catalog) {
     const errors = [],
@@ -187,7 +188,7 @@
     return errors;
   }
   async function submitDraft() {
-    try{await shared.submit(state.masterScope);render();}catch(error){const focused=document.activeElement?.id,scroll=window.scrollY;render();document.getElementById(focused)?.focus({preventScroll:true});window.scrollTo(0,scroll);toast(error.message);}
+    try{await shared.submit(state.masterScope);render();}catch(error){const focused=document.activeElement?.id,scroll=window.scrollY;render();document.getElementById(focused)?.focus({preventScroll:true});window.scrollTo(0,scroll);toast(displayDraftError(error));}
   }
   let syncRows = function() {
     const version = draft();
@@ -314,7 +315,7 @@
     if(tab==='process-master'&&!sharedLoaded.has('PROCESS')){
       content.textContent=document.documentElement.lang==='vi'?'Đang tải dữ liệu quy trình…':'載入流程資料中…';
       if(!sharedLoading.has('PROCESS')){sharedLoading.add('PROCESS');shared.load('PROCESS').then(()=>{sharedLoaded.add('PROCESS');if(state.dataTab==='process-master')selectDataTab(tab);}).catch(error=>{
-        if(state.dataTab!=='process-master')return;content.textContent=error.message;const retry=document.createElement('button');retry.className='button ghost';retry.textContent=document.documentElement.lang==='vi'?'Thử lại':'重試';retry.onclick=()=>selectDataTab(tab);content.append(retry);
+        if(state.dataTab!=='process-master')return;content.textContent=displayDraftError(error);const retry=document.createElement('button');retry.className='button ghost';retry.textContent=document.documentElement.lang==='vi'?'Thử lại':'重試';retry.onclick=()=>selectDataTab(tab);content.append(retry);
       }).finally(()=>sharedLoading.delete('PROCESS'));}bindTabButtons();return;
     }
     content.dataset.activeTab=tab;
@@ -1081,7 +1082,7 @@
     bindMaster = function(){enhanced.bindMaster();const scope=state.masterScope;if(sharedLoaded.has(scope)||sharedLoading.has(scope))return;
       sharedLoading.add(scope);document.querySelectorAll('#data-content button').forEach(b=>b.disabled=true);
       shared.load(scope).then(()=>{sharedLoaded.add(scope);render();}).catch(error=>{
-        toast(error.message);const panel=document.querySelector('#data-content');if(!panel)return;
+        toast(displayDraftError(error));const panel=document.querySelector('#data-content');if(!panel)return;
         const retry=document.createElement('button');retry.className='button ghost';retry.textContent=document.documentElement.lang==='vi'?'Thử tải lại bản nháp chung':'重新載入共用草稿';retry.onclick=()=>{retry.remove();bindMaster();};panel.prepend(retry);
       }).finally(()=>sharedLoading.delete(scope));};
     productRows = enhanced.productRows;
@@ -1103,7 +1104,7 @@
         },
       });
       approvalSection = review.view;
-      bindApprovalMaster = function(){review.bind();const missing=['AB','C','PROCESS'].filter(scope=>!sharedLoaded.has(scope)&&!sharedLoading.has(scope));if(!missing.length)return;missing.forEach(s=>sharedLoading.add(s));Promise.all(missing.map(s=>shared.load(s).then(()=>sharedLoaded.add(s)))).then(()=>render()).catch(e=>toast(e.message)).finally(()=>missing.forEach(s=>sharedLoading.delete(s)));};
+      bindApprovalMaster = function(){review.bind();const missing=['AB','C','PROCESS'].filter(scope=>!sharedLoaded.has(scope)&&!sharedLoading.has(scope));if(!missing.length)return;missing.forEach(s=>sharedLoading.add(s));Promise.all(missing.map(s=>shared.load(s).then(()=>sharedLoaded.add(s)))).then(()=>render()).catch(e=>toast(displayDraftError(e))).finally(()=>missing.forEach(s=>sharedLoading.delete(s)));};
     }
   }
   window.MasterDataWorkflow = {
@@ -1122,7 +1123,7 @@
         for(const scope of scopes){if(!sharedLoaded.has(scope))continue;const result=await shared.load(scope);changed ||= !result.unchanged||result.permissionsChanged;}
         if(changed){applyActive();render();}
       }
-    }}catch(error){const panel=document.querySelector('#master-shared-status');if(panel)panel.textContent=error.message;}finally{pollMaster();}
+    }}catch(error){const panel=document.querySelector('#master-shared-status');if(panel)panel.textContent=displayDraftError(error);}finally{pollMaster();}
   },4000);}
   pollMaster();
   applyActive();

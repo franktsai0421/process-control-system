@@ -100,7 +100,7 @@
     if (state.view === view && push) writeRoute(view);
   }
 
-  function navButton(view, icon, label, group = '') {
+  function navButton(view, icon, label, _group = '') {
     const allowed = qualityViews[view] ? (currentUser && currentUser.role !== 'device') : canView(view);
     return `<button class="nav-item ${state.view === view ? 'active' : ''}" data-view="${view}" data-dual-view="${view}" ${allowed ? '' : 'disabled aria-disabled="true" title="目前帳號沒有此功能權限"'}><span>${icon}</span>${label}</button>`;
   }
@@ -306,6 +306,8 @@
         ? 'data'
       : requested === 'approval' && canView('approval')
         ? 'approval'
+      : requested === 'editor' && canView('editor')
+        ? 'editor'
       : activeSystem === 'quality'
         ? 'quality-dashboard'
         : canView(requested)

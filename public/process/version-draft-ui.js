@@ -32,8 +32,9 @@
       const paint=()=>{rows.forEach((row,i)=>row.hidden=i<page*8||i>=(page+1)*8);prev.disabled=page===0;next.disabled=(page+1)*8>=rows.length;label.textContent=`${page+1} / ${Math.ceil(rows.length/8)}`;};prev.type=next.type='button';prev.onclick=()=>{page--;paint();};next.onclick=()=>{page++;paint();};nav.append(prev,label,next);group.after(nav);paint();
     }
   }
-  async function historyMetadata(shell,model,select,log){
+  async function historyMetadata(shell,model,select,log,empty){
     const client=model.historyClient?.();if(!client?.uiHistory||client.permission('history')===false)return;
+    empty?.remove();
     const known=new Map(),sections={},pages={},cursors={versions:[''],saves:['']};
     const view=async row=>{try{const options={client,editable:()=>false,onApplied:async()=>{}};if(row.caseId)options.caseId=row.caseId;else options.versionPreview=(await client.version(row.id)).version;await host.openSharedDraftHistory(options);}catch(error){notice.textContent=t('history')+' · '+error.message;}};
     const notice=create('p','vd-history-load',t('history')+' · '+t('syncing'));log.append(notice);
@@ -93,13 +94,13 @@
     // Keep all legacy records and deletion impact details, tied to this version.
     if(v?.warnings?.length){const detail=create('details','vd-advisory');detail.append(create('summary','',`${number(v)} · ${document.documentElement.lang==='vi'?'Ảnh hưởng thao tác xóa':'刪除操作影響'}`));for(const warning of v.warnings)detail.append(create('p','',warning));log.append(detail);}
     if(!model.historyClient&&flow?.saves?.length){const saves=create('ol','vd-saves');for(const save of [...flow.saves].reverse())saves.append(create('li','',`${t('saved')} · ${save.actor?.name||t('unknown')} · ${date(save.at)} · ${save.id}`));log.append(saves);}
-    if(log.children.length===1)log.append(create('p','',t('none')));historyPages(log);shell.append(log);
+    const empty=log.children.length===1?create('p','vd-history-empty',t('none')):null;if(empty)log.append(empty);historyPages(log);shell.append(log);
     old.before(shell);old.remove();
     for(const node of statusNodes){const buttons=[...node.querySelectorAll('button')];if(buttons.length){const group=create('div','vd-secondary');group.append(...buttons);log.append(group);}node.replaceChildren();node.className='vd-live';card.append(node);}
     for(const selector of model.remove||[])root.querySelectorAll(selector).forEach(node=>node.remove());
     root.querySelectorAll('.shared-validation,.master-version-bar').forEach(node=>{if(!node.children.length&&!node.textContent.trim())node.remove();});
     if(model.failed&&!shell.querySelector('.vd-errors details')){const detail=create('details','has-issues'),summary=create('summary','',t(model.rejected?'rejected':'failed'));detail.append(summary,create('p','',t('locked')));shell.querySelector('.vd-errors').replaceChildren(label(create('h3','',t('errors')),'errors'),detail);}
-    decorateIssues(shell);shell.dataset.vdMounted='true';void historyMetadata(shell,model,select,log);let priorLanguage=document.documentElement.lang;
+    decorateIssues(shell);shell.dataset.vdMounted='true';void historyMetadata(shell,model,select,log,empty);let priorLanguage=document.documentElement.lang;
     shell.refreshLabels=()=>{const lang=document.documentElement.lang;if(lang===priorLanguage)return;const before=priorLanguage==='vi'?1:0,after=lang==='vi'?1:0;for(const area of [heading,meta]){const walker=document.createTreeWalker(area,NodeFilter.SHOW_TEXT);let node;while((node=walker.nextNode())){for(const pair of Object.values(words))node.nodeValue=node.nodeValue.split(pair[before]).join(pair[after]);}}for(const refresh of translations)refresh();for(const option of select?.options||[]){const row=versions.find(item=>item.id===option.value);if(row)option.textContent=`${number(row)} · ${t(row.status)}`;}const recorded=saved||model.savedMetadata;const saverNode=meta.querySelector('[data-vd-saver]');if(saverNode)saverNode.textContent=t('savedBy')+'：'+savedStamp(recorded?.actor?.name||saveEvent?.actorName||saveEvent?.actor,recorded?.at||saveEvent?.at);shell.refreshHistoryLabels?.();priorLanguage=lang;};return shell;
   }
   const issueWords={NO_SUBSTANTIVE_CHANGE:['內容與正式版相同；交由審核者確認','Nội dung giống bản có hiệu lực; người duyệt xác nhận'],IPQC_UNASSIGNED:['IPQC 項目尚未分配','Hạng mục IPQC chưa được phân công'],IPQC_REFERENCE_CHANGED:['IPQC 來源或產品關聯已變更','Nguồn hoặc sản phẩm IPQC đã thay đổi'],IPQC_SOURCE_NOT_APPROVED:['IPQC 來源尚未核准','Nguồn IPQC chưa được duyệt'],PRODUCT_MISSING:['產品主資料不存在','Thiếu dữ liệu gốc sản phẩm'],NAME_REQUIRED:['流程名稱待補','Thiếu tên quy trình'],MACHINE_REQUIRED:['設備待選擇','Chưa chọn thiết bị'],INSTRUCTIONS_REQUIRED:['操作說明待補','Thiếu hướng dẫn thao tác'],STEP_STANDARD_REQUIRED:['步驟標準待補','Thiếu tiêu chuẩn bước'],SINGLE_SUCCESSOR_REQUIRED:['後續流程超過一個','Có nhiều hơn một bước tiếp theo'],CONNECTION_TARGET_MISSING:['連線目標不存在','Đích kết nối không tồn tại'],DISCONNECTED_OPERATIONS:['流程尚未連通','Các bước chưa kết nối'],PRODUCT_ROUTE_CHANGED:['產品路線已變更','Tuyến sản phẩm đã thay đổi'],PRODUCT_STAGE_REQUIRED:['產品缺少工段流程','Thiếu bước tại công đoạn'],BOM_ASSIGNMENT_REQUIRED:['BOM 配置待補','Cần bổ sung phân bổ BOM'],EQUIPMENT_REFERENCE_MISSING:['設備引用待確認','Cần xác nhận liên kết thiết bị']};

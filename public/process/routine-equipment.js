@@ -1,4 +1,5 @@
 (() => {
+  const displayDraftError = error => window.sharedDraftErrorMessage?.(error) ?? (typeof error === 'string' ? error : error?.message || String(error ?? ''));
   const api = '/api/routine-equipment';
   const query = new URL(location.href).searchParams.get('manage') === '1' ? '?manage=1' : '';
   const endpoint = api + query;
@@ -12,7 +13,12 @@
     try { return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date()); }
     catch { return new Date().toISOString().slice(0, 10); }
   };
-  const lang = () => localStorage.getItem('processUILanguage') === 'vi' ? 'vi' : 'zh';
+  const lang = () => {
+    const tabLanguage = String(document.documentElement.lang || '').toLowerCase();
+    if (tabLanguage === 'vi') return 'vi';
+    if (tabLanguage === 'zh' || tabLanguage.startsWith('zh-')) return 'zh';
+    return localStorage.getItem('processUILanguage') === 'vi' ? 'vi' : 'zh';
+  };
   const t = (zh, vi) => lang() === 'vi' ? vi : zh;
   const norm = str => String(str || '')
     .replace(/đ/g, 'd').replace(/Đ/g, 'D')
@@ -34,16 +40,17 @@
   let selectedVersionId = '', selectedCategory = '', selectedSubcategory = '', selectedGroup = '';
   let selectedEquipmentId = '', editingEquipmentId = '', search = '', busy = false, message = '', reviewHost = null;
   let equipmentPage = 1, submitProblems = [], openErrors = false, composing = false;
+  let equipmentEditRequest = 0;
   let problemSnapshot = null;
-  let nodeDialog = null, viewDialog = null, formSnapshot = null, addingEquipment = false, newEquipmentForm = null, transferDialog = null;
+  let nodeDialog = null, viewDialog = null, formSnapshot = null, addingEquipment = false, newEquipmentForm = null, newEquipmentOwner = null, equipmentReadAttempt = null, transferDialog = null;
   const equipmentRefCache = new Map();
   let sharedClient=null,sharedActor='',syncBase=null,syncGeneration=null,sharedPoll;
-  function sharedTransport(){const id=identity()?.id;if(!id)throw Error('LOGIN_REQUIRED');if(sharedActor!==id){sharedActor=id;sharedClient=window.createSharedDraftClient({endpoint:api+'/workflow?caseMetadata=1',legacyArchive:true,actorId:id,headers,permissionGates:{edit:'#routine-add,#routine-begin,#routine-form-apply,#routine-add-submit,[data-equipment-edit],[data-node-add],[data-node-edit],#routine-dialog-confirm,[data-issue-result],[data-issue-resolve]',save:'#routine-save',submit:'#routine-submit',withdraw:'#routine-withdraw,[data-routine-review="withdraw"]',approve:'[data-routine-review="approve"]',return:'[data-routine-review="reject"]',history:'#routine-case-history',delete:'[data-equipment-delete],[data-node-delete]'}});}return sharedClient;}
+  function sharedTransport(){const id=identity()?.id;if(!id)throw Error('LOGIN_REQUIRED');if(sharedActor!==id){sharedActor=id;sharedClient=window.createSharedDraftClient({endpoint:api+'/workflow?caseMetadata=1',legacyArchive:true,actorId:id,headers,permissionGates:{edit:'#routine-add,#routine-begin,#routine-form-apply,#routine-add-submit,[data-equipment-edit],[data-node-add],[data-node-edit],#routine-dialog-confirm,[data-issue-result],[data-issue-resolve]',save:'#routine-save',submit:'#routine-submit',withdraw:'#routine-withdraw,[data-routine-review="withdraw"]',approve:'[data-routine-review="approve"]',return:'[data-routine-review="reject"]',history:'#routine-case-history',delete:'#routine-delete,[data-equipment-delete],[data-node-delete]'}});}return sharedClient;}
   function snapshotChanges(base,next){const patches=[],guards=[],fields={equipment:['name','unit','spec','owner','enabled','calibrationMethod','calibrationCycle','customCycle','calibratedAt','expiresAt','notes','intakeDate','confirmed','photoId','photoHidden','groupId'],groups:['name','nameZh','nameVi','photoId','spec','notes','categoryId','subcategoryId'],categories:['name','photoId'],subcategories:['name','categoryId','photoId'],issues:['status','resolution']};
     for(const collection of Object.keys(fields)){
       for(const old of base[collection]||[])if(!(next[collection]||[]).some(r=>r.id===old.id)){const path=[collection,{id:old.id}];patches.push({op:'remove',path});guards.push({path,value:old});}
       for(const row of next[collection]||[]){const old=(base[collection]||[]).find(r=>r.id===row.id);if(!old){patches.push({op:'insert',path:[collection],value:row});continue;}
-        for(const field of fields[collection])if(row[field]!==undefined&&JSON.stringify(row[field])!==JSON.stringify(old[field])&&!(row[field]===''&&old[field]==null)){const path=[collection,{id:row.id},field];patches.push({op:'set',path,value:row[field]});if(!['name','nameZh','nameVi','notes','owner','spec','resolution'].includes(field))guards.push({path,value:old[field]});}
+        for(const field of fields[collection])if(row[field]!==undefined&&JSON.stringify(row[field])!==JSON.stringify(old[field])&&!(row[field]===''&&old[field]==null)){const path=[collection,{id:row.id},field];patches.push({op:'set',path,value:row[field]});guards.push({path,value:old[field]});}
       }
     }return{patches,guards};
   }
@@ -87,11 +94,125 @@
         message=t('已儲存的送審內容未通過驗證，請查看報錯與待補。修正後須手動儲存再送審。','Nội dung đã lưu để gửi duyệt chưa đạt kiểm tra. Xem lỗi và mục cần bổ sung; sửa rồi lưu thủ công trước khi gửi lại.');
       }
       return null;
-    }finally{busy=false;if(action==='apply'&&document.activeElement?.matches('[data-issue-result]')){const status=host?.querySelector('#routine-shared-status');if(status)status.textContent=message;}else{
+    }finally{busy=false;if(action==='apply'&&document.activeElement?.matches('[data-issue-result]')){const status=host?.querySelector('#routine-shared-status');if(status)status.textContent=displayDraftError(message);}else{
       const focusedId=host?.contains(document.activeElement)?document.activeElement.id:priorFocusedId,scrollX=window.scrollX,scrollY=window.scrollY;
       render();if(focusedId){document.getElementById(focusedId)?.focus({preventScroll:true});window.scrollTo(scrollX,scrollY);}
     }}
   }
+  // Preserve this unapplied drawer; renewal reads never acknowledge or replay it.
+  function captureAddEquipmentInput() {
+    if (!addingEquipment || !newEquipmentForm || !routineTabIsActive()) return;
+    const fields = {assetCode:'asset-code',name:'name',unit:'unit',owner:'owner',calibrationMethod:'calibration-method',calibrationCycle:'calibration-cycle',customCycle:'custom-cycle',calibratedAt:'calibrated-at',expiresAt:'expires-at',intakeDate:'intake-date',spec:'spec',notes:'notes',groupId:'group-select'};
+    for (const [field, id] of Object.entries(fields)) {
+      const input = host.querySelector('#routine-add-' + id);
+      if (input) newEquipmentForm[field] = input.value;
+    }
+    for (const field of ['enabled','confirmed']) {
+      const input = host.querySelector('#routine-add-' + field);
+      if (input) newEquipmentForm[field] = input.value === 'true';
+    }
+    // pendingPhoto retains the exact File and object URL; never clone/revoke/upload.
+  }
+  function bindAddEquipmentInput() {
+    const drawer = host?.querySelector('#routine-add-modal'), page = host, form = newEquipmentForm, owner = newEquipmentOwner;
+    if (!drawer || drawer.dataset.routineInputBound || !form || !owner) return;
+    const capture = event => {
+      if (!drawer.isConnected || !drawer.contains(event.target) || !routineTabIsActive() || host !== page ||
+          newEquipmentForm !== form || newEquipmentOwner !== owner || identity()?.id !== owner.actor ||
+          window.ProcessSync?.identityGeneration?.() !== owner.epoch) return;
+      captureAddEquipmentInput();
+    };
+    drawer.dataset.routineInputBound = 'true';
+    drawer.addEventListener('input', capture);
+    drawer.addEventListener('change', capture);
+  }
+  function showEquipmentReadRecovery(error) {
+    readUnavailable = true;
+    message = displayDraftError(error);
+    if (!routineTabIsActive()) return;
+    window.VersionDraftUI?.updateSync?.(host, busy, true);
+    const status = host.querySelector('#routine-shared-status');
+    if (status) status.textContent = t('同步失敗；保留目前內容：','Đồng bộ thất bại; giữ nội dung: ') + message;
+    host.querySelectorAll('#routine-add-submit,#routine-save,#routine-submit,#routine-begin').forEach(button => {button.disabled = true;});
+    if (!addingEquipment || !newEquipmentForm) return;
+    const footer = host.querySelector('#routine-add-modal .routine-modal-footer');
+    if (!footer) return;
+    let button = footer.querySelector('#routine-add-load-retry');
+    if (!button) {
+      button = document.createElement('button');
+      button.type = 'button'; button.id = 'routine-add-load-retry'; button.className = 'button signal';
+      button.addEventListener('click', recoverAddEquipmentRead);
+      footer.prepend(button);
+    }
+    button.textContent = t('重新載入並保留輸入','Tải lại và giữ dữ liệu đang nhập');
+    button.disabled = busy;
+  }
+  async function recoverAddEquipmentRead() {
+    if (busy || equipmentReadAttempt || !addingEquipment || !newEquipmentForm || !routineTabIsActive()) return;
+    const actor = identity()?.id, epoch = window.ProcessSync?.identityGeneration?.(), page = host,
+      form = newEquipmentForm, draft = working, base = syncBase, generation = syncGeneration,
+      flowGeneration = control?.workflow?.generation, pendingId = control?.workflow?.pendingId,
+      versionId = selectedVersionId, previousRevision = revision, client = sharedClient;
+    const ownsAttempt = () => equipmentReadAttempt === attempt && routineTabIsActive() && host === page && identity()?.id === actor &&
+      window.ProcessSync?.identityGeneration?.() === epoch && controlActor === actor &&
+      newEquipmentForm === form && addingEquipment && !!client && sharedClient === client &&
+      newEquipmentOwner?.actor === actor && newEquipmentOwner?.epoch === epoch;
+    const sameContext = () => ownsAttempt() && working === draft && syncBase === base &&
+      syncGeneration === generation && control?.workflow?.generation === flowGeneration &&
+      control?.workflow?.pendingId === pendingId && selectedVersionId === versionId &&
+      newEquipmentOwner?.generation === generation;
+    captureAddEquipmentInput();
+    const attempt = {};
+    equipmentReadAttempt = attempt;
+    busy = true;
+    try {
+      if (!actor || !Number.isSafeInteger(epoch) || !sameContext()) throw Error('ACCOUNT_CHANGED_REOPEN_REQUIRED');
+      if (generation !== flowGeneration) throw Error('DEPENDENCY_CHANGED_RECONFIRM');
+      if (client.hasUnknown() || client.hasSyncFailures()) throw Error('PREVIOUS_OPERATION_UNKNOWN');
+      showEquipmentReadRecovery(message);
+      // Existing normal projection authenticates the cookie on the server. No identity/token mutation.
+      const response = await fetch('/api/shared-state', {cache:'no-store',headers:headers(),signal:AbortSignal.timeout(15000)});
+      const freshIdentity = await response.json();
+      if (!sameContext()) throw Error('ACCOUNT_CHANGED_REOPEN_REQUIRED');
+      if (!response.ok || freshIdentity.identity?.id !== actor || freshIdentity.identity?.sessionType !== 'platform') throw Error('LOGIN_REQUIRED');
+      const result = await client.read();
+      if (!sameContext()) throw Error('ACCOUNT_CHANGED_REOPEN_REQUIRED');
+      if (client.hasUnknown() || client.hasSyncFailures()) throw Error('PREVIOUS_OPERATION_UNKNOWN');
+      const access = result.permissions;
+      if (!access || ['view','edit','save','submit','withdraw','approve','return','history','delete'].some(key => typeof access[key] !== 'boolean') || access.view !== true || access.edit !== true) throw Error('FORBIDDEN');
+      const validSnapshot = value => value && typeof value === 'object' && !Array.isArray(value) &&
+        ['equipment','groups','categories','subcategories','issues'].every(key => Array.isArray(value[key]) &&
+          value[key].every(row => row && typeof row === 'object' && !Array.isArray(row)));
+      if (!result.control?.workflow || !Number.isSafeInteger(result.revision) || !Number.isSafeInteger(result.control.workflow.revision) ||
+          !Array.isArray(result.control.versions) || !validSnapshot(result.control.workflow.working) ||
+          !result.control.versions.every(version => version && typeof version.id === 'string' && typeof version.status === 'string' &&
+            Array.isArray(version.equipment) && Array.isArray(version.groups) && validSnapshot(version.snapshot))) throw Error('INVALID_WORKFLOW_RESPONSE');
+      if (result.revision < previousRevision || result.revision < revision || result.control.workflow.revision < control.workflow.revision ||
+          result.control.workflow.generation !== flowGeneration || result.control.workflow.pendingId !== pendingId ||
+          !result.control.versions.some(version => version.id === versionId && version.status === 'draft')) throw Error('DEPENDENCY_CHANGED_RECONFIRM');
+      captureAddEquipmentInput();
+      control = result.control; revision = result.revision;
+      // Keep working, syncBase, syncGeneration, group selection and guarded field baselines unchanged.
+      readUnavailable = false;
+      message = t('已載入最新版，未套用輸入與照片仍保留；套用時重新核對來源。','Đã tải bản mới; giữ đầu vào và ảnh chưa áp dụng, kiểm tra nguồn khi áp dụng.');
+      busy = false;
+      render();
+    } catch (error) {
+      // A changed owner/page must never redraw the preserved form into another context.
+      if (ownsAttempt()) showEquipmentReadRecovery(error);
+    } finally {
+      if (equipmentReadAttempt === attempt) {
+        const updateUI = ownsAttempt();
+        equipmentReadAttempt = null;
+        busy = false;
+        if (updateUI) {
+          const button = host.querySelector('#routine-add-load-retry');
+          if (button) button.disabled = false;
+        }
+      }
+    }
+  }
+
   function pollShared(){clearTimeout(sharedPoll);sharedPoll=setTimeout(async()=>{
     if(!routineTabIsActive())return;
     try{if(!busy&&document.visibilityState!=='hidden'){
@@ -100,7 +221,7 @@
         if(editingEquipmentId||nodeDialog||addingEquipment||document.activeElement?.matches('input,textarea,select')){const status=host?.querySelector('#routine-shared-status');if(status)status.textContent=t('共用內容已更新，保留目前輸入，套用時核對來源。','Nội dung chung đã cập nhật; giữ dữ liệu đang nhập và kiểm tra nguồn khi áp dụng.');}
         else{if(wasOpen){selectedVersionId=open()?.id||active()?.id;working=open()?.status==='draft'?snapshotOf(open()):null;syncBase=working&&clone(working);syncGeneration=control.workflow?.generation||null;}render();}
       }
-    }}catch(e){const status=host?.querySelector('#routine-shared-status');if(status)status.textContent=t('同步失敗；保留目前內容：','Đồng bộ thất bại; giữ nội dung: ')+e.message;}
+    }}catch(e){showEquipmentReadRecovery(e);}
     finally{pollShared();}
   },4000);}
   const unitLabels = { '個': ['個','Cái'], '支': ['支','Cây'], '台': ['台','Máy'], '組': ['組','Bộ'] };
@@ -192,7 +313,7 @@
   const active = () => control?.versions.find(version => version.id === control.activeVersionId);
   const selected = () => control?.versions.find(version => version.id === selectedVersionId) || open() || active() || control?.versions[0];
   const visible = () => selected()?.id === open()?.id && working ? working : selected();
-  const editable = () => selected()?.status === 'draft' && !!working && permitted('approval.submit');
+  const editable = () => !readUnavailable && selected()?.status === 'draft' && !!working && permitted('approval.submit');
   const status = value => ({
     draft: t('待確認草稿', 'Bản nháp chờ xác nhận'),
     pending: t('主管審核中', 'Quản lý đang duyệt'),
@@ -207,6 +328,9 @@
     approve: t('主管核准', 'Quản lý phê duyệt'),
     reject: t('發回修改', 'Trả lại để sửa'),
     withdraw: t('撤回送審', 'Rút hồ sơ'),
+    approved: t('主管核准', 'Quản lý phê duyệt'),
+    returned: t('發回修改', 'Trả lại để sửa'),
+    withdrawn: t('撤回送審', 'Rút hồ sơ'),
     delete: t('刪除草稿設備', 'Xóa thiết bị nháp'),
     import: t('匯入來源主檔', 'Nhập nguồn chính')
   })[act] || act;
@@ -263,7 +387,8 @@
     finally { busy = false; render(); }
   }
 
-  async function uploadImage(file) {
+  async function uploadImage(file, { preserveSource = false } = {}) {
+    if (!preserveSource) file = await window.ProcessPhotoUpload.prepare(file);
     if (!file || file.size > 5_000_000) throw Error(t('照片限 5 MB', 'Ảnh giới hạn 5 MB'));
     const response = await fetch(`${api}/photo${query}`, {
       method: 'PUT', headers: { ...headers(), 'Content-Type': file.type || 'image/jpeg' }, body: file,
@@ -289,7 +414,7 @@
           const imageResponse = await fetch(item.photoSource.webPath);
           if (!imageResponse.ok) throw Error(`第 ${item.sourceRow} 列照片讀取失敗`);
           const blob = await imageResponse.blob();
-          item.photoId = await uploadImage(blob);
+          item.photoId = await uploadImage(blob, { preserveSource: true });
           if ((index + 1) % 10 === 0) { message = `照片上傳中：${index + 1}／119`; render(); }
         }
       };
@@ -797,7 +922,8 @@
   }
 
   function addEquipmentDrawerHTML() {
-    if (!addingEquipment || !newEquipmentForm) return '';
+    if (!addingEquipment || !newEquipmentForm || newEquipmentOwner?.actor !== identity()?.id ||
+        newEquipmentOwner?.epoch !== window.ProcessSync?.identityGeneration?.()) return '';
     const tree = structure(visible());
     const group = tree.groups.find(g => g.id === selectedGroup);
     const cat = tree.categories.find(c => c.id === (group?.categoryId || selectedCategory));
@@ -843,7 +969,7 @@
           <label class="wide">
             ${t('所屬規格群組（必填）', 'Nhóm quy cách (Bắt buộc)')}
             <select id="routine-add-group-select">
-              ${tree.groups.filter(g => g.subcategoryId === selectedSubcategory).map(g => `<option value="${h(g.id)}" ${g.id === selectedGroup ? 'selected' : ''}>${h(g.id)} · ${h(g.name || g.nameVi || g.nameZh || '')}</option>`).join('')}
+              ${tree.groups.filter(g => g.subcategoryId === selectedSubcategory).map(g => `<option value="${h(g.id)}" ${g.id === (form.groupId || selectedGroup) ? 'selected' : ''}>${h(g.id)} · ${h(g.name || g.nameVi || g.nameZh || '')}</option>`).join('')}
             </select>
           </label>
 
@@ -918,7 +1044,7 @@
 
       <div class="routine-modal-footer">
         <button type="button" class="button ghost" id="routine-add-cancel">${t('取消', 'Hủy')}</button>
-        <button type="button" class="button signal" id="routine-add-submit" ${busy ? 'disabled' : ''}>${t('新增至草稿', 'Thêm vào bản nháp')}</button>
+        <button type="button" class="button signal" id="routine-add-submit" ${busy || !editable() ? 'disabled' : ''}>${t('新增至草稿', 'Thêm vào bản nháp')}</button>
       </div>
     </section></div>`;
   }
@@ -947,6 +1073,7 @@
     const parentSub = tree.subcategories.find(s => s.id === selectedSubcategory);
     const parentGrp = tree.groups.find(g => g.id === selectedGroup);
 
+    equipmentEditRequest++;
     nodeDialog = {
       kind,
       id,
@@ -1050,15 +1177,29 @@
   }
 
   async function deleteEquipment(id) {
-    if (!editable()) return;
+    if (!editable() || !permitted('master.delete')) return;
     const item = (working?.equipment || []).find(record => record.id === id);
     if (!item) return;
-
-    let refs = equipmentRefCache.get(id);
-    if (!refs) {
-      refs = await queryAllQualityReferences(id);
-      equipmentRefCache.set(id, refs);
+    const actorId = identity()?.id, originalWorking = working,
+      originalGeneration = syncGeneration, originalVersion = selectedVersionId;
+    const sameContext = () => identity()?.id === actorId && controlActor === actorId &&
+      working === originalWorking && syncGeneration === originalGeneration &&
+      selectedVersionId === originalVersion && editable() && permitted('master.delete') &&
+      working.equipment.find(record => record.id === id) === item;
+    let refs;
+    try {
+      // A display cache may be stale or partial; destructive actions require a
+      // complete fresh check and retain their original actor/draft context.
+      refs = await queryAllQualityReferences(id, { strict: true });
+    } catch {
+      if (sameContext()) {
+        message = t('無法確認品質標準引用；保留草稿，請重新載入核對後再操作。', 'Không thể xác minh tham chiếu tiêu chuẩn; giữ bản nháp, hãy tải lại và đối chiếu trước khi tiếp tục.');
+        render();
+      }
+      return;
     }
+    if (!sameContext()) return;
+    equipmentRefCache.set(id, refs);
     const hasActiveRefs = (refs.fqc.active.length + refs.iqc.active.length + refs.ipqcC.active.length + refs.ipqcAB.active.length) > 0;
     const hasPendingRefs = (refs.fqc.pending.length + refs.iqc.pending.length + refs.ipqcC.pending.length + refs.ipqcAB.pending.length) > 0;
     const hasDraftRefs = (refs.fqc.draft.length + refs.iqc.draft.length + refs.ipqcC.draft.length + refs.ipqcAB.draft.length) > 0;
@@ -1101,7 +1242,7 @@
     const title = `${item.assetCode} · ${displayName(item) || item.pieceMark}`;
     if (!confirm(t(`確定刪除【${title}】？`, `Bạn có chắc muốn xóa 【${title}】?`))) return;
     if (!confirm(t(`再次確認：將從目前草稿刪除【${title}】，是否繼續？`, `Xác nhận lần nữa: sẽ xóa 【${title}】 khỏi bản nháp hiện tại, tiếp tục?`))) return;
-
+    if (!sameContext()) return;
     const idx = working.equipment.findIndex(record => record.id === id);
     if (idx !== -1) working.equipment.splice(idx, 1);
     pendingPhotos.delete(id);
@@ -1113,10 +1254,17 @@
   }
 
   async function openEditEquipment(id) {
-    if (!editable()) return;
+    if (!editable() || !routineTabIsActive() || editingEquipmentId || addingEquipment || nodeDialog || viewDialog || transferDialog) return;
+    if (!(visible()?.equipment || []).some(record => record.id === id)) return;
+    const request = ++equipmentEditRequest, actor = identity()?.id, epoch = window.ProcessSync?.identityGeneration?.(), page = host,
+      versionId = selectedVersionId, generation = syncGeneration, workflowGeneration = control?.workflow?.generation;
+    await loadEquipmentReferences(id, { renderAfter: false });
+    if (request !== equipmentEditRequest || host !== page || !routineTabIsActive() || identity()?.id !== actor ||
+        window.ProcessSync?.identityGeneration?.() !== epoch || controlActor !== actor || selectedVersionId !== versionId ||
+        syncGeneration !== generation || control?.workflow?.generation !== workflowGeneration || !editable() ||
+        editingEquipmentId || addingEquipment || nodeDialog || viewDialog || transferDialog) return;
     const item = (visible()?.equipment || []).find(record => record.id === id);
     if (!item) return;
-    await loadEquipmentReferences(id, { renderAfter: false });
     addingEquipment = false;
     newEquipmentForm = null;
     editingEquipmentId = id;
@@ -1147,10 +1295,13 @@
     if (!selectedGroup || !availableGroups.some(g => g.id === selectedGroup)) {
       selectedGroup = availableGroups[0].id;
     }
+    equipmentEditRequest++;
     editingEquipmentId = '';
     formSnapshot = null;
     addingEquipment = true;
+    newEquipmentOwner = {actor:identity()?.id,epoch:window.ProcessSync?.identityGeneration?.(),generation:syncGeneration};
     newEquipmentForm = {
+      groupId: selectedGroup,
       assetCode: '',
       name: '',
       quantity: 1,
@@ -1298,7 +1449,7 @@
   const isFormDirty = () => {
     if (!formSnapshot || !host) return false;
     const curName = host.querySelector('#routine-editor [data-field="name"]')?.value?.trim();
-    if (curName !== undefined && curName !== (formSnapshot.name || formSnapshot.nameVi || formSnapshot.nameZh || '')) return true;
+    if (curName !== undefined && curName !== String(displayName(formSnapshot)).replace(/[\r\n]/g, '').trim()) return true;
     const curGroup = host.querySelector('#routine-edit-group')?.value;
     if (curGroup && curGroup !== formSnapshot.groupId) return true;
     const curUnit = host.querySelector('#routine-editor [data-select="unit"]')?.value;
@@ -1341,6 +1492,7 @@
       if (curEditing && formSnapshot) Object.assign(curEditing, formSnapshot);
     }
 
+    equipmentEditRequest++;
     if (search) {
       const matchesSearch = matchingRows(visible()?.equipment || []).some(e => e.id === id);
       if (!matchesSearch) {
@@ -1387,7 +1539,7 @@
     });
   }
 
-  async function queryAllQualityReferences(eqId) {
+  async function queryAllQualityReferences(eqId, { strict = false } = {}) {
     const result = {
       fqc: { active: [], pending: [], draft: [], superseded: [] },
       iqc: { active: [], pending: [], draft: [], superseded: [] },
@@ -1396,8 +1548,8 @@
     };
     if (!eqId) return result;
     const addUnique = (bucket, ref) => {
-      const key = `${ref.versionId}:${ref.itemId}`;
-      if (!bucket.some(item => `${item.versionId}:${item.itemId}` === key)) bucket.push(ref);
+      const key = JSON.stringify([ref.scope || '', ref.versionId, ref.itemId]);
+      if (!bucket.some(item => JSON.stringify([item.scope || '', item.versionId, item.itemId]) === key)) bucket.push(ref);
     };
 
     // 1. FQC
@@ -1413,8 +1565,10 @@
       } else {
         const fqcCtrl = JSON.parse(localStorage.getItem('qualityMasterControl') || '{}');
         const lib = fqcCtrl.libraries?.fqc;
+        if (!Array.isArray(lib?.versions)) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
         (lib?.versions || []).forEach(v => {
-          (v.snapshot?.items || []).forEach(it => {
+          if (!Array.isArray(v?.snapshot?.items)) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
+          v.snapshot.items.forEach(it => {
             if (!it.isDeleted && it.equipmentId === eqId) {
               const ref = {
                 moduleId: 'fqc', moduleName: 'FQC', versionId: v.id, versionNumber: v.number,
@@ -1429,16 +1583,21 @@
         });
       }
     } catch (e) {
+      if (strict) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
+      result.fqc.unavailable = true;
       console.error('Error querying FQC references', e);
     }
 
     // 2. IQC
     try {
       const res = await fetch('/api/iqc');
+      if (!res.ok) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
       if (res.ok) {
         const data = await res.json();
+        if (!Array.isArray(data.control?.versions)) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
         (data.control?.versions || []).forEach(v => {
-          (v.snapshot?.items || []).forEach(it => {
+          if (!Array.isArray(v?.snapshot?.items)) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
+          v.snapshot.items.forEach(it => {
             const matchId = it.equipmentId === eqId;
             if (!it.isDeleted && matchId) {
               const ref = {
@@ -1454,16 +1613,21 @@
         });
       }
     } catch (e) {
+      if (strict) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
+      result.iqc.unavailable = true;
       console.error('Error querying IQC references', e);
     }
 
     // 3. IPQC-C: only a stable equipmentId is a confirmed relationship.
     try {
       const res = await fetch('/api/ipqc-c');
+      if (!res.ok) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
       if (res.ok) {
         const data = await res.json();
+        if (!Array.isArray(data.control?.versions)) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
         (data.control?.versions || []).forEach(v => {
-          (v.snapshot?.items || []).forEach(it => {
+          if (!Array.isArray(v?.snapshot?.items)) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
+          v.snapshot.items.forEach(it => {
             const matchId = it.equipmentId === eqId;
             if (!it.deleted && matchId) {
               const ref = {
@@ -1479,6 +1643,8 @@
         });
       }
     } catch (e) {
+      if (strict) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
+      result.ipqcC.unavailable = true;
       console.error('Error querying IPQC-C references', e);
     }
 
@@ -1486,13 +1652,15 @@
     // not the source Excel tool text, is the only confirmed relationship.
     try {
       const res = await fetch('/api/ipqc-ab');
+      if (!res.ok) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
       if (res.ok) {
         const data = await res.json();
-        Object.values(data.control?.scopes || {}).forEach(scope => {
+        if (!data.control?.scopes || typeof data.control.scopes !== 'object' || Array.isArray(data.control.scopes)) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
+        Object.entries(data.control?.scopes || {}).forEach(([scopeKey, scope]) => {
           scope.versions.forEach(v => {
             v.snapshot.items.forEach(it => {
               if (it.deleted || it.equipmentId !== eqId) return;
-              const ref = { moduleId: 'ipqc-ab', moduleName: 'IPQC-AB', versionId: v.id,
+              const ref = { moduleId: 'ipqc-ab', moduleName: 'IPQC-AB', scope: scopeKey, line: scope.line, group: scope.group, versionId: v.id,
                 versionNumber: v.number, status: v.status, itemId: it.id, checkNo: it.code,
                 itemName: it.standard || it.code, isEnabled: it.isEnabled };
               if (v.id === scope.activeVersionId && v.status === 'approved') addUnique(result.ipqcAB.active, ref);
@@ -1503,25 +1671,27 @@
           });
         });
       }
-    } catch (e) { console.error('Error querying IPQC-AB references', e); }
+    } catch (e) { if (strict) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED'); result.ipqcAB.unavailable = true; console.error('Error querying IPQC-AB references', e); }
 
     try {
       const response = await fetch(`/api/quality-equipment-replacement?sourceId=${encodeURIComponent(eqId)}`);
+      if (!response.ok) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
       if (response.ok) {
         const data = await response.json();
+        if (!Array.isArray(data.pending) || !Array.isArray(data.modules)) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED');
         for (const record of data.pending || []) {
-          const bucket = record.moduleId === 'ipqc-c' ? result.ipqcC : result[record.moduleId];
+          const bucket = record.moduleId === 'ipqc-c' ? result.ipqcC : record.moduleId === 'ipqc-ab' ? result.ipqcAB : result[record.moduleId];
           if (!bucket) continue;
           bucket.planned ||= [];
           const targetModule = data.modules.find(row => row.moduleId === record.moduleId);
           const item = targetModule?.items.find(row => row.id === record.itemId);
-          addUnique(bucket.planned, { versionId: record.pendingVersionId, itemId: record.itemId,
+          addUnique(bucket.planned, { scope: record.scopeKey || '', versionId: record.pendingVersionId, itemId: record.itemId,
             checkNo: record.itemCode || item?.code || record.itemId,
             itemName: record.itemName || item?.name || '', versionNumber: record.pendingVersionNumber || '—',
             status: record.status, reason: record.reason, moduleId: record.moduleId });
         }
       }
-    } catch (error) { console.error('Error querying planned replacements', error); }
+    } catch (error) { if (strict) throw Error('EQUIPMENT_REFERENCE_CHECK_FAILED'); result.plannedUnavailable = true; console.error('Error querying planned replacements', error); }
 
     return result;
   }
@@ -1547,6 +1717,7 @@
   }
 
   function renderRefItems(mRef, moduleName) {
+    if (mRef.unavailable) return `<p class="routine-ref-empty-note" role="alert">${t('查詢未完成；請關閉後重新開啟設備資訊重試。', 'Tra cứu chưa hoàn tất; đóng rồi mở lại thông tin thiết bị để thử lại.')}</p>`;
     const active = mRef.active || [];
     const pending = mRef.pending || [];
     const draft = mRef.draft || [];
@@ -1563,7 +1734,7 @@
         <div class="routine-ref-item-rows">
           ${items.map(it => `
             <div class="routine-ref-row">
-              <a href="javascript:void(0)" class="routine-standard-link" data-std-module="${moduleName}" data-std-vid="${h(it.versionId)}" data-std-iid="${h(it.itemId)}">
+              <a href="javascript:void(0)" class="routine-standard-link" data-std-module="${moduleName}" data-std-vid="${h(it.versionId)}" data-std-iid="${h(it.itemId)}" data-std-scope="${h(it.scope || '')}">
                 <code>${h(it.checkNo)}</code>
               </a>
               <span class="routine-ref-row-name" data-i18n-skip="true">${h(it.itemName)}</span>
@@ -1606,6 +1777,7 @@
     return `
       <div class="routine-ref-section" data-routine-reference-id="${h(eqId)}" data-reference-mode="${h(mode)}">
         <h4 class="routine-ref-main-title">${t('四種品質標準反向引用', 'Tham chiếu ngược 4 tiêu chuẩn chất lượng')}</h4>
+        ${refs.plannedUnavailable ? `<p role="alert">${t('待處理替換查詢未完成；請重新開啟設備資訊重試。', 'Tra cứu thay thế chưa hoàn tất; mở lại thông tin thiết bị để thử lại.')}</p>` : ''}
 
         <!-- 1. FQC -->
         <details class="routine-ref-box" ${fqcOpen ? 'open' : ''}>
@@ -1613,9 +1785,9 @@
             <div class="routine-ref-summary-left">
               <span class="routine-ref-icon">📋</span>
               <b>FQC ${t('標準引用', 'Tham chiếu tiêu chuẩn')}</b>
-              <span class="routine-ref-count ${fqcTotal > 0 ? 'highlight' : ''}">${fqcTotal > 0 ? `· ${fqcTotal} ${t('筆', 'mục')}` : t('· 尚無引用 (0)', '· Chưa có (0)')}</span>
+              <span class="routine-ref-count ${fqcTotal > 0 ? 'highlight' : ''}">${refs.fqc.unavailable ? t('查詢未完成', 'Tra cứu chưa hoàn tất') : fqcTotal > 0 ? `· ${fqcTotal} ${t('筆', 'mục')}` : t('· 尚無引用 (0)', '· Chưa có (0)')}</span>
             </div>
-            ${mode === 'edit' && fqcTotal > 0 && permitted('approval.submit') ? `
+            ${mode === 'edit' && !refs.fqc.unavailable && fqcTotal > 0 && permitted('approval.submit') ? `
               <button type="button" class="button ghost master-small routine-ref-transfer-btn" data-transfer-module="fqc" data-source-eq="${h(eqId)}">
                 ${t('移轉 FQC 標準', 'Chuyển tiêu chuẩn FQC')}
               </button>
@@ -1632,7 +1804,7 @@
             <div class="routine-ref-summary-left">
               <span class="routine-ref-icon">⚙️</span>
               <b>IPQC-AB ${t('標準引用', 'Tham chiếu tiêu chuẩn')}</b>
-              <span class="routine-ref-count ${ipqcABTotal > 0 ? 'highlight' : ''}">· ${ipqcABTotal} ${t('筆', 'mục')}</span>
+              <span class="routine-ref-count ${ipqcABTotal > 0 ? 'highlight' : ''}">${refs.ipqcAB.unavailable ? t('查詢未完成', 'Tra cứu chưa hoàn tất') : `· ${ipqcABTotal} ${t('筆', 'mục')}`}</span>
             </div>
           </summary>
           <div class="routine-ref-content">
@@ -1646,9 +1818,9 @@
             <div class="routine-ref-summary-left">
               <span class="routine-ref-icon">🔍</span>
               <b>IPQC-C ${t('標準引用', 'Tham chiếu tiêu chuẩn')}</b>
-              <span class="routine-ref-count ${ipqcCTotal > 0 ? 'highlight' : ''}">${ipqcCTotal > 0 ? `· ${ipqcCTotal} ${t('筆', 'mục')}` : t('尚無引用 (0)', 'Chưa có (0)')}</span>
+              <span class="routine-ref-count ${ipqcCTotal > 0 ? 'highlight' : ''}">${refs.ipqcC.unavailable ? t('查詢未完成', 'Tra cứu chưa hoàn tất') : ipqcCTotal > 0 ? `· ${ipqcCTotal} ${t('筆', 'mục')}` : t('尚無引用 (0)', 'Chưa có (0)')}</span>
             </div>
-            ${mode === 'edit' && ipqcCTotal > 0 && permitted('approval.submit') ? `
+            ${mode === 'edit' && !refs.ipqcC.unavailable && ipqcCTotal > 0 && permitted('approval.submit') ? `
               <button type="button" class="button ghost master-small routine-ref-transfer-btn" data-transfer-module="ipqc-c" data-source-eq="${h(eqId)}">
                 ${t('移轉 IPQC-C 標準', 'Chuyển tiêu chuẩn IPQC-C')}
               </button>
@@ -1665,9 +1837,9 @@
             <div class="routine-ref-summary-left">
               <span class="routine-ref-icon">📦</span>
               <b>IQC ${t('標準引用', 'Tham chiếu tiêu chuẩn')}</b>
-              <span class="routine-ref-count ${iqcTotal > 0 ? 'highlight' : ''}">${iqcTotal > 0 ? `· ${iqcTotal} ${t('筆', 'mục')}` : t('尚無引用 (0)', 'Chưa có (0)')}</span>
+              <span class="routine-ref-count ${iqcTotal > 0 ? 'highlight' : ''}">${refs.iqc.unavailable ? t('查詢未完成', 'Tra cứu chưa hoàn tất') : iqcTotal > 0 ? `· ${iqcTotal} ${t('筆', 'mục')}` : t('尚無引用 (0)', 'Chưa có (0)')}</span>
             </div>
-            ${mode === 'edit' && iqcTotal > 0 && permitted('approval.submit') ? `
+            ${mode === 'edit' && !refs.iqc.unavailable && iqcTotal > 0 && permitted('approval.submit') ? `
               <button type="button" class="button ghost master-small routine-ref-transfer-btn" data-transfer-module="iqc" data-source-eq="${h(eqId)}">
                 ${t('移轉 IQC 標準', 'Chuyển tiêu chuẩn IQC')}
               </button>
@@ -1681,13 +1853,13 @@
     `;
   }
 
-  function openStandardItemView(moduleName, versionId, itemId) {
+  function openStandardItemView(moduleName, versionId, itemId, requestedScope = '') {
     if (moduleName === 'fqc' && window.FQCQualityAPI?.openItemView) {
       window.FQCQualityAPI.openItemView(versionId, itemId);
       return;
     }
     if (moduleName === 'ipqc-ab' && window.IPQCABUI?.openItemView) {
-      window.IPQCABUI.openItemView(versionId, itemId);
+      window.IPQCABUI.openItemView(versionId, itemId, requestedScope);
       return;
     }
     alert(t(`正在查閱 ${moduleName.toUpperCase()} 標準項目 ${itemId}（版本：${versionId}）`, `Đang xem mục tiêu chuẩn ${itemId}`));
@@ -1701,7 +1873,7 @@
     });
     root.querySelectorAll('[data-std-module]').forEach(link => link.onclick = event => {
       event.stopPropagation();
-      openStandardItemView(link.dataset.stdModule, link.dataset.stdVid, link.dataset.stdIid);
+      openStandardItemView(link.dataset.stdModule, link.dataset.stdVid, link.dataset.stdIid, link.dataset.stdScope);
     });
   }
 
@@ -1720,6 +1892,7 @@
     const iqcItems = [...refs.iqc.active, ...refs.iqc.draft];
     const ipqcCItems = [...refs.ipqcC.active, ...refs.ipqcC.draft];
 
+    equipmentEditRequest++;
     transferDialog = {
       sourceId,
       targetEqId: '',
@@ -2207,6 +2380,7 @@
       const id = button.dataset.equipmentView;
       const item = (visible()?.equipment || []).find(e => e.id === id);
       if (item) {
+        equipmentEditRequest++;
         await loadEquipmentReferences(id, { renderAfter: false });
         viewDialog = { kind: 'equipment', data: item };
         render();
@@ -2218,7 +2392,7 @@
     });
     host.querySelectorAll('[data-equipment-delete]').forEach(button => button.onclick = event => {
       event.stopPropagation();
-      deleteEquipment(button.dataset.equipmentDelete);
+      deleteEquipment(button.dataset.equipmentDelete).catch(failed);
     });
     host.querySelectorAll('[data-equipment-transfer]').forEach(button => button.onclick = event => {
       event.stopPropagation();
@@ -2238,7 +2412,7 @@
       const loadError = message;
       host.innerHTML = `<section class="routine-page" data-i18n-skip="true">
         <div class="routine-card">
-          <p>${h(loadError || t('正在載入檢具資料…', 'Đang tải dữ liệu thiết bị…'))}</p>
+          <p>${h(loadError ? displayDraftError(loadError) : t('正在載入檢具資料…', 'Đang tải dữ liệu thiết bị…'))}</p>
           ${loadError ? `<button type="button" class="button signal" id="routine-load-retry">${t('重新載入', 'Tải lại')}</button>` : ''}
         </div>
       </section>`;
@@ -2249,6 +2423,7 @@
       });
       return;
     }
+    captureAddEquipmentInput();
     const version = selected(), data = visible();
     if(problemSnapshot&&(problemSnapshot.generation!==control.workflow?.generation||problemSnapshot.kind==='saved'&&problemSnapshot.id!==control.workflow?.saved?.id)){
       submitProblems=[];problemSnapshot=null;openErrors=false;
@@ -2273,7 +2448,7 @@
         <span class="routine-count">${rows.length} ${t('筆設備', 'thiết bị')}</span>
       </div>
 
-      ${message ? `<div class="routine-message" role="${readUnavailable?'alert':'status'}">${h(message)}</div>` : ''}
+      ${message ? `<div class="routine-message" role="${readUnavailable?'alert':'status'}">${h(displayDraftError(message))}</div>` : ''}
       ${readUnavailable?`<button type="button" class="button signal" id="routine-load-retry">${t('重新載入並保留輸入','Tải lại và giữ dữ liệu đang nhập')}</button>`:''}
 
       ${!version ? `<section class="routine-card">
@@ -2338,13 +2513,14 @@
       ${transferDialogHTML()}
       `}</section>`;
     bind();
-    host.querySelector('#routine-load-retry')?.addEventListener('click',async()=>{const preserveInput=isDirty()||pendingPhotos.size>0;try{await read(preserveInput);message=preserveInput?t('已載入最新版，未套用輸入仍保留；套用時重新核對來源。','Đã tải bản mới; giữ đầu vào chưa áp dụng, kiểm tra nguồn khi áp dụng.'):'';render();}catch(error){message=error.message;render();}});
+    host.querySelector('#routine-load-retry')?.addEventListener('click',async()=>{if(addingEquipment&&newEquipmentForm){await recoverAddEquipmentRead();return;}const preserveInput=isDirty()||pendingPhotos.size>0;try{await read(preserveInput);message=preserveInput?t('已載入最新版，未套用輸入仍保留；套用時重新核對來源。','Đã tải bản mới; giữ đầu vào chưa áp dụng, kiểm tra nguồn khi áp dụng.'):'';render();}catch(error){message=error.message;render();}});
     if(readUnavailable)host.querySelectorAll('#routine-save,#routine-submit,#routine-begin').forEach(button=>{button.disabled=true;});
     if(control.workflow){const flow=control.workflow,panel=document.createElement('section');panel.className='routine-card';panel.id='routine-shared-status';panel.setAttribute('role','status');panel.innerHTML=`<b>${t('共用範圍：檢具全庫','Phạm vi chung: toàn bộ thiết bị')}</b><p>${flow.pendingId?t('待審鎖定','Khóa chờ duyệt'):!flow.saved||JSON.stringify(flow.saved.content)!==JSON.stringify(flow.working)?t('已同步 · 尚未手動儲存','Đã đồng bộ · chưa lưu thủ công'):t('已儲存','Đã lưu')}</p>${flow.saved?`<p>${t('儲存者','Người lưu')}: ${h(flow.saved.actor.name)} · ${h(flow.saved.at)}</p>`:''}`;host.querySelector('#routine-page')?.prepend(panel);
       if(permitted('approval.compare')){const b=document.createElement('button');b.id='routine-case-history';b.className='button ghost';b.textContent=t('送審案件','Hồ sơ gửi duyệt');b.onclick=()=>window.openSharedDraftHistory({client:sharedTransport(),editable:()=>open()?.status==='draft'&&permitted('approval.submit'),onApplied:async()=>{await read();render();}}).catch(failed);panel.append(b);}
       if(sharedClient?.hasUnknown())for(const [label,method]of [[t('查詢上次操作','Kiểm tra thao tác trước'),'resolveUnknown'],[t('重試同一操作','Thử lại cùng thao tác'),'retryUnknown']]){const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await sharedTransport()[method]();await read();render();}catch(e){failed(e);}};panel.append(b);}
     }
     sharedClient?.gatePermissions?.();
+    if(readUnavailable)showEquipmentReadRecovery(message);
     window.VersionDraftUI?.mount(host,{header:'.routine-version',historyClient:sharedTransport,module:t('檢具與測試設備','Dưỡng kiểm và thiết bị đo'),scope:t('檢具全庫','Toàn bộ thiết bị'),version,versions:control.versions,active:active(),flow:control.workflow,busy,failed:readUnavailable||sharedClient?.hasUnknown(),actions:{begin:'#routine-begin',save:'#routine-save',submit:'#routine-submit',withdraw:'#routine-withdraw'},review:()=>{state.view='approval';state.approvalTab='quality';window.render();},errors:'[data-routine-issue-kind="error"]',missing:'.routine-issues-card,[data-routine-issue-kind="missing"]',history:['.routine-history-card','#routine-case-history','[data-routine-issue-kind="warning"]'],status:['#routine-shared-status'],remove:['.routine-top']});
   }
 
@@ -2359,6 +2535,7 @@
     root.querySelector('#routine-version-select')?.addEventListener('change', event => {
       if (editable() && isDirty() &&
           !confirm(t('尚有未儲存的草稿修改；確定切換版本？', 'Còn thay đổi chưa lưu; bạn có chắc muốn chuyển phiên bản?'))) { event.target.value = selected().id; return; }
+      equipmentEditRequest++;
       selectedVersionId = event.target.value;
       working = selected().status === 'draft' ? snapshotOf(selected()) : null;
       selectedEquipmentId = '';
@@ -2377,6 +2554,7 @@
     bindList();
 
     root.querySelectorAll('[data-node-select]').forEach(button => button.onclick = () => {
+      equipmentEditRequest++;
       const id = button.dataset.id;
       if (button.dataset.nodeSelect === 'category') { selectedCategory = id; selectedSubcategory = ''; selectedGroup = ''; }
       if (button.dataset.nodeSelect === 'subcategory') {
@@ -2401,13 +2579,14 @@
                          structure(visible()).groups;
       const item = collection.find(c => c.id === id);
       if (item) {
+        equipmentEditRequest++;
         viewDialog = { kind, data: item };
         render();
       }
     });
     root.querySelectorAll('[data-node-add]').forEach(button => button.onclick = () => openNodeDialog(button.dataset.nodeAdd));
     root.querySelectorAll('[data-node-edit]').forEach(button => button.onclick = event => { event.stopPropagation(); openNodeDialog(button.dataset.nodeEdit, button.dataset.id); });
-    root.querySelectorAll('[data-node-delete]').forEach(button => button.onclick = event => { event.stopPropagation(); deleteNode(button.dataset.nodeDelete, button.dataset.id); });
+    root.querySelectorAll('[data-node-delete]').forEach(button => button.onclick = event => { event.stopPropagation(); deleteNode(button.dataset.nodeDelete, button.dataset.id).catch(failed); });
 
     // Node dialog bindings
     root.querySelector('#routine-dialog-close')?.addEventListener('click', () => { nodeDialog = null; render(); });
@@ -2419,7 +2598,7 @@
     root.querySelector('#routine-dialog-photo-input')?.addEventListener('change', event => {
       const file = event.target.files?.[0];
       if (!file) return;
-      if (file.size > 5_000_000) { alert(t('照片限 5 MB', 'Ảnh giới hạn 5 MB')); return; }
+      try { window.ProcessPhotoUpload.assertInput(file); } catch (error) { alert(error.message); return; }
       nodeDialog.name = root.querySelector('#routine-dialog-name')?.value || '';
       if (nodeDialog.kind === 'group') nodeDialog.spec = root.querySelector('#routine-dialog-spec')?.value || '';
       if (nodeDialog.pendingPhoto) URL.revokeObjectURL(nodeDialog.pendingPhoto.url);
@@ -2495,7 +2674,7 @@
     root.querySelectorAll('[data-retry-action]').forEach(button => button.onclick = () => {
       const act = button.dataset.retryAction;
       if (act === 'submit' || act === 'save') {
-        saveDraft(act);
+        saveDraft(act).catch(failed);
       }
     });
     root.querySelectorAll('[data-issue-result]').forEach(input => input.oninput = () => { if (working?.issues?.[Number(input.dataset.issueResult)]) working.issues[Number(input.dataset.issueResult)].resolution = input.value; });
@@ -2510,7 +2689,7 @@
 
     // Form handlers
     const item = working?.equipment.find(record => record.id === editingEquipmentId);
-    const closeForm = () => { editingEquipmentId = ''; formSnapshot = null; render(); };
+    const closeForm = () => { equipmentEditRequest++; editingEquipmentId = ''; formSnapshot = null; render(); };
     const tryCloseForm = () => {
       if (formSnapshot && isFormDirty()) {
         if (!confirm(t('尚有未套用的修改，確定關閉？', 'Có thay đổi chưa áp dụng, bạn có chắc muốn đóng?'))) return;
@@ -2590,7 +2769,7 @@
 
       root.querySelector('#routine-photo-input')?.addEventListener('change', event => {
         const file = event.target.files?.[0]; if (!file) return;
-        if (file.size > 5_000_000) { alert(t('照片限 5 MB', 'Ảnh giới hạn 5 MB')); return; }
+        try { window.ProcessPhotoUpload.assertInput(file); } catch (error) { alert(error.message); return; }
         const prior = pendingPhotos.get(item.id); if (prior) URL.revokeObjectURL(prior.url);
         pendingPhotos.set(item.id, { file, url: URL.createObjectURL(file) });
         item.photoHidden = false;
@@ -2658,11 +2837,12 @@
       });
 
       root.querySelector('#routine-delete')?.addEventListener('click', () => {
-        if (item) deleteEquipment(item.id);
+        if (item) deleteEquipment(item.id).catch(failed);
       });
     }
 
     if (addingEquipment && newEquipmentForm) {
+      bindAddEquipmentInput();
       const syncAddFormFromDOM = () => {
         if (!newEquipmentForm) return;
         const code = root.querySelector('#routine-add-asset-code')?.value;
@@ -2732,7 +2912,7 @@
       root.querySelector('#routine-add-photo-input')?.addEventListener('change', event => {
         const file = event.target.files?.[0];
         if (!file) return;
-        if (file.size > 5_000_000) { alert(t('照片限 5 MB', 'Ảnh giới hạn 5 MB')); return; }
+        try { window.ProcessPhotoUpload.assertInput(file); } catch (error) { alert(error.message); return; }
         syncAddFormFromDOM();
         if (newEquipmentForm.pendingPhoto) URL.revokeObjectURL(newEquipmentForm.pendingPhoto.url);
         newEquipmentForm.pendingPhoto = { file, url: URL.createObjectURL(file) };
@@ -2784,10 +2964,11 @@
     equipmentRefCache.clear();
   }
   async function mount(element) {
+    equipmentEditRequest++;
     clearTimeout(sharedPoll);
-    const preserve = controlActor===identity()?.id&&(isDirty() || pendingPhotos.size > 0);
+    const preserve = controlActor===identity()?.id&&(isDirty() || pendingPhotos.size > 0 || addingEquipment && newEquipmentForm);
     host = element;
-    if (preserve) { message = t('本頁仍有未儲存草稿，已保留於工作區；請儲存或送審。', 'Trang này còn bản nháp chưa lưu; đã giữ trong vùng làm việc.'); render(); return; }
+    if (preserve) { message = t('本頁仍有未儲存草稿，已保留於工作區；請儲存或送審。', 'Trang này còn bản nháp chưa lưu; đã giữ trong vùng làm việc.'); render(); pollShared(); return; }
     message = ''; render();
     try {
       await read();
@@ -2817,7 +2998,7 @@
   function reviewHTML() { return `<section class="routine-review routine-card" data-i18n-skip="true"><h3>${t('檢具與測試設備 · 待確認', 'Dưỡng kiểm và thiết bị đo · Chờ duyệt')}</h3><div class="routine-review-body">${t('正在載入…', 'Đang tải…')}</div></section>`; }
   async function bindReview(element) {
     reviewHost = element?.querySelector('.routine-review'); if (!reviewHost) return;
-    try { await read(); reviewRender(); } catch (error) { reviewHost.querySelector('.routine-review-body').textContent = error.message; }
+    try { await read(); reviewRender(); } catch (error) { reviewHost.querySelector('.routine-review-body').textContent = displayDraftError(error); }
   }
 
   function reviewRender() {

@@ -8,7 +8,7 @@ const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),
  db.prepare('INSERT INTO shared_state(id,revision,"values",updated_at) VALUES(1,1,?,?)').run(JSON.stringify({platformUsers:JSON.stringify(users)}),'synthetic');
  const headers={};for(const u of users)headers[u.id]={Cookie:'process_demo='+await core.demoSession(new Request('http://localhost'),u.id,false),Origin:'http://localhost','Content-Type':'application/json'};
  const request=async(body)=>{const response=await api.POST(new Request('http://localhost/api/bom/workflow',{method:'POST',headers:headers.alice,body:JSON.stringify(body)}));const result=await response.json();if(!response.ok)throw Error(JSON.stringify(result));return result;};
- let control=(await request({action:'begin'})).control;
+ const control=(await request({action:'begin'})).control;
  const sheets=[{name:'Synthetic',rows:[D.columns,['TEST-001','0','','','測試主件','','PCS','0','0','0'],['TEST-001','.1','0010','PART-1','零件甲','','PCS','2','1','0'],['TEST-001','.1','0020','PART-2','零件乙','','PCS','1','1','0']]}];
  await request({command:{action:'apply',generation:control.workflow.generation,operationId:randomUUID(),clientId:'fixture-seed',sequence:1,moduleAction:'import-digiwin',input:{sheets,file:'synthetic-only.xlsx',base:{},decisions:[{decision:'accept'}]}}});
  const server=http.createServer(async(req,res)=>{try{const url=new URL(req.url,'http://127.0.0.1:'+port);

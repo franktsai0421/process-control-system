@@ -233,3 +233,9 @@
 .routine-transfer-item-row .routine-transfer-override{flex-basis:100%;color:#9a4c24;font-weight:650}
 .routine-transfer-mod-msg{white-space:pre-wrap;overflow-wrap:anywhere}
 .routine-empty-hint{font-size:.8rem;color:#9ca3af;margin:0;font-style:italic}
+
+/* Keep the visible feedback launcher clear of equipment confirmation actions. */
+body:has(#wf-launcher) #routine-editor > .routine-modal-footer,
+body:has(#wf-launcher) #routine-add-modal > .routine-modal-footer { padding-inline-end:82px; }
+
+body:has(#wf-launcher) #routine-list-card { padding-bottom:76px; }

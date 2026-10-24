@@ -105,6 +105,7 @@
     const user = { ...value.user };
     sync?.setPlatformIdentity?.(user, password);
     await sync?.refresh?.();
+    window.BOMExcel?.refreshProjection?.();
     state.editorByCategory={};state.editorVersionId=null;
     enterPlatform(user);
     updateOwnRecovery(true);
@@ -173,7 +174,7 @@
     const response = await fetch(backupEndpoint(), {
         cache: 'no-store',
         ...options,
-        headers: { ...backupHeaders(password), ...(options.headers || {}) },
+        headers: { ...backupHeaders(password), ...options.headers },
       }),
       raw = await response.text();
     let value;
@@ -206,7 +207,7 @@
         if (mode === activeBackupMode || (mode === 'disk' && !isLocalBackup)) return;
         activeBackupMode = mode;
         if (isLocalBackup) sessionStorage.setItem('process-backup-mode', mode);
-        backupPage();
+        backupPage().catch(error => toast(error.message));
       };
     });
   }

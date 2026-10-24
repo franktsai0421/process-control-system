@@ -45,3 +45,6 @@ new MutationObserver(()=>{
   setText(emptyCategory,vi?'Chuyền này chưa có nhóm sản phẩm':'此線別尚無產品類型');
   setText(document.querySelector('.editor-no-category'),editorEmptyMessage());
 }).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
+
+// These classic-script functions are consumed by app.js.
+Object.assign(globalThis,{normalizeEditorSelection,changeEditorSelection,editorSelectionPath});

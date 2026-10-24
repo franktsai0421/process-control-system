@@ -1,4 +1,5 @@
 (() => {
+  const displayDraftError = error => window.sharedDraftErrorMessage?.(error) ?? (typeof error === 'string' ? error : error?.message || String(error ?? ''));
   const API = '/api/ipqc-ab';
   const h = value => String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[char]);
   const clone = value => JSON.parse(JSON.stringify(value));
@@ -30,7 +31,8 @@
   const equipmentLabel = eq => eq ? `${eq.assetCode}${eq.pieceMark ? ` / ${eq.pieceMark}` : ''} · ${eq.name}` : '';
   const status = state => ({draft:t('草稿','Bản nháp'),pending:t('待審','Chờ duyệt'),
     'pending-test':t('測試待審','Đang duyệt thử'),approved:t('生效','Có hiệu lực'),
-    superseded:t('歷史版','Bản cũ'),tested:t('測試完成・未生效','Thử xong · chưa hiệu lực')})[state] || state;
+    superseded:t('歷史版','Bản cũ'),tested:t('測試完成・未生效','Thử xong · chưa hiệu lực'),
+    returned:t('已發回','Đã trả lại'),withdrawn:t('已撤回','Đã rút')})[state] || state;
   const lastEdit = version => [...(version?.history||[])].reverse().find(event=>!['submit','submit-test','approve','reject','withdraw'].includes(event.action));
   const ruleLabel = rule => rule.cadence === 'batch'
     ? `${t('按批次','Theo lô')} · ${({aql:'AQL',fixed:t('固定件數','Số mẫu cố định'),quantity:t('批次數量','Số lượng lô'),custom:rule.name})[rule.kind] || rule.kind} ${rule.value || ''}`
@@ -40,7 +42,7 @@
   const ownPending = v => v && ['pending','pending-test'].includes(v.status) && permitted('approval.withdraw');
   let sharedClient=null,sharedIdentity='',modalBase=null,modalGeneration=null,pollTimer,sourceEntryApplied=false;
   function transport(){const id=actor()?.id,identityKey=id+':'+key();if(!id)throw Error('LOGIN_REQUIRED');if(sharedIdentity!==identityKey){sharedIdentity=identityKey;sharedClient=window.createSharedDraftClient({endpoint:API+'/workflow?scope='+encodeURIComponent(key())+'&caseMetadata=1',legacyArchive:true,actorId:id,headers,permissionGates:{edit:'#ab-apply,#ipqcab-add-item,#ipqcab-add-error,[data-ab-edit-item],[data-ab-edit-error],[data-ab-matrix-item]',save:'#ipqcab-save',submit:'#ipqcab-submit',withdraw:'#ipqcab-withdraw',history:'#ab-case-history',approve:`[data-ab-approve="${key()}"]`,return:`[data-ab-reject="${key()}"]`,delete:'[data-ab-delete-item],[data-ab-delete-error]'}});}return sharedClient;}
-  function changes(base,next){const patches=[],guards=[];for(const collection of ['errors','items'])for(const row of next[collection]){const old=base[collection].find(r=>r.id===row.id);if(!old)continue;for(const [field,value]of Object.entries(row)){if(['equipmentSnapshot'].includes(field)||JSON.stringify(value)===JSON.stringify(old[field]))continue;const path=[collection,{id:row.id},field];patches.push({op:'set',path,value});if(!['name','standard','methodText','reason','isEnabled'].includes(field))guards.push({path,value:old[field]});}}return{patches,guards};}
+  function changes(base,next){const patches=[],guards=[];for(const collection of ['errors','items'])for(const row of next[collection]){const old=base[collection].find(r=>r.id===row.id);if(!old)continue;for(const [field,value]of Object.entries(row)){if(['equipmentSnapshot'].includes(field)||JSON.stringify(value)===JSON.stringify(old[field]))continue;const path=[collection,{id:row.id},field];patches.push({op:'set',path,value});guards.push({path,value:old[field]});}}return{patches,guards};}
   async function writeShared(action,detail={}){
     if(busy)return null;busy=true;message='';const restoreView=window.VersionDraftUI.preserveView(host,reviewHost),requestActor=actor(),requestScope=key();let cancelled=false;try{
       // Save captures the server draft, not this modal. Retain its independent
@@ -202,8 +204,9 @@
   }
   function historyHTML() {
     const v = version();
+    const actionLabels={'initial-import':t('匯入初始資料','Nhập dữ liệu ban đầu'),begin:t('開始修改','Bắt đầu sửa'),save:t('儲存草稿','Lưu bản nháp'),submit:t('送出審核','Gửi duyệt'),'submit-test':t('送出試用確認','Gửi xác nhận thử nghiệm'),'create-error':t('新增錯誤代碼','Thêm mã lỗi'),'create-item':t('新增檢查項目','Thêm hạng mục kiểm tra'),'delete-error':t('刪除錯誤代碼','Xóa mã lỗi'),'delete-item':t('刪除檢查項目','Xóa hạng mục kiểm tra'),approve:t('已核准','Đã duyệt'),approved:t('已核准','Đã duyệt'),return:t('已發回','Đã trả lại'),returned:t('已發回','Đã trả lại'),reject:t('已發回','Đã trả lại'),withdraw:t('已撤回','Đã rút'),withdrawn:t('已撤回','Đã rút')};
     return `<details class="ipqcab-history"><summary>${t('操作歷程','Lịch sử thao tác')}</summary>
-      ${(v?.history || []).slice().reverse().map(e=>`<p>${h(e.action)} · ${h(e.actorName)} · ${h(new Date(e.at).toLocaleString())} ${h(e.comment || '')}</p>`).join('') || '—'}</details>`;
+      ${(v?.history || []).slice().reverse().map(e=>`<p>${h(Object.hasOwn(actionLabels,e.action)?actionLabels[e.action]:e.action)} · ${h(e.actorName)} · ${h(new Date(e.at).toLocaleString())} ${h(e.comment || '')}</p>`).join('') || '—'}</details>`;
   }
   function mainHTML() {
     selectDefaults(); const v = version(), data = snapshot(), list = items(), products = candidates();
@@ -223,7 +226,7 @@
             <button type="button" class="signal" id="ipqcab-submit" ${busy?'disabled':''}>${t('送出審核','Gửi duyệt')}</button>`:''}
           ${ownPending(v)?`<button type="button" id="ipqcab-withdraw">${t('撤回','Rút hồ sơ')}</button>`:''}</div>
         ${editing()?`<label class="ipqcab-reason">${t('變更理由','Lý do thay đổi')}<input id="ipqcab-reason" value="${h(reason)}"></label>`:''}</section>
-      ${message?`<p class="ipqcab-message" role="status">${h(message)}</p>`:''}
+      ${message?`<p class="ipqcab-message" role="status">${h(displayDraftError(message))}</p>`:''}
       ${historyHTML()}${issueHTML()}
       <section class="ipqcab-card ipqcab-filters"><label>${t('產線','Chuyền')}<select id="ipqcab-line"><option value="A" ${line==='A'?'selected':''}>A</option><option value="B" ${line==='B'?'selected':''}>B</option></select></label>
         <label>${t('產品群組','Nhóm sản phẩm')}<select id="ipqcab-group">${catalog.groups.filter(g=>g.line===line).map(g=>`<option value="${h(g.name)}" ${g.name===group?'selected':''}>${h(g.name)}</option>`).join('')}</select></label>
@@ -285,7 +288,7 @@
   }
   function modalHTML() {
     if (!modal) return '';
-    if (modal.type === 'new-error') return `<div class="ipqcab-overlay"><div class="ipqcab-dialog"><header><h3>${t('新增錯誤代碼','Thêm mã lỗi')}</h3><button type="button" data-ab-close>×</button></header><div class="ipqcab-dialog-body"><p>${t('錯誤代碼編號將於儲存時自動帶入。','Mã lỗi sẽ được cấp tự động khi lưu.')}</p><label>${t('錯誤代碼名稱','Tên mã lỗi')}<input id="ab-error-name" value="${h(modal.name||'')}" required></label>${message?`<p role="alert">${h(message)}</p>`:''}</div><footer><button type="button" data-ab-close>${t('取消','Hủy')}</button><button type="button" class="signal" id="ab-apply">${t('建立並儲存','Tạo và lưu')}</button></footer></div></div>`;
+    if (modal.type === 'new-error') return `<div class="ipqcab-overlay"><div class="ipqcab-dialog"><header><h3>${t('新增錯誤代碼','Thêm mã lỗi')}</h3><button type="button" data-ab-close>×</button></header><div class="ipqcab-dialog-body"><p>${t('錯誤代碼編號將於儲存時自動帶入。','Mã lỗi sẽ được cấp tự động khi lưu.')}</p><label>${t('錯誤代碼名稱','Tên mã lỗi')}<input id="ab-error-name" value="${h(modal.name||'')}" required></label>${message?`<p role="alert">${h(displayDraftError(message))}</p>`:''}</div><footer><button type="button" data-ab-close>${t('取消','Hủy')}</button><button type="button" class="signal" id="ab-apply">${t('建立並儲存','Tạo và lưu')}</button></footer></div></div>`;
     if (modal.type === 'creating-item') return `<div class="ipqcab-overlay"><div class="ipqcab-dialog"><header><h3>${t('新增檢查項目','Thêm hạng mục')}</h3></header><div class="ipqcab-dialog-body"><p role="status">${t('正在自動分配項目編號…','Đang cấp mã hạng mục tự động…')}</p></div></div></div>`;
     if (modal.type === 'equipment') {
       const options = (field, label, rows) => `<label>${label}<select id="ab-equipment-${field}"><option value="">${t('全部','Tất cả')}</option>${[...new Map(rows.filter(e=>e[field+'Id']).map(e=>[e[field+'Id'],e[field]])).entries()].map(([id,name])=>`<option value="${h(id)}" ${modal[field]===id?'selected':''}>${h(name)}</option>`).join('')}</select></label>`;
@@ -301,7 +304,7 @@
     const row = modal.type === 'error' ? snapshot().errors.find(e=>e.id===modal.id) : snapshot().items.find(i=>i.id===modal.id);
     if (!row) return '';
     return `<div class="ipqcab-overlay"><div class="ipqcab-dialog"><header><h3>${modal.type==='error'?t('錯誤代碼','Mã lỗi'):t('檢查項目','Hạng mục')}</h3><button type="button" data-ab-close>×</button></header>
-      <div class="ipqcab-dialog-body">${message?`<p role="alert">${h(message)}</p>`:''}${modal.type==='error'?errorModal(row,modal.readonly):itemModal(row,modal.readonly)}</div>
+      <div class="ipqcab-dialog-body">${message?`<p role="alert">${h(displayDraftError(message))}</p>`:''}${modal.type==='error'?errorModal(row,modal.readonly):itemModal(row,modal.readonly)}</div>
       <footer><button type="button" data-ab-close>${t('取消','Hủy')}</button>${modal.readonly?'':`<button type="button" class="signal" id="ab-apply">${window.VersionDraftUI.t('apply')}</button>`}</footer></div></div>`;
   }
   function viewerHTML() {
@@ -328,7 +331,7 @@
     }});
     const flow=scope()?.workflow;
     if(flow){const status=document.createElement('section');status.className='ipqcab-card';status.id='ipqcab-shared-status';status.setAttribute('role','status');status.innerHTML=`<b>${t('共用範圍','Phạm vi chung')}: ${h(key())}</b><p>${flow.pendingId?t('待審鎖定','Khóa chờ duyệt'):!flow.saved||JSON.stringify(flow.saved.content)!==JSON.stringify(flow.working)?t('已同步 · 尚未手動儲存','Đã đồng bộ · chưa lưu thủ công'):t('已儲存','Đã lưu')}</p>${flow.saved?`<p>${t('儲存者','Người lưu')}: ${h(flow.saved.actor.name)} · ${h(flow.saved.at)} · ${h(flow.saved.id)}</p>`:''}`;host.querySelector('#ipqcab-page')?.prepend(status);
-      if(permitted('approval.compare')){const button=document.createElement('button');button.id='ab-case-history';button.className='button ghost';button.textContent=t('送審案件','Hồ sơ gửi duyệt');button.onclick=()=>window.openSharedDraftHistory({client:transport(),editable:()=>opened()?.status==='draft'&&permitted('approval.submit'),onApplied:async()=>{await load();draw();}}).catch(e=>{message=e.message;draw();});status.append(button);}
+      if(permitted('approval.compare')){const button=document.createElement('button');button.id='ab-case-history';button.className='button ghost';button.textContent=t('送審案件','Hồ sơ gửi duyệt');button.onclick=()=>window.openSharedDraftHistory({client:control?.moduleDraft?moduleTransport():transport(),editable:()=>!control?.moduleDraft&&opened()?.status==='draft'&&permitted('approval.submit'),onApplied:async()=>{await load();draw();}}).catch(e=>{message=e.message;draw();});status.append(button);}
       if(sharedClient?.hasUnknown())for(const [label,method]of [[t('查詢上次操作','Kiểm tra thao tác trước'),'resolveUnknown'],[t('重試同一操作','Thử lại cùng thao tác'),'retryUnknown']]){const button=document.createElement('button');button.textContent=label;button.onclick=async()=>{try{await transport()[method]();await load();}catch(e){message=e.message;}draw();};status.append(button);}
     }
     window.VersionDraftUI?.mount(host,{header:'.ipqcab-version',historyClient:()=>control?.moduleDraft?moduleTransport():transport(),module:'IPQC-AB',moduleActions:true,scope:t('全部 IPQC-AB 草稿；A／B 全部群組與工段','Tất cả bản nháp IPQC-AB; mọi nhóm và công đoạn A/B'),version:version(),versions:scope()?.versions,active:active(),flow:control?.moduleDraft?.workflow||scope()?.workflow,busy,failed:sharedClient?.hasUnknown(),actions:{begin:'#ipqcab-begin',save:'#ipqcab-save',submit:'#ipqcab-submit',withdraw:'#ipqcab-withdraw'},review:()=>{state.view='approval';state.approvalTab='quality';window.render();},errors:'[data-ab-issue-kind="error"],[data-shared-issue-kind="error"]',missing:'[data-ab-issue-kind="missing"],[data-shared-issue-kind="missing"]',checked:{missing:true},history:['.ipqcab-history','#ab-case-history','[data-shared-issue-kind="warning"]'],status:['#ipqcab-shared-status']});
@@ -365,11 +368,15 @@
       return old&&['cadence','kind','value','name'].every(field=>(old[field]||'')===next[field])?old:next;});
   }
   async function upload(files,kind) {
+    const targetModal = modal, targetWorking = working;
     const item = working.items.find(i=>i.id===modal.id);
-    for (const file of files) {
+    for (const source of files) {
+      const file = await window.ProcessPhotoUpload.prepare(source);
+      if (modal !== targetModal || working !== targetWorking) return;
       const response = await fetch(`${API}/photo`,{method:'PUT',headers:{...headers(),'Content-Type':file.type},body:file});
       const body = await response.json().catch(()=>({}));
       if (!response.ok) throw Error(body.error || `HTTP ${response.status}`);
+      if (modal !== targetModal || working !== targetWorking) return;
       item[kind==='standard'?'standardPhotos':'methodPhotos'].push({id:body.id,name:file.name,note:''});
     }
   }
@@ -516,7 +523,7 @@
     }
     const pending = Object.values(control?.scopes || {}).flatMap(s=>s.versions.filter(v=>!v.wholeModuleCaseId&&['pending','pending-test'].includes(v.status)).map(v=>({scope:s,version:v})));
     const history = Object.values(control?.scopes || {}).flatMap(s=>s.versions.filter(v=>!v.wholeModuleCaseId&&['approved','superseded','tested','returned','withdrawn'].includes(v.status)).slice(-3).reverse().map(v=>({scope:s,version:v})));
-    return `<section class="ipqcab-review ipqcab-card" data-i18n-skip="true"><h3>IPQC-AB · ${t('待確認','Chờ duyệt')} ${pending.length+Number(!!control?.moduleDraft?.workflow?.pendingId)}</h3>${message?`<p role="alert" class="ipqcab-message">${h(message)}</p>`:''}
+    return `<section class="ipqcab-review ipqcab-card" data-i18n-skip="true"><h3>IPQC-AB · ${t('待確認','Chờ duyệt')} ${pending.length+Number(!!control?.moduleDraft?.workflow?.pendingId)}</h3>${message?`<p role="alert" class="ipqcab-message">${h(displayDraftError(message))}</p>`:''}
       ${moduleReviewHTML()}${[...pending,...history].map(({scope:s,version:v})=>`<article class="vd-review-case"><details data-case-id="${h(v.id)}"><summary><b>${h(s.line)} · ${h(s.group)} · V${v.number} · ${status(v.status)}</b> · ${t('展開內容','Xem nội dung')}</summary><p>${h(v.creatorName)} · ${h(new Date(v.updatedAt).toLocaleString())} · ${v.snapshot.errors.length} ${t('錯誤代碼','mã lỗi')} / ${v.snapshot.items.length} ${t('項目','hạng mục')}${v.reviewedBy?`<br>${t('確認者','Người duyệt')}: ${h(v.reviewedBy)} · ${h(new Date(v.reviewedAt).toLocaleString())}`:''}${v.reviewComment?`<br>${t('意見','Ý kiến')}: ${h(v.reviewComment)}`:''}</p>
         <p>${t('送審理由','Lý do gửi duyệt')}：${h(s.workflow?.cases?.find(c=>c.id===v.id)?.reason||v.reason||'—')}</p>
         <details><summary>${t('檢查項目','Hạng mục kiểm tra')} · ${v.snapshot.items.length}</summary>${v.snapshot.items.filter(i=>!i.deleted).map(i=>`<p><b>${h(i.code)}</b> · ${h(i.standard)}</p>`).join('')}</details>
@@ -548,9 +555,9 @@
   }
   function showPendingItem() {
     if (!pendingItemView || !control) return;
-    const { versionId: requestedVersion, itemId } = pendingItemView;
-    const match = Object.values(control.scopes).flatMap(s=>s.versions.map(v=>({s,v})))
-      .find(({v})=>v.id===requestedVersion && v.snapshot.items.some(i=>i.id===itemId && !i.deleted));
+    const { versionId: requestedVersion, itemId, scope: requestedScope } = pendingItemView;
+    const match = Object.entries(control.scopes).flatMap(([scopeKey,s])=>s.versions.map(v=>({scopeKey,s,v})))
+      .find(({scopeKey,v})=>(!requestedScope || scopeKey===requestedScope) && v.id===requestedVersion && v.snapshot.items.some(i=>i.id===itemId && !i.deleted));
     pendingItemView = null;
     if (!match) return;
     line=match.s.line;group=match.s.group;versionId=match.v.id;
@@ -570,8 +577,8 @@
     }
   });
   window.IPQCABUI = { html:()=>'<section class="ipqcab-page" id="ipqcab-page">IPQC-AB…</section>',
-    openItemView(requestedVersion,itemId){
-      pendingItemView={versionId:requestedVersion,itemId};
+    openItemView(requestedVersion,itemId,requestedScope=''){
+      pendingItemView={versionId:requestedVersion,itemId,scope:requestedScope};
       if (host?.dataset.activeTab==='quality-ipqc-ab' && document.contains(host)) { showPendingItem();return; }
       document.querySelector('[data-quality-tab="quality-ipqc-ab"]')?.click();
     },

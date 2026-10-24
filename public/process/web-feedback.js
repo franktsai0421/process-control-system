@@ -5,6 +5,7 @@
  const uid=()=>crypto.randomUUID(), api='/api/web-feedback', imageURL=id=>api+'?action=image&id='+encodeURIComponent(id);
  let actor='',draft=null,index=0,panel=null,dbPromise=null,persistChain=Promise.resolve(),objectURLs=[],selecting=false,selectionCleanup=null,busy=false,epoch=0;
  const selected=new Set();let board=null,boardActor='',issues=[],selectedIssue='',boardTab='list',isAdmin=false,boardPermissions={},exportOperation=null;
+ let imageTasks=0;
  const localKey=id=>location.origin+'|feedback-v1|'+id;
  const database=()=>dbPromise||(dbPromise=new Promise((resolve,reject)=>{const req=indexedDB.open('process-web-feedback-v1',1);req.onupgradeneeded=()=>req.result.createObjectStore('drafts');req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);}));
  async function storage(mode,key,value){const db=await database();return new Promise((resolve,reject)=>{const tx=db.transaction('drafts',mode),store=tx.objectStore('drafts'),req=mode==='readonly'?store.get(key):store.put(value,key);let result;req.onsuccess=()=>{result=req.result;};tx.oncomplete=()=>resolve(result);tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);});}
@@ -44,7 +45,25 @@
   panel.querySelector('[data-select]').onclick=selectLocation;panel.querySelector('[data-submit]').onclick=submit;
   panel.querySelector('[data-list]').onclick=()=>{close();void showPublicList();};positionPanel();
  }
- async function addImages(files){if(busy||draft?.pending)return;const target=draft?.markers[index],token=epoch;if(!target)return;for(const file of files){if(target.images.length>=6){message(t('最多 6 張圖片','Tối đa 6 ảnh'));break;}if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5_000_000){message(t('僅限 PNG/JPEG/WebP，每張 5 MB','Chỉ PNG/JPEG/WebP, 5 MB mỗi ảnh'));continue;}if(token!==epoch)return;target.images.push({id:uid(),name:file.name||'screenshot.png',blob:file});}await persist();if(token===epoch)draw();}
+ async function addImages(files){
+  const profile=window.ProcessPhotoUpload.profileFor(panel?.querySelector('input[type=file]'));
+  if(busy||draft?.pending)return;
+  const target=draft?.markers[index],token=epoch;if(!target)return;
+  const current=()=>token===epoch&&!busy&&!draft?.pending&&draft?.markers.includes(target);
+  const additions=[];imageTasks++;
+  try{
+   for(const source of files){
+    if(target.images.length+additions.length>=6){message(t('最多 6 張圖片','Tối đa 6 ảnh'));break;}
+    const file=await window.ProcessPhotoUpload.prepare(source,{profile});
+    if(!current())return;
+    if(!['image/png','image/jpeg','image/webp'].includes(file.type)||file.size>5_000_000){message(t('僅限 PNG/JPEG/WebP，每張 5 MB','Chỉ PNG/JPEG/WebP, 5 MB mỗi ảnh'));continue;}
+    additions.push({id:uid(),name:file.name||'screenshot.png',blob:file});
+   }
+   if(!current())return;
+   target.images.push(...additions.slice(0,Math.max(0,6-target.images.length)));
+   await persist();if(token===epoch)draw();
+  }finally{imageTasks--;}
+ }
  function paste(e){if(panel?.hidden||!draft||!actor)return;const files=[...e.clipboardData.items].filter(i=>i.kind==='file'&&i.type.startsWith('image/')).map(i=>i.getAsFile()).filter(Boolean);if(files.length){e.preventDefault();e.stopPropagation();addImages(files).catch(e=>message(e.message));}}
  function locate(element){let el=element.closest('[data-feedback-id],[data-op-id],[data-node],[data-stage],[data-action],[data-tab],[data-testid],button,a,label,input,select,textarea,[id]')||element;
   // Port/action buttons repeat per card. The stable card identifies their business record.
@@ -107,7 +126,7 @@
    return true;
   }catch(e){if(token===epoch){const status=panel.querySelector('[role=status]');if(status)status.textContent=t('草稿未載入；輸入尚未保存：','Bản nháp chưa tải, nội dung chưa lưu: ')+e.message;else panel.textContent=e.message;}}
  }
- async function submit(){if(busy||!draft)return;const token=epoch;busy=true;try{
+ async function submit(){if(imageTasks)return message(t('照片處理中，完成後再送出。','Đang xử lý ảnh; hãy gửi sau khi hoàn tất.'));if(busy||!draft)return;const token=epoch;busy=true;try{
   if(!draft.pending){const valid=draft.markers.filter(m=>m.description.trim()||m.images.length);if(!valid.length){busy=false;return message(t('請輸入說明或加入圖片','Nhập mô tả hoặc thêm ảnh'));}draft.pending={operationId:uid(),markers:structuredClone(valid)};await persist();}
   draw();const frozen=draft.pending,markers=[];
   for(const m of frozen.markers){const attachments=[];for(const a of m.images){if(!a.uploaded){const res=await fetch(api+'?action=upload&name='+encodeURIComponent(a.name)+'&location='+encodeURIComponent(JSON.stringify(m.location)),{method:'POST',headers:{'Content-Type':a.blob.type},body:a.blob});const value=await res.json();if(!res.ok)throw Error(value.error);if(token!==epoch)return;a.uploaded=value.id;await persist();}attachments.push(a.uploaded);}markers.push({id:m.id,description:m.description,location:m.location,attachments});}

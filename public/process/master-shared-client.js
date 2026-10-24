@@ -43,7 +43,7 @@ if(!clients.has(key))clients.set(key,host.createSharedDraftClient({endpoint:'/ap
         if(before.length===after.length&&before.every(r=>next.has(r.id))&&!equal(before.map(r=>r.id),after.map(r=>r.id))){patches.push({op:'order',path,ids:after.map(r=>r.id)});guards.push({path,value:before});}
       }else if(before&&after&&typeof before==='object'&&typeof after==='object'&&!Array.isArray(before)&&!Array.isArray(after)){
         for(const key of Object.keys(after))if(key!=='id')diff(before[key],after[key],[...path,key],patches,guards);
-      }else{patches.push({op:'set',path,value:after});if(!['name','nameVi','description','note','specification'].includes(path.at(-1)))guards.push({path,value:before});}
+      }else{patches.push({op:'set',path,value:after});guards.push({path,value:before});}
       return{patches,guards};
     }
     async function execute(scope,action,detail={}){

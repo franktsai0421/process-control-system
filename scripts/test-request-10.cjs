@@ -34,10 +34,11 @@ function getFreshFixture() {
   const context = await browser.newContext({ viewport: { width: 1400, height: 900 } });
   const page = await context.newPage();
 
-  let { control, version, revision } = getFreshFixture();
+  const { control, version, revision: initialRevision } = getFreshFixture();
+  let revision = initialRevision;
   const photoId = 'b'.repeat(64);
 
-  page.route('**/api/routine-equipment/photo**', route => {
+  await page.route('**/api/routine-equipment/photo**', route => {
     if (route.request().method() === 'PUT') {
       return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: photoId }) });
     }

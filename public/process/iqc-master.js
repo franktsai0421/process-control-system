@@ -1,4 +1,5 @@
 (function (host) {
+  const displayDraftError = error => window.sharedDraftErrorMessage?.(error) ?? (typeof error === 'string' ? error : error?.message || String(error ?? ''));
   const h = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
   const copy = value => JSON.parse(JSON.stringify(value));
   const formText = (form, key) => { const value = new FormData(form).get(key); return typeof value === 'string' ? value : ''; };
@@ -19,7 +20,7 @@
         if(!old){patches.push({op:'insert',path:[collection],value:row});continue;}
         for(const [field,value]of Object.entries(row))if(field!=='equipmentSnapshot'&&value!==undefined&&!equal(value,old[field])){
           const path=[collection,{id:row.id},field];patches.push({op:'set',path,value});
-          if(!['nameVi','specificationVi','toolVi','methodVi','inspectionSpecVi','isEnabled'].includes(field))guards.push({path,value:old[field]});
+          guards.push({path,value:old[field]});
         }
       }
     }return{patches,guards};
@@ -208,11 +209,11 @@
     const listScroll = root.querySelector('.iqc-part-list')?.scrollTop || 0;
     const pageScroll = window.scrollY;
     root.innerHTML = `${versionBar()}${sharedStatus()}${issuesPanel()}${historyPanel()}${pendingPanel()}${importPanel()}<div class="iqc-grid">${listPanel()}${detailPanel()}</div>`;
-    for(const [id,action]of [['iqc-operation-check','resolveUnknown'],['iqc-operation-retry','retryUnknown']])root.querySelector('#'+id)?.addEventListener('click',async()=>{try{await transport()[action]();await load();render();}catch(error){notice(error.message);}});
+    for(const [id,action]of [['iqc-operation-check','resolveUnknown'],['iqc-operation-retry','retryUnknown']])root.querySelector('#'+id)?.addEventListener('click',async()=>{try{await transport()[action]();await load();render();}catch(error){notice(displayDraftError(error));}});
     bind();
     if(control.workflow&&(window.sharedDraftPermissionAllowed?.(sharedClient,'approval.compare')??true)&&window.hasPermission?.('approval.compare')){
       const button=document.createElement('button');button.id='iqc-case-history';button.className='button ghost';button.textContent=t('送審案件','Hồ sơ gửi duyệt');root.querySelector('.iqc-version')?.append(button);
-      button.onclick=()=>window.openSharedDraftHistory({client:transport(),editable:()=>!!draft()&&mayEdit(),onApplied:async()=>{await load();render();notice(t('已还原至草稿，尚未儲存','Đã khôi phục vào bản nháp, chưa lưu'));}}).catch(error=>notice(error.message));
+      button.onclick=()=>window.openSharedDraftHistory({client:transport(),editable:()=>!!draft()&&mayEdit(),onApplied:async()=>{await load();render();notice(t('已还原至草稿，尚未儲存','Đã khôi phục vào bản nháp, chưa lưu'));}}).catch(error=>notice(displayDraftError(error)));
     }
     const list = root.querySelector('.iqc-part-list');
     if (list) list.scrollTop = listScroll;
@@ -241,7 +242,7 @@
   async function mount(container) {
     root = container.querySelector('#iqc-page');
     if (!root) return;
-    try { await load(); render(); } catch (error) { root.innerHTML = `<section class="iqc-panel iqc-alert" role="alert">${h(error.message)} <button class="button ghost" id="iqc-retry">${t('重新載入','Tải lại')}</button></section>`; root.querySelector('#iqc-retry').onclick = () => mount(container); }
+    try { await load(); render(); } catch (error) { root.innerHTML = `<section class="iqc-panel iqc-alert" role="alert">${h(displayDraftError(error))} <button class="button ghost" id="iqc-retry">${t('重新載入','Tải lại')}</button></section>`; root.querySelector('#iqc-retry').onclick = () => mount(container); }
     scheduleRefresh();
   }
   function scheduleRefresh(){clearTimeout(pollTimer);pollTimer=setTimeout(async()=>{
@@ -253,7 +254,7 @@
         if(!document.querySelector('.iqc-dialog-overlay')&&!root?.contains(document.activeElement))render();
         else {const status=root?.querySelector('#iqc-shared-status');if(status)status.textContent=t('共用內容已更新；彈窗輸入保留，套用時核對來源。','Nội dung chung đã cập nhật; giữ dữ liệu cửa sổ và kiểm tra nguồn khi áp dụng.');}
       }
-    }}catch(error){const status=root?.querySelector('#iqc-shared-status');if(status)status.textContent=t('同步讀取失敗；未覆蓋目前內容。','Không đọc được dữ liệu đồng bộ; giữ nguyên nội dung.')+' '+error.message;}
+    }}catch(error){const status=root?.querySelector('#iqc-shared-status');if(status)status.textContent=t('同步讀取失敗；未覆蓋目前內容。','Không đọc được dữ liệu đồng bộ; giữ nguyên nội dung.')+' '+displayDraftError(error);}
     finally{scheduleRefresh();}
   },4000);}
   function twoConfirm(label) {
@@ -302,12 +303,13 @@
         else await post('begin');
       }
       action();
-    } catch (error) { notice(error.message); }
+    } catch (error) { notice(displayDraftError(error)); }
   }
   async function mutateSnapshot(change, success) {
     const next = copy(dialogBase||draft().snapshot); change(next); await saveSnapshot(next, success);
   }
-  async function upload(file) {
+  async function upload(file, { preserveSource = false } = {}) {
+    if (!preserveSource) file = await window.ProcessPhotoUpload.prepare(file);
     const response = await fetch(photoUrl, { method: 'PUT', headers: { ...window.ProcessSync?.platformHeaders?.(), 'Content-Type': file.type }, body: file });
     const data = await response.json();
     if (!response.ok || !data.id) throw Error(data.error || '照片保存失敗');
@@ -345,7 +347,7 @@
       event.stopPropagation(); const code = button.dataset.deletePart;
       if (!twoConfirm(`${t('刪除零件', 'Xóa linh kiện')} ${code}`)) return;
       try { await mutateSnapshot(next => { next.parts.find(item => item.code === code).isDeleted = true; }, t('零件已標記刪除於草稿','Đã đánh dấu xóa linh kiện trong bản nháp')); if (ui.partCode === code) ui.partCode = ''; render(); }
-      catch (error) { notice(error.message); }
+      catch (error) { notice(displayDraftError(error)); }
     });
   }
 
@@ -384,20 +386,20 @@
     on('[data-item-details]', 'toggle', event => { const id = event.currentTarget.dataset.itemDetails; if (event.currentTarget.open) ui.openItems.add(id); else ui.openItems.delete(id); });
     on('#iqc-preview', 'click', async () => { try { const response = await fetch('/process/iqc-source.json', { cache: 'no-store' }); if (!response.ok) throw Error('IQC 來源預覽尚未建立'); const preview = await response.json(); if (preview.snapshot?.parts?.length !== 187) throw Error('IQC 來源筆數不符，沒有提供匯入'); ui.preview = preview; ui.previewError = preview.ready ? '' : '類別對照檔尚未核對完成；可預覽來源，但不能匯入草稿'; } catch (error) { ui.previewError = error.message; } render(); });
     on('#iqc-import', 'click', importPreview);
-    on('#iqc-begin', 'click', async () => { try { await post('begin'); notice(t('IQC 草稿已開啟','Đã mở bản nháp IQC')); } catch (error) { notice(error.message); } });
-    on('#iqc-save', 'click', async () => { try { await post('save');notice(t('已儲存全員已同步的 IQC 草稿','Đã lưu toàn bộ bản nháp IQC đã đồng bộ của mọi người')); } catch (error) { notice(error.message); } });
-    on('#iqc-submit', 'click', async () => { if (!confirm(t('確定送出審核？送審後將無法編輯，須先撤回或發回。','Gửi duyệt? Sau khi gửi sẽ không thể chỉnh sửa cho đến khi rút hoặc được trả lại.'))) return; const v = draft(); try { await post('submit', { versionId: v.id, versionRevision: v.revision, snapshot: copy(v.snapshot) }); notice(t('IQC 草稿已送出主管審核','Đã gửi bản nháp IQC để quản lý duyệt')); } catch (error) { notice(error.message); } });
-    on('#iqc-withdraw', 'click', async () => { try { await post('withdraw'); void window.RoutineEquipmentUI?.reconcilePendingReplacements?.(); notice(t('IQC 送審已撤回，仍保留同一草稿','Đã rút hồ sơ IQC; bản nháp được giữ lại')); } catch (error) { notice(error.message); } });
+    on('#iqc-begin', 'click', async () => { try { await post('begin'); notice(t('IQC 草稿已開啟','Đã mở bản nháp IQC')); } catch (error) { notice(displayDraftError(error)); } });
+    on('#iqc-save', 'click', async () => { try { await post('save');notice(t('已儲存全員已同步的 IQC 草稿','Đã lưu toàn bộ bản nháp IQC đã đồng bộ của mọi người')); } catch (error) { notice(displayDraftError(error)); } });
+    on('#iqc-submit', 'click', async () => { if (!confirm(t('確定送出審核？送審後將無法編輯，須先撤回或發回。','Gửi duyệt? Sau khi gửi sẽ không thể chỉnh sửa cho đến khi rút hoặc được trả lại.'))) return; const v = draft(); try { await post('submit', { versionId: v.id, versionRevision: v.revision, snapshot: copy(v.snapshot) }); notice(t('IQC 草稿已送出主管審核','Đã gửi bản nháp IQC để quản lý duyệt')); } catch (error) { notice(displayDraftError(error)); } });
+    on('#iqc-withdraw', 'click', async () => { try { await post('withdraw'); void window.RoutineEquipmentUI?.reconcilePendingReplacements?.(); notice(t('IQC 送審已撤回，仍保留同一草稿','Đã rút hồ sơ IQC; bản nháp được giữ lại')); } catch (error) { notice(displayDraftError(error)); } });
     on('#iqc-to-review', 'click', () => { document.querySelector('[data-dual-view="approval"]')?.click(); setTimeout(() => document.querySelector('#approval-tab-quality')?.click(), 0); });
     on('#iqc-manage-suppliers', 'click', () => withDraft(() => manageList('suppliers')));
     on('#iqc-manage-categories', 'click', () => withDraft(() => manageList('categories')));
     on('#iqc-add-part', 'click', () => withDraft(() => editPart()));
     on('#iqc-add-error', 'click', () => editError());
     on('[data-edit-error]', 'click', event => editError(event.currentTarget.dataset.editError));
-    on('[data-delete-error]', 'click', async event => { const id = event.currentTarget.dataset.deleteError; const error = snap().errors.find(item => item.id === id); if (snap().items.some(item => item.errorId === id && !item.isDeleted)) return notice(t('請先刪除所屬檢查項目','Hãy xóa các hạng mục thuộc mã lỗi trước')); if (!twoConfirm(`${t('刪除錯誤代碼', 'Xóa mã lỗi')} ${error.code}`)) return; try { await mutateSnapshot(next => { next.errors.find(item => item.id === id).isDeleted = true; }, t('錯誤代碼已標記刪除','Đã đánh dấu xóa mã lỗi')); } catch (failure) { notice(failure.message); } });
+    on('[data-delete-error]', 'click', async event => { const id = event.currentTarget.dataset.deleteError; const error = snap().errors.find(item => item.id === id); if (snap().items.some(item => item.errorId === id && !item.isDeleted)) return notice(t('請先刪除所屬檢查項目','Hãy xóa các hạng mục thuộc mã lỗi trước')); if (!twoConfirm(`${t('刪除錯誤代碼', 'Xóa mã lỗi')} ${error.code}`)) return; try { await mutateSnapshot(next => { next.errors.find(item => item.id === id).isDeleted = true; }, t('錯誤代碼已標記刪除','Đã đánh dấu xóa mã lỗi')); } catch (failure) { notice(displayDraftError(failure)); } });
     on('[data-add-item]', 'click', event => editItem('', event.currentTarget.dataset.addItem));
     on('[data-edit-item]', 'click', event => editItem(event.currentTarget.dataset.editItem));
-    on('[data-delete-item]', 'click', async event => { const id = event.currentTarget.dataset.deleteItem, item = snap().items.find(row => row.id === id); if (!twoConfirm(`${t('刪除檢查項目', 'Xóa hạng mục')} ${item.checkNo}`)) return; try { await mutateSnapshot(next => { next.items.find(row => row.id === id).isDeleted = true; }, t('檢查項目已標記刪除','Đã đánh dấu xóa hạng mục')); } catch (failure) { notice(failure.message); } });
+    on('[data-delete-item]', 'click', async event => { const id = event.currentTarget.dataset.deleteItem, item = snap().items.find(row => row.id === id); if (!twoConfirm(`${t('刪除檢查項目', 'Xóa hạng mục')} ${item.checkNo}`)) return; try { await mutateSnapshot(next => { next.items.find(row => row.id === id).isDeleted = true; }, t('檢查項目已標記刪除','Đã đánh dấu xóa hạng mục')); } catch (failure) { notice(displayDraftError(failure)); } });
   }
 
   async function importPreview() {
@@ -407,9 +409,9 @@
     const data = copy(source);
     const photos = data.snapshot.parts.flatMap(part => part.photos);
     let cursor = 0;
-    const worker = async () => { while (cursor < photos.length) { const photo = photos[cursor++]; const response = await fetch(photo.webPath); if (!response.ok) throw Error(`${photo.webPath} 讀取失敗`); const bytes = await response.blob(); const uploaded = await upload(new File([bytes], photo.name || 'iqc-source.jpg', { type: 'image/jpeg' })); if (uploaded.id !== photo.id) throw Error(`${photo.webPath} 圖片校驗失敗`); photo.src = uploaded.src; delete photo.webPath; } };
+    const worker = async () => { while (cursor < photos.length) { const photo = photos[cursor++]; const response = await fetch(photo.webPath); if (!response.ok) throw Error(`${photo.webPath} 讀取失敗`); const bytes = await response.blob(); const uploaded = await upload(new File([bytes], photo.name || 'iqc-source.jpg', { type: 'image/jpeg' }), { preserveSource: true }); if (uploaded.id !== photo.id) throw Error(`${photo.webPath} 圖片校驗失敗`); photo.src = uploaded.src; delete photo.webPath; } };
     try { await Promise.all(Array.from({ length: 6 }, worker)); await post('import', { source: data }); ui.preview = null; notice('IQC Excel 已匯入未核准草稿'); }
-    catch (error) { notice(`IQC 匯入未完成：${error.message}`); }
+    catch (error) { notice(`IQC 匯入未完成：${displayDraftError(error)}`); }
   }
 
   function manageList(kind) {
@@ -441,10 +443,13 @@
     };
     draw();
     overlay.querySelector('#iqc-list-add').onclick = () => { const input = overlay.querySelector('#iqc-list-new'); const value = input.value.trim(); if (!value) return; if (rows.some(item => item.nameVi === value)) { overlay.querySelector('#iqc-list-error').textContent = t('名稱不可重複','Tên không được trùng'); return; } rows.push({ id: crypto.randomUUID(), nameVi: value }); input.value = ''; search.value = ''; draw(); };
-    overlay.querySelector('#iqc-list-save').onclick = async () => { if (rows.some(item => !item.nameVi.trim()) || new Set(rows.map(item => item.nameVi.trim())).size !== rows.length) { overlay.querySelector('#iqc-list-error').textContent = t('名稱不可空白或重複', 'Tên không được trống hoặc trùng'); return; } try { await mutateSnapshot(next => { next[kind] = rows; }, `${title}已儲存`); close(); } catch (error) { overlay.querySelector('#iqc-list-error').textContent = error.message; } };
+    overlay.querySelector('#iqc-list-save').onclick = async () => { if (rows.some(item => !item.nameVi.trim()) || new Set(rows.map(item => item.nameVi.trim())).size !== rows.length) { overlay.querySelector('#iqc-list-error').textContent = t('名稱不可空白或重複', 'Tên không được trống hoặc trùng'); return; } try { await mutateSnapshot(next => { next[kind] = rows; }, `${title}已儲存`); close(); } catch (error) { overlay.querySelector('#iqc-list-error').textContent = displayDraftError(error); } };
   }
 
   function editPart(code = '') {
+    const formActor=identity(),formActorId=formActor?.id,formGeneration=control?.workflow?.generation,formVersionId=selected()?.id;
+    const formCurrent=()=>overlay.isConnected&&identity()===formActor&&formActor?.id===formActorId&&control?.workflow?.generation===formGeneration&&selected()?.id===formVersionId;
+    const assertFormCurrent=()=>{if(!formCurrent())throw Error('DEPENDENCY_CHANGED_RECONFIRM');if(control?.workflow?.pendingId||transport().permission('edit')===false)throw Error('PENDING_OR_PERMISSION_LOCKED');};
     const data = draft().snapshot, old = data.parts.find(item => item.code === code), suppliers = [...data.suppliers].sort((a,b) => {
       const rank = x => x.nameVi === 'NƯỚC NGOÀI' ? 0 : x.nameVi === 'CÔNG TY' ? 1 : 2;
       return rank(a)-rank(b) || a.nameVi.localeCompare(b.nameVi,'vi');
@@ -452,14 +457,14 @@
     const supplierIds = [...(old?.supplierIds || [])], photos = copy(old?.photos || []);
     const rawSupplierNote = old?.supplierRaw && old.supplierRaw !== supplierIds.map(id => name(data.suppliers,id)).join(' → ') ? `<details class="iqc-source-note"><summary>${t('匯入供應商備註', 'Ghi chú nhà cung cấp gốc')}</summary><p data-i18n-skip="true">${h(old.supplierRaw)}</p></details>` : '';
     const { overlay, close } = dialog(`<h3>${old ? t('修改零件', 'Sửa linh kiện') : t('新增零件', 'Thêm linh kiện')}</h3><form id="iqc-part-form"><div class="iqc-form-grid"><div class="iqc-field"><label>${t('零件編號', 'Mã linh kiện')}</label><input name="code" required value="${h(old?.code || '')}" ${old ? 'readonly' : ''} data-i18n-skip="true"></div><div class="iqc-field"><label>${t('零件名稱（越文）', 'Tên linh kiện (tiếng Việt)')}</label><input name="nameVi" required value="${h(old?.nameVi || '')}" data-i18n-skip="true"></div></div><div class="iqc-field"><label>${t('規格（越文）', 'Quy cách (tiếng Việt)')}</label><textarea name="specificationVi" data-i18n-skip="true">${h(old?.specificationVi || '')}</textarea></div><div class="iqc-field"><label>${t('零件類別', 'Nhóm linh kiện')}</label><select name="categoryId" required><option value="">${t('選擇類別', 'Chọn nhóm')}</option>${data.categories.map(item => `<option value="${h(item.id)}" ${old?.categoryId === item.id ? 'selected' : ''} data-i18n-skip="true">${h(item.nameVi)}</option>`).join('')}</select></div><div class="iqc-field"><label>${t('第一、第二及後續供應商（依順序）', 'Nhà cung cấp thứ nhất, thứ hai và tiếp theo (theo thứ tự)')}</label><div id="iqc-part-suppliers"></div><button type="button" class="button ghost" id="iqc-part-add-supplier">${t('＋新增供應商位置', '＋Thêm vị trí nhà cung cấp')}</button></div>${rawSupplierNote}<div class="iqc-field"><label>${t('零件照片（可多張）', 'Ảnh linh kiện (nhiều ảnh)')}</label><input type="file" id="iqc-part-file" accept="image/jpeg,image/png,image/webp,image/gif" multiple><div id="iqc-part-photos"></div></div><p class="iqc-error" id="iqc-part-error" role="alert"></p><footer><button type="button" class="button ghost" data-close>${t('取消', 'Hủy')}</button><button class="button signal" type="submit">${window.VersionDraftUI.t('apply')}</button></footer></form>`);
-    const showError = error => overlay.querySelector('#iqc-part-error').textContent = error.message || String(error);
+    const showError = error => overlay.querySelector('#iqc-part-error').textContent = displayDraftError(error);
     const drawSuppliers = () => { overlay.querySelector('#iqc-part-suppliers').innerHTML = supplierIds.map((id,index) => `<div class="iqc-supplier-row"><label>${t('供應商', 'Nhà cung cấp')} ${index+1}<select data-supplier-index="${index}"><option value="">${t('選擇供應商', 'Chọn nhà cung cấp')}</option>${suppliers.map(item => `<option value="${h(item.id)}" ${item.id === id ? 'selected' : ''} data-i18n-skip="true">${h(item.nameVi)}</option>`).join('')}</select></label><button type="button" class="button ghost" data-supplier-up="${index}" ${index ? '' : 'disabled'} aria-label="${t('向前移動','Chuyển lên')}">↑</button><button type="button" class="button ghost" data-supplier-down="${index}" ${index < supplierIds.length-1 ? '' : 'disabled'} aria-label="${t('向後移動','Chuyển xuống')}">↓</button><button type="button" class="button iqc-danger" data-supplier-remove="${index}">${t('移除', 'Bỏ')}</button></div>`).join(''); overlay.querySelectorAll('[data-supplier-index]').forEach(select => select.onchange = () => { supplierIds[Number(select.dataset.supplierIndex)] = select.value; }); overlay.querySelectorAll('[data-supplier-up]').forEach(button => button.onclick = () => { const i=Number(button.dataset.supplierUp); [supplierIds[i-1],supplierIds[i]]=[supplierIds[i],supplierIds[i-1]]; drawSuppliers(); }); overlay.querySelectorAll('[data-supplier-down]').forEach(button => button.onclick = () => { const i=Number(button.dataset.supplierDown); [supplierIds[i+1],supplierIds[i]]=[supplierIds[i],supplierIds[i+1]]; drawSuppliers(); }); overlay.querySelectorAll('[data-supplier-remove]').forEach(button => button.onclick = () => { const i=Number(button.dataset.supplierRemove); if (!twoConfirm(`${t('移除供應商', 'Bỏ nhà cung cấp')} ${i+1}`)) return; supplierIds.splice(i,1); drawSuppliers(); }); };
     const drawPhotos = () => { overlay.querySelector('#iqc-part-photos').innerHTML = photos.map((photo,index) => `<div class="iqc-photo-edit"><img src="${h(photo.src)}" alt="${t('零件照片', 'Ảnh linh kiện')}"><span>${index+1}</span><button type="button" class="button ghost" data-photo-up="${index}" ${index ? '' : 'disabled'}>↑</button><button type="button" class="button ghost" data-photo-down="${index}" ${index < photos.length-1 ? '' : 'disabled'}>↓</button><button type="button" class="button iqc-danger" data-photo-remove="${index}">${t('移除', 'Bỏ')}</button></div>`).join(''); overlay.querySelectorAll('[data-photo-up]').forEach(button => button.onclick = () => { const i=Number(button.dataset.photoUp); [photos[i-1],photos[i]]=[photos[i],photos[i-1]]; drawPhotos(); }); overlay.querySelectorAll('[data-photo-down]').forEach(button => button.onclick = () => { const i=Number(button.dataset.photoDown); [photos[i+1],photos[i]]=[photos[i],photos[i+1]]; drawPhotos(); }); overlay.querySelectorAll('[data-photo-remove]').forEach(button => button.onclick = () => { const i=Number(button.dataset.photoRemove); if (!twoConfirm(`${t('移除照片', 'Bỏ ảnh')} ${i+1}`)) return; photos.splice(i,1); drawPhotos(); }); };
     overlay.querySelector('#iqc-part-form').insertAdjacentHTML('afterbegin',`<label class="iqc-enabled"><input type="checkbox" name="partEnabled" ${old?.isEnabled!==false?'checked':''}>${t('啟用此 IQC 零件','Kích hoạt linh kiện IQC')}</label>`);
     drawSuppliers(); drawPhotos();
     overlay.querySelector('#iqc-part-add-supplier').onclick = () => { supplierIds.push(''); drawSuppliers(); };
-    overlay.querySelector('#iqc-part-file').onchange = async event => { const files = [...event.target.files]; for (const file of files) { try { photos.push(await upload(file)); drawPhotos(); } catch (error) { showError(error); return; } } event.target.value = ''; };
-    overlay.querySelector('#iqc-part-form').onsubmit = async event => { event.preventDefault(); const form = event.currentTarget; const partCode = formText(form, 'code').trim(); const nameVi = formText(form, 'nameVi'); const categoryId = formText(form, 'categoryId'); if (!partCode || !nameVi.trim()) return showError(t('請填寫零件編號及越文名稱','Hãy nhập mã và tên tiếng Việt của linh kiện')); if (!categoryId) return showError(t('請選擇零件類別','Hãy chọn nhóm linh kiện')); if (supplierIds.some(id => !id) || new Set(supplierIds).size !== supplierIds.length) return showError(t('供應商不可空白或重複','Nhà cung cấp không được trống hoặc trùng')); if (!old && data.parts.some(item => item.code === partCode)) return showError(t('零件編號已存在','Mã linh kiện đã tồn tại')); try { await mutateSnapshot(next => { const part = old ? next.parts.find(item => item.id === old.id) : { id: crypto.randomUUID(), code: partCode, supplierRaw: '', standardCode: '', sourceRow: undefined }; Object.assign(part, { isEnabled:form.elements.partEnabled.checked, nameVi, specificationVi: formText(form, 'specificationVi'), categoryId, supplierIds, photos }); if (!old) next.parts.push(part); }, t('零件已儲存至 IQC 草稿','Đã lưu linh kiện vào bản nháp IQC')); ui.partCode = partCode; close(); render(); } catch (error) { showError(error); } };
+    overlay.querySelector('#iqc-part-file').onchange = async event => { const files = [...event.target.files]; for (const file of files) { try { assertFormCurrent(); const photo=await upload(file); assertFormCurrent(); photos.push(photo); drawPhotos(); } catch (error) { showError(error); return; } } event.target.value = ''; };
+    overlay.querySelector('#iqc-part-form').onsubmit = async event => { event.preventDefault(); const form = event.currentTarget; try { assertFormCurrent(); } catch(error) { showError(error); return; } const partCode = formText(form, 'code').trim(); const nameVi = formText(form, 'nameVi'); const categoryId = formText(form, 'categoryId'); if (!partCode || !nameVi.trim()) return showError(t('請填寫零件編號及越文名稱','Hãy nhập mã và tên tiếng Việt của linh kiện')); if (!categoryId) return showError(t('請選擇零件類別','Hãy chọn nhóm linh kiện')); if (supplierIds.some(id => !id) || new Set(supplierIds).size !== supplierIds.length) return showError(t('供應商不可空白或重複','Nhà cung cấp không được trống hoặc trùng')); if (!old && data.parts.some(item => item.code === partCode)) return showError(t('零件編號已存在','Mã linh kiện đã tồn tại')); try { await mutateSnapshot(next => { const part = old ? next.parts.find(item => item.id === old.id) : { id: crypto.randomUUID(), code: partCode, supplierRaw: '', standardCode: '', sourceRow: undefined }; Object.assign(part, { isEnabled:form.elements.partEnabled.checked, nameVi, specificationVi: formText(form, 'specificationVi'), categoryId, supplierIds, photos }); if (!old) next.parts.push(part); }, t('零件已儲存至 IQC 草稿','Đã lưu linh kiện vào bản nháp IQC')); if(formCurrent()){ui.partCode = partCode; close(); render();} } catch (error) { showError(error); } };
   }
 
   function previewNumber(prefix, reserved = [], width = 0) {
@@ -469,10 +474,13 @@
   function editError(id = '') {
     const old = snap().errors.find(item => item.id === id);
     const { overlay, close } = dialog(`<h3>${old ? t('修改錯誤代碼', 'Sửa mã lỗi') : t('新增錯誤代碼', 'Thêm mã lỗi')}</h3><form id="iqc-error-form"><div class="iqc-field"><label>${t('錯誤代碼', 'Mã lỗi')}</label><input value="${h(old?.code || previewNumber(`${ui.partCode}-IQC-L`, control.reservedErrorCodes))}" readonly></div><div class="iqc-field"><label>${t('錯誤名稱（越文）', 'Tên lỗi (tiếng Việt)')}</label><input name="nameVi" required value="${h(old?.nameVi || '')}" data-i18n-skip="true"></div><p class="iqc-error" id="iqc-error-message"></p><footer><button type="button" class="button ghost" data-close>${t('取消', 'Hủy')}</button><button class="button signal" type="submit">${window.VersionDraftUI.t('apply')}</button></footer></form>`);
-    overlay.querySelector('form').onsubmit = async event => { event.preventDefault(); const value = formText(event.currentTarget, 'nameVi').trim(); try { if (old) await mutateSnapshot(next => { next.errors.find(item => item.id === id).nameVi = value; }, t('錯誤代碼已套用','Đã áp dụng mã lỗi')); else { const v = draft(); await post('createError', { versionId: v.id, versionRevision: v.revision, partCode: ui.partCode, nameVi: value }); notice(t('新增錯誤代碼已同步，尚未手動儲存','Đã đồng bộ mã lỗi mới, chưa lưu thủ công')); } close(); } catch (error) { overlay.querySelector('#iqc-error-message').textContent = error.message; } };
+    overlay.querySelector('form').onsubmit = async event => { event.preventDefault(); const value = formText(event.currentTarget, 'nameVi').trim(); try { if (old) await mutateSnapshot(next => { next.errors.find(item => item.id === id).nameVi = value; }, t('錯誤代碼已套用','Đã áp dụng mã lỗi')); else { const v = draft(); await post('createError', { versionId: v.id, versionRevision: v.revision, partCode: ui.partCode, nameVi: value }); notice(t('新增錯誤代碼已同步，尚未手動儲存','Đã đồng bộ mã lỗi mới, chưa lưu thủ công')); } close(); } catch (error) { overlay.querySelector('#iqc-error-message').textContent = displayDraftError(error); } };
   }
 
   function editItem(id = '', errorId = '') {
+    const formActor=identity(),formActorId=formActor?.id,formGeneration=control?.workflow?.generation,formVersionId=selected()?.id;
+    const formCurrent=()=>overlay.isConnected&&identity()===formActor&&formActor?.id===formActorId&&control?.workflow?.generation===formGeneration&&selected()?.id===formVersionId;
+    const assertFormCurrent=()=>{if(!formCurrent())throw Error('DEPENDENCY_CHANGED_RECONFIRM');if(control?.workflow?.pendingId||transport().permission('edit')===false)throw Error('PENDING_OR_PERMISSION_LOCKED');};
     const old = snap().items.find(item => item.id === id), error = snap().errors.find(item => item.id === (old?.errorId || errorId));
     if (!error) return;
     const rules = copy(old?.rules || [{ id: crypto.randomUUID(), cadence: 'batch', kind: 'aql', value: '', nameVi: '' }]);
@@ -535,7 +543,7 @@
           drawSubcategories(); drawGroups(); picker.querySelector('#iqc-picker-filters').hidden = false; drawList();
         } catch (error) {
           if (!picker.isConnected) return;
-          status.textContent = `${t('設備載入失敗','Không tải được thiết bị')}: ${error.message}`;
+          status.textContent = `${t('設備載入失敗','Không tải được thiết bị')}: ${displayDraftError(error)}`;
           list.innerHTML = `<button type="button" class="button ghost" id="iqc-picker-retry">${t('重新載入設備','Tải lại thiết bị')}</button>`;
           list.querySelector('#iqc-picker-retry').onclick = load;
         }
@@ -588,8 +596,8 @@
     drawItemPhotos();
     overlay.querySelector('#iqc-item-file').onchange = async event => {
       for (const file of event.target.files) {
-        try { photos.push({ ...await upload(file), note: '' }); drawItemPhotos(); }
-        catch (error) { overlay.querySelector('#iqc-item-error').textContent = error.message; break; }
+        try { assertFormCurrent(); const photo=await upload(file); assertFormCurrent(); photos.push({ ...photo, note: '' }); drawItemPhotos(); }
+        catch (error) { overlay.querySelector('#iqc-item-error').textContent = displayDraftError(error); break; }
       }
       event.target.value = '';
     };
@@ -627,6 +635,7 @@
       const selectedId = selectedEqId;
       const chosen = equipmentChoices.find(eq => eq.id === selectedId) || (selectedId === old?.equipmentId ? old.equipmentSnapshot : null);
       const errorBox = overlay.querySelector('#iqc-item-error');
+      try { assertFormCurrent(); } catch(error) { errorBox.textContent=displayDraftError(error); return; }
       if (!control.workflow&&!nameVi.trim()) { errorBox.textContent = t('請填寫越文檢查項目','Nhập hạng mục tiếng Việt'); return; }
       if (!control.workflow&&!rules.length) { errorBox.textContent = t('至少需要一條檢查規則','Cần ít nhất một quy tắc'); return; }
       if (!old && !chosenMode) { errorBox.textContent = t('請選擇目視檢查或檢具','Chọn kiểm tra bằng mắt hoặc thiết bị'); return; }
@@ -646,8 +655,8 @@
       try {
         if (old) await mutateSnapshot(next => { Object.assign(next.items.find(row => row.id === id), payload); }, t('檢查項目已儲存','Hạng mục đã lưu'));
         else { const v = draft(); await post('createItem', { versionId: v.id, versionRevision: v.revision, errorId: error.id, ...payload }); notice(t('新檢查項目已同步，尚未手動儲存','Đã đồng bộ hạng mục mới, chưa lưu thủ công')); }
-        close();
-      } catch (failure) { errorBox.textContent = failure.message; }
+        if(formCurrent())close();
+      } catch (failure) { errorBox.textContent = displayDraftError(failure); }
     };
   }
 
@@ -681,18 +690,18 @@
             if (!current.isConnected || identity()?.id !== requestActor) return;
             const isCase = control.workflow?.cases.some(c => c.id === v.id);
             await window.openSharedDraftHistory({client, editable:()=>false, onApplied:async()=>{}, ...(isCase ? {caseId:v.id} : {legacyFirst:true,legacyVersionId:v.id})});
-          } catch (error) { if(current.isConnected) notice(error.message); }
+          } catch (error) { if(current.isConnected) notice(displayDraftError(error)); }
         };
         sharedClient?.gatePermissions?.();
         for (const action of ['reject','approve','withdraw']) detail.querySelector(`#iqc-review-${action}`)?.addEventListener('click',async()=>{
           const comment=action==='approve' ? detail.querySelector('#iqc-review-comment')?.value?.trim() || '' : '';
           try { const result=await post(action,{versionId:v.id,versionRevision:v.revision,comment});if(!result)return; void window.RoutineEquipmentUI?.reconcilePendingReplacements?.(); reviewRoot=panel.querySelector('.iqc-review'); if(reviewRoot){reviewRoot.outerHTML=reviewHTML();bindReview(panel);} notice(action==='approve'?t('IQC 版本已核准','Đã duyệt phiên bản IQC'):action==='withdraw'?t('IQC 送審已撤回','Đã rút hồ sơ IQC'):t('IQC 版本已發回','Đã trả lại phiên bản IQC')); }
-          catch(error){notice(error.message);}
+          catch(error){notice(displayDraftError(error));}
         });
       });
       current.querySelector('.quality-review-pending-list [data-iqc-review]')?.click();
     };
-    ready().catch(error => { if(initial.isConnected && identity()?.id === requestActor) initial.innerHTML = `<p role="alert">${h(error.message)}</p>`; });
+    ready().catch(error => { if(initial.isConnected && identity()?.id === requestActor) initial.innerHTML = `<p role="alert">${h(displayDraftError(error))}</p>`; });
   }
   function pendingCount() { return (control?.versions || []).filter(v => v.status === 'pending').length; }
   function renderApprovedDetail(area,data,partId,onPhoto){const part=data.parts.find(p=>p.id===partId),state={partCode:part?.code||'',errorId:''};function draw(){area.innerHTML=detailPanel(data,state,true);area.querySelectorAll('[data-select-error]').forEach(b=>b.onclick=()=>{state.errorId=b.dataset.selectError;draw();});area.querySelectorAll('[data-photo-part]').forEach(b=>b.onclick=()=>onPhoto(part.photos[Number(b.dataset.photoIndex)]?.src));area.querySelectorAll('[data-item-photo]').forEach(b=>b.onclick=()=>onPhoto(data.items.find(i=>i.id===b.dataset.itemPhoto)?.mediaItems?.[Number(b.dataset.photoIndex)]?.src));}draw();}

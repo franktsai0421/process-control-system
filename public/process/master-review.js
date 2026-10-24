@@ -1,6 +1,6 @@
 (function(host){
   'use strict';
-  const copy=v=>JSON.parse(JSON.stringify(v)), h=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+  const _copy=v=>JSON.parse(JSON.stringify(v)), h=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
   const t=(zh,vi)=>document.documentElement.lang==='vi'?vi:zh;
   function processSnapshot(catalog){return catalog&&typeof catalog==='object'&&!Array.isArray(catalog)&&!Array.isArray(catalog.products)&&!Array.isArray(catalog.lines);}
   function rows(catalog){if(processSnapshot(catalog))return Object.entries(catalog||{}).flatMap(([stage,templates])=>(templates||[]).flatMap(template=>[
@@ -12,7 +12,7 @@
     ...(host.MasterAdminUI?.categoryEntries(catalog)||[]).map(g=>({key:'category:'+g.line+':'+g.name,kind:t('類別','Nhóm'),code:g.line,value:g.name+' · '+(Array.isArray(g.defaultStages)?t('預設路線：','Tuyến mặc định: ')+(g.defaultStages.join(' → ')||t('空路線','Tuyến trống')):g.defaultStages===null?t('已移除預設，保留產品路線','Đã bỏ mặc định, giữ tuyến sản phẩm'):t('尚未設定群組路線','Chưa đặt tuyến nhóm'))}))
   ];}
   function diff(next,previous){const before=new Map(rows(previous).map(r=>[r.key,r])),after=new Map(rows(next).map(r=>[r.key,r]));return [...new Set([...before.keys(),...after.keys()])].flatMap(key=>{const a=before.get(key),b=after.get(key);if(a&&b&&(a.fingerprint||a.value)===(b.fingerprint||b.value))return [];const mediaOnly=a&&b&&a.value===b.value;return [{kind:(b||a).kind,code:(b||a).code,type:!a?'add':!b?'delete':'edit',before:a?.value||'—',after:(b?.value||'—')+(mediaOnly?t('（照片或詳細內容已更新）',' (Đã cập nhật ảnh hoặc chi tiết)'):'')}];});}
-  function install({state,control,persist,record,validateCatalog,applyActive,showVersion,shared}){
+  function install({state,control,persist: _persist,record: _record,validateCatalog: _validateCatalog,applyActive,showVersion: _showVersion,shared}){
     let busy=false,error='',owner='',epoch=0;
     const bodies=new Map(),requests=new Map();
     const statuses=()=>({pending:t('待確認','Chờ duyệt'),approved:t('已確認','Đã duyệt'),withdrawn:t('已撤回','Đã rút'),returned:t('已發回','Đã trả lại'),superseded:t('歷史版本','Phiên bản trước')});

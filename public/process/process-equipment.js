@@ -112,8 +112,8 @@
     const editable = Boolean(editableProcessMasterData()),
       sourceButton = '',
       rows = uniqueEntries(currentProcessMasterData()).filter(row => isMachineTemplate(row.template)),
-      lines = [...new Set(rows.map(row => row.equipment.line).filter(Boolean))].sort(),
-      availableStages = [...new Set(rows.filter(row => !lineFilter || row.equipment.line === lineFilter).map(row => row.equipment.stageCode).filter(Boolean))].sort(),
+      lines = [...new Set(rows.map(row => row.equipment.line).filter(Boolean))].sort((a, b) => { const left = String(a), right = String(b); return left < right ? -1 : left > right ? 1 : 0; }),
+      availableStages = [...new Set(rows.filter(row => !lineFilter || row.equipment.line === lineFilter).map(row => row.equipment.stageCode).filter(Boolean))].sort((a, b) => { const left = String(a), right = String(b); return left < right ? -1 : left > right ? 1 : 0; }),
       lowered = search.trim().toLowerCase(),
       shown = rows.filter(({equipment:e}) => (!lineFilter || e.line === lineFilter) && (!stageFilter || e.stageCode === stageFilter) && (!lowered || [e.number,e.name,e.nameVi,e.stageCode,e.line,e.machineType,e.purpose,e.purposeVi].join(' ').toLowerCase().includes(lowered)))
         .sort((a,b) => `${a.equipment.line}-${a.equipment.stageCode}-${a.equipment.number}`.localeCompare(`${b.equipment.line}-${b.equipment.stageCode}-${b.equipment.number}`)),
@@ -147,8 +147,9 @@
   }
   async function commitEditor() {
     if (!editableProcessMasterData() || !editing) return;
-    const snapshot=copy(editing.base);
-    const item = copy(editing.record), template = targetTemplate(snapshot,item.stageCode);
+    const target = editing, submittedRecord = JSON.stringify(target.record);
+    const snapshot=copy(target.base);
+    const item = copy(target.record), template = targetTemplate(snapshot,item.stageCode);
     item.number = String(item.number || '').trim();
     item.name = String(item.name || '').trim();
     item.nameVi = String(item.nameVi || '').trim();
@@ -160,7 +161,9 @@
     if (!template) { toast(`${item.stageCode}：${t('找不到機器設定流程','Không tìm thấy quy trình cài đặt máy')}`); return; }
     entries(snapshot).forEach(row => { row.template.equipment = (row.template.equipment || []).filter(e => e.id !== item.id); });
     (template.equipment ||= []).push(item);
-    if (!(await saveVersion(editing.isNew ? t('新增設備','Thêm máy') : t('修改設備資料','Sửa dữ liệu máy'),editing.base,snapshot))) return;
+    if (!(await saveVersion(target.isNew ? t('新增設備','Thêm máy') : t('修改設備資料','Sửa dữ liệu máy'),target.base,snapshot))) return;
+    if (editing !== target) return;
+    if (JSON.stringify(target.record) !== submittedRecord) { target.base = copy(snapshot); return; }
     editing = null;
     repaint();
   }
@@ -199,11 +202,19 @@
     } catch (error) { toast(error.message || t('設備匯入失敗','Nhập thiết bị thất bại')); }
   }
   async function updatePhotos(mode, files) {
-    if (!editing || !files?.length) return;
+    const target = editing, working = editableProcessMasterData(), draft = processMasterDraft();
+    const dialog = document.querySelector('#equipment-editor-dialog');
+    const actor = host.ProcessSync?.identity || (typeof currentUser === 'undefined' ? null : currentUser);
+    const actorId = actor?.id;
+    if (!target || !files?.length || !working || !dialog?.open || !dialog.isConnected) return;
     try {
       const {items} = await prepareMediaUploads([...files]);
-      if (mode === 'replace') editing.record.mediaItems = [items[0], ...(editing.record.mediaItems || []).slice(1)];
-      else editing.record.mediaItems = [...(editing.record.mediaItems || []), ...items];
+      const currentActor = host.ProcessSync?.identity || (typeof currentUser === 'undefined' ? null : currentUser);
+      if (editing !== target || editableProcessMasterData() !== working || processMasterDraft() !== draft ||
+          currentActor !== actor || currentActor?.id !== actorId || !dialog.open || !dialog.isConnected ||
+          document.querySelector('#equipment-editor-dialog') !== dialog) return;
+      if (mode === 'replace') target.record.mediaItems = [items[0], ...(target.record.mediaItems || []).slice(1)];
+      else target.record.mediaItems = [...(target.record.mediaItems || []), ...items];
       repaint(true);
     } catch (error) { toast(error.message); }
   }
@@ -225,10 +236,12 @@
     document.querySelector('[data-equipment-save]')?.addEventListener('click',commitEditor);
     document.querySelector('[data-equipment-delete]')?.addEventListener('click',async() => {
       if (!editableProcessMasterData() || !editing || !canDeleteProcessMaster()) return;
-      const snapshot=copy(editing.base);
+      const target = editing, snapshot=copy(target.base);
       if (!confirm(t(`刪除 ${editing.record.number || editing.record.name}？已核准製程的歷史快照會保留。`,`Xóa ${editing.record.number || editing.record.name}? Lịch sử quy trình đã duyệt vẫn được giữ.`))) return;
-      entries(snapshot).forEach(row => { row.template.equipment = (row.template.equipment || []).filter(item => item.id !== editing.record.id); });
-      if(!(await saveVersion(t('刪除設備','Xóa máy'),editing.base,snapshot)))return;editing = null; repaint();
+      entries(snapshot).forEach(row => { row.template.equipment = (row.template.equipment || []).filter(item => item.id !== target.record.id); });
+      if(!(await saveVersion(t('刪除設備','Xóa máy'),target.base,snapshot)))return;
+      if (editing !== target) return;
+      editing = null; repaint();
     });
     bindLightbox();
   }

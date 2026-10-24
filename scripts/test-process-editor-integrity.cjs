@@ -6,12 +6,12 @@ async function send(user,action,detail={}){const c=await read();return f.request
 async function change(user,id,fields,stage='A-CUT',original){const c=await read(),o=original||c.workflow.working.workspaces.find(w=>w.id===wid).stages[stage].find(o=>o.id===id),p=[...base,stage,{id}],patches=Object.entries(fields).map(([k,value])=>({op:'set',path:[...p,k],value})),guards=Object.keys(fields).map(k=>({path:[...p,k],value:o[k]}));return send(user,'apply',{patches,guards});}
 function ok(name,r,status=200){assert.equal(r.status,status,JSON.stringify({name,...r}));evidence.push({name,status:r.status,error:r.body.error||null,details:r.body.details||null});}
 (async()=>{f=await fixture(source);try{
- let before=await read();ok('BM01 common code only valid products',await change('admin','pe-1',{bomSelections:{'PED-A':['P001'],'PED-B':['P001']}}));
+ const _before=await read();ok('BM01 common code only valid products',await change('admin','pe-1',{bomSelections:{'PED-A':['P001'],'PED-B':['P001']}}));
  ok('BM09 reject nonexistent product component',await change('admin','pe-1',{bomSelections:{'PED-A':['P001'],'PED-B':['P001'],'PED-C':['P001']}}),409);
  ok('BM02 reject other stage occupancy',await change('admin','pe-2',{bomSelections:{'PED-A':['P002']}}),409);
  ok('BM03 other product same code allowed',await change('admin','pe-2',{bomSelections:{'PED-B':['P002']}}));
- const original=(await read()).workflow.working.workspaces[0].stages['A-CUT'].find(o=>o.id==='pe-4');
- const race=await Promise.all([change('admin','pe-3',{bomSelections:{'PED-C':['P003']}}),change('admin2','pe-4',{bomSelections:{'PED-C':['P003']}})]);assert.deepEqual(race.map(r=>r.status).sort(),[200,409]);evidence.push({name:'BM10 concurrent allocation',statuses:race.map(r=>r.status)});
+ const _original=(await read()).workflow.working.workspaces[0].stages['A-CUT'].find(o=>o.id==='pe-4');
+ const race=await Promise.all([change('admin','pe-3',{bomSelections:{'PED-C':['P003']}}),change('admin2','pe-4',{bomSelections:{'PED-C':['P003']}})]);assert.deepEqual(race.map(r=>r.status).sort((a, b) => { const left = String(a), right = String(b); return left < right ? -1 : left > right ? 1 : 0; }),[200,409]);evidence.push({name:'BM10 concurrent allocation',statuses:race.map(r=>r.status)});
  ok('BM06 release after removing product',await change('admin','pe-1',{productCodes:['PED-B','PED-C'],bomSelections:{'PED-B':['P001']}}));ok('BM06 released allocation usable elsewhere',await change('admin2','pe-2',{bomSelections:{'PED-A':['P001'],'PED-B':['P002']}}));
  ok('BM08 readd requires explicit BOM',await change('admin','pe-1',{productCodes:['PED-A','PED-B','PED-C']}));assert.equal((await read()).workflow.working.workspaces[0].stages['A-CUT'][1].bomSelections['PED-A'],undefined);
  ok('LN01 duplicate entry rejected',await change('admin','pe-4',{editorType:'entry',productCodes:[],bomSelections:{}}),409);

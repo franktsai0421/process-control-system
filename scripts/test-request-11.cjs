@@ -113,7 +113,7 @@ function getFreshFixture() {
   // 4. Check position order
   // Order: 1. routine-version, 2. routine-errors-card, 3. routine-issues-card, 4. routine-toolbar
   const cardClasses = await page.locator('.routine-page > section, .routine-page > details, .routine-page > div.routine-toolbar').evaluateAll(
-    nodes => nodes.map(n => n.className)
+    nodes => nodes.map(n => n.getAttribute('class') || '')
   );
   const versionIdx = cardClasses.findIndex(c => c.includes('routine-version'));
   const errorsIdx = cardClasses.findIndex(c => c.includes('routine-errors-card'));

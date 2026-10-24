@@ -693,8 +693,6 @@ function operationTemplateMediaMarkup(operation) {
   const item = items[0], title = item.name || `${operation.name} 流程資料照片`;
   return `<div class="operation-template-header-media"><button type="button" aria-label="查看流程類別照片" title="查看流程類別照片" data-lightbox-src="${escapeHtml(item.src)}" data-lightbox-type="${escapeHtml(item.type || 'image/jpeg')}" data-lightbox-title="${escapeHtml(title)}" data-lightbox-group="template-${escapeHtml(operation.id || operation.number)}">${item.type?.startsWith('video/') ? '<span class="media-video-mark">▶</span>' : `<img src="${escapeHtml(item.src)}" alt="${escapeHtml(title)}">`}</button></div>`;
 }
-const MEDIA_IMAGE_MAX_EDGE = 1600;
-const MEDIA_IMAGE_QUALITY = 0.82;
 function readUploadAsDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -703,84 +701,9 @@ function readUploadAsDataUrl(file) {
     reader.readAsDataURL(file);
   });
 }
-async function loadUploadImage(file) {
-  if (typeof createImageBitmap === 'function') return createImageBitmap(file);
-  const url = URL.createObjectURL(file),
-    image = new Image();
-  try {
-    await new Promise((resolve, reject) => {
-      image.onload = resolve;
-      image.onerror = () => reject(new Error('照片格式無法讀取'));
-      image.src = url;
-    });
-    return image;
-  } catch (error) {
-    URL.revokeObjectURL(url);
-    throw error;
-  }
-}
-function canvasAsBlob(canvas, type, quality) {
-  return new Promise((resolve) => canvas.toBlob(resolve, type, quality));
-}
-function compressedMediaName(name) {
-  const base = String(name || 'operation-photo').replace(/\.[^.]+$/, '');
-  return `${base}.webp`;
-}
 async function prepareMediaUpload(file) {
-  const original = async () => ({
-    item: {
-      src: await readUploadAsDataUrl(file),
-      name: file.name,
-      type: file.type,
-    },
-    compressed: false,
-  });
-  if (
-    !file.type?.startsWith('image/') ||
-    ['image/gif', 'image/svg+xml'].includes(file.type)
-  )
-    return original();
-  let image;
-  try {
-    image = await loadUploadImage(file);
-    const sourceWidth = image.naturalWidth || image.width,
-      sourceHeight = image.naturalHeight || image.height;
-    if (!sourceWidth || !sourceHeight) return original();
-    const scale = Math.min(
-        1,
-        MEDIA_IMAGE_MAX_EDGE / Math.max(sourceWidth, sourceHeight),
-      ),
-      width = Math.max(1, Math.round(sourceWidth * scale)),
-      height = Math.max(1, Math.round(sourceHeight * scale)),
-      canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const context = canvas.getContext('2d');
-    if (!context) return original();
-    context.drawImage(image, 0, 0, width, height);
-    const blob = await canvasAsBlob(
-      canvas,
-      'image/webp',
-      MEDIA_IMAGE_QUALITY,
-    );
-    if (!blob || (scale === 1 && blob.size >= file.size)) return original();
-    return {
-      item: {
-        src: await readUploadAsDataUrl(blob),
-        name: compressedMediaName(file.name),
-        type: 'image/webp',
-      },
-      compressed: true,
-    };
-  } catch (error) {
-    if (!image || !(image.naturalWidth || image.width) || !(image.naturalHeight || image.height)) throw error;
-    console.warn('照片自動壓縮失敗，改用原始檔案', error);
-    return original();
-  } finally {
-    image?.close?.();
-    if (image instanceof HTMLImageElement && image.src?.startsWith('blob:'))
-      URL.revokeObjectURL(image.src);
-  }
+  const output = file.type?.startsWith('video/') ? file : await window.ProcessPhotoUpload.prepare(file);
+  return { item: { src: await readUploadAsDataUrl(output), name: output.name, type: output.type }, compressed: output !== file };
 }
 async function prepareMediaUploads(files) {
   const items = [];
@@ -1683,6 +1606,65 @@ async function applyProcessMasterSnapshot(before,next) {
   const shared=window.MasterDataWorkflow.shared,{patches,guards}=shared.diff(before,next);
   if(patches.length)await shared.patch('PROCESS',patches,guards);
 }
+const processMasterNameBindings=new Set();
+function bindProcessMasterName(input) {
+  const shared=window.MasterDataWorkflow.shared,owner=window.ProcessSync?.identity,generation=shared.flow('PROCESS')?.generation;
+  const key=input.closest('.master-template')?.dataset.templateKey,snapshot=editableProcessMasterData();
+  if(!snapshot)return;
+  const previous=[...processMasterNameBindings].find(binding=>binding.owner===owner&&binding.generation===generation&&binding.key===key&&!binding.input.isConnected&&!binding.clean());
+  if(previous){previous.transfer(input);return;}
+  const ids=new Set(processMasterCatalogMatches(snapshot,key).map(template=>template.id));
+  let baseline=Object.entries(snapshot).flatMap(([stage,list])=>list.filter(template=>ids.has(template.id)).map(template=>({path:[stage,{id:template.id},'name'],value:template.name})));
+  let pending=Promise.resolve(),failure=null,lastQueued=input.value,composing=false,active=0;
+  const owned=()=>input.isConnected&&window.ProcessSync?.identity===owner&&shared.flow('PROCESS')?.generation===generation&&Boolean(editableProcessMasterData());
+  const synchronize=()=>{
+    const value=input.value;
+    if(failure||lastQueued===value)return;
+    lastQueued=value;active++;
+    pending=pending.then(async()=>{
+      if(failure)return;
+      if(!owned())throw Error('DEPENDENCY_CHANGED_RECONFIRM');
+      const changed=baseline.filter(row=>row.value!==value);
+      if(!changed.length)return;
+      const patches=changed.map(row=>({op:'set',path:row.path,value})),guards=changed.map(row=>({path:row.path,value:row.value}));
+      await shared.patch('PROCESS',patches,guards);
+      if(!owned())throw Error('DEPENDENCY_CHANGED_RECONFIRM');
+      // Advance only values confirmed by this successful command, never a fresh remote snapshot.
+      baseline=baseline.map(row=>({path:row.path,value}));
+      updateProcessSharedStatus();
+    }).catch(error=>{if(!failure){failure=error;if(owned())toast(window.sharedDraftErrorMessage?.(error)||error.message);}}).finally(()=>{active--;});
+  };
+  const drain=async()=>{
+    let current;do{current=pending;await current;}while(current!==pending);
+    if(failure)throw failure;
+    if(composing)throw Error('OPERATION_IN_PROGRESS');
+    if(!owned())throw Error('DEPENDENCY_CHANGED_RECONFIRM');
+  };
+  const binding={input,owner,generation,key,drain,clean:()=>!active&&!failure&&!composing};
+  const attach=()=>{
+    const attached=input;
+    input.processMasterNameFlush=drain;
+    input.oncompositionstart=()=>{if(input===attached)composing=true;};
+    input.oninput=event=>{if(input!==attached)return;composing=!!event.isComposing;if(!composing)synchronize();};
+    input.oncompositionend=()=>{if(input!==attached)return;composing=false;synchronize();};
+  };
+  binding.transfer=next=>{
+    const visible=input.value;
+    input.oninput=input.oncompositionstart=input.oncompositionend=null;
+    input=next;binding.input=next;input.value=visible;attach();
+  };
+  processMasterNameBindings.add(binding);attach();
+}
+async function flushProcessMasterNames() {
+  const owner=window.ProcessSync?.identity,generation=window.MasterDataWorkflow.shared.flow('PROCESS')?.generation,waiting=[];
+  for(const binding of processMasterNameBindings){
+    if(binding.owner!==owner||binding.generation!==generation){if(binding.input.isConnected)throw Error('DEPENDENCY_CHANGED_RECONFIRM');processMasterNameBindings.delete(binding);continue;}
+    if(!binding.input.isConnected&&binding.clean()){processMasterNameBindings.delete(binding);continue;}
+    waiting.push(binding.drain());
+  }
+  await Promise.all(waiting);
+  if(window.ProcessSync?.identity!==owner||window.MasterDataWorkflow.shared.flow('PROCESS')?.generation!==generation)throw Error('DEPENDENCY_CHANGED_RECONFIRM');
+}
 function updateProcessSharedStatus() {
   const shared=window.MasterDataWorkflow?.shared,flow=shared?.flow('PROCESS');
   const bar=document.querySelector('.process-master-version')||(state.dataTab==='process-master'?document.querySelector('#data-content .vd-card'):null);if(!bar||!flow)return;
@@ -1753,15 +1735,15 @@ async function beginProcessMasterDraft() {
 }
 
 async function saveProcessMasterDraft() {
-  try{await window.MasterDataWorkflow.shared.execute('PROCESS','save');
+  try{await flushProcessMasterNames();await window.MasterDataWorkflow.shared.execute('PROCESS','save');
     toast(document.documentElement.lang==='vi'?'Đã lưu nội dung đã đồng bộ.':'已儲存全員已同步內容。');
     if(!document.querySelector('#equipment-editor-dialog[open]'))render();
-  }catch(error){toast(error.message);}
+  }catch(error){toast(window.sharedDraftErrorMessage?.(error)||error.message);}
 }
 async function submitProcessMasterDraft() {
-  try{const result=await window.MasterDataWorkflow.shared.submit('PROCESS');if(!result)return;
+  try{await flushProcessMasterNames();const result=await window.MasterDataWorkflow.shared.submit('PROCESS');if(!result)return;
     state.masterReviewId=result.receipt.caseId;state.processMasterVersionId=result.receipt.caseId;render();
-  }catch(error){updateProcessSharedStatus();toast(error.message);}
+  }catch(error){updateProcessSharedStatus();toast(window.sharedDraftErrorMessage?.(error)||error.message);}
 }
 async function withdrawProcessMasterDraft() {
   const version = processMasterPending();
@@ -3005,11 +2987,13 @@ function renderInspector(operation) {
       updateMachines();
     };
   document.querySelector('#operation-media').onchange = async (event) => {
+    const input = event.target, actor = currentUser;
     const files = [...(event.target.files || [])];
     if (!files.length) return;
     syncText();
     try {
       const { items, compressedCount } = await prepareMediaUploads(files);
+      if (!input.isConnected || currentUser !== actor) return;
       operation.mediaItems.push(...items);
       const first = operationWorkMediaItems(operation)[0];
       operation.media = first?.src || null;
@@ -3019,7 +3003,7 @@ function renderInspector(operation) {
       renderInspector(operation);
     } catch (error) {
       console.warn('媒體上傳失敗', error);
-      toast('照片處理失敗，請改用 JPG、PNG 或 WebP');
+      toast(error.message || '照片處理失敗，請改用 JPG、PNG 或 WebP');
     }
   };
   document.querySelectorAll('[data-remove-media-index]').forEach(
@@ -3158,20 +3142,7 @@ function bindDataInner(tab) {
       latest?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       latest?.querySelector('[data-master-name]')?.select();
     };
-    document.querySelectorAll('[data-master-name]').forEach((input) => {
-      let lastQueued=null;
-      const synchronize = () => {
-        if(lastQueued===input.value)return;
-        const key = input.closest('.master-template')?.dataset.templateKey;
-        const snapshot=editableProcessMasterData();if(!snapshot)return;
-        const ids=new Set(processMasterCatalogMatches(snapshot,key).map(template=>template.id));
-        const patches=Object.entries(snapshot).flatMap(([stage,list])=>list.filter(template=>ids.has(template.id)).map(template=>({op:'set',path:[stage,{id:template.id},'name'],value:input.value})));
-        lastQueued=input.value;
-        window.MasterDataWorkflow.shared.patch('PROCESS',patches).then(updateProcessSharedStatus).catch(error=>{lastQueued=null;toast(error.message);});
-      };
-      input.oninput=event=>{if(!event.isComposing)synchronize();};
-      input.oncompositionend=synchronize;
-    });
+    document.querySelectorAll('[data-master-name]').forEach(bindProcessMasterName);
     document.querySelector('#process-master-version-choice')?.addEventListener(
       'change',
       (event) => {
@@ -3244,6 +3215,9 @@ function bindDataInner(tab) {
     document.querySelectorAll('[data-master-media]').forEach((input) => {
       input.onchange = async () => {
         const before=editableProcessMasterData();if(!before||input.disabled)return;
+        const requestDraft=processMasterDraft(), requestActor=window.ProcessSync?.identity || currentUser,
+          requestActorId=requestActor?.id, requestEpoch=window.ProcessSync?.identityGeneration?.();
+        const sameActor=()=>{const actor=window.ProcessSync?.identity || currentUser;return actor===requestActor && actor?.id===requestActorId && window.ProcessSync?.identityGeneration?.()===requestEpoch;};
         const next=JSON.parse(JSON.stringify(before));
         const card = input.closest('.master-template'),
           matches = processMasterCatalogMatches(
@@ -3255,12 +3229,14 @@ function bindDataInner(tab) {
         input.disabled=true;
         try{
         const prepared = await prepareMediaUploads([...input.files]);
+        if(input.isConnected===false || !sameActor() || before!==editableProcessMasterData() || requestDraft!==processMasterDraft())return;
         const nextMedia = [
           ...processTemplateMediaItems(template),
           ...prepared.items,
         ];
         matches.forEach((item) => setProcessTemplateMedia(item, nextMedia));
         await applyProcessMasterSnapshot(before,next);
+        if(input.isConnected===false || !sameActor())return;
         document.querySelector('#data-content').innerHTML =
           processMasterView();
         bindDataInner('process-master');

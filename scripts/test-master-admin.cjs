@@ -62,6 +62,25 @@ assert.equal(sandbox.MasterAdminUI.validProduct(draft.snapshot,{code:'B2',name:'
 assert.equal(sandbox.MasterAdminUI.validProduct(draft.snapshot,{code:'N',name:'N',line:'B',stages:['A-CUT']}), 'route');
 sandbox.state.masterScope='C';sandbox.state.masterSection='lines';assert.match(sandbox.dataView(),/C-TURN/);assert.doesNotMatch(sandbox.dataView(),/A-CUT/);
 sandbox.state.masterSection='products';sandbox.document.documentElement.lang='vi';assert.match(sandbox.dataView(),/Chọn phiên bản/);assert.match(sandbox.dataView(),/Thêm sản phẩm/);
+// Actual component render of both legacy and V3 version events; raw rows remain immutable.
+const historyDraft=control.versions.find(v=>v.id==='C2'),oldHistory=historyDraft.history;
+const historyRows=[
+ {label:'Legacy <label>',note:'Legacy <note>',actor:'Legacy <actor>',action:'approved',actorName:'ignored actor',comment:'ignored comment',at:'2026-10-16T11:00:00Z'},
+ ...['submit','approved','returned','withdrawn'].map(action=>({action,actorId:'id-'+action,actorName:'V3 <'+action+'>',comment:'Reason <'+action+'>',at:'2026-10-16T11:01:00Z'})),
+ {label:'',note:'',actor:'',action:'approved',actorName:'hidden actor',comment:'hidden comment',at:'2026-10-16T11:02:00Z'},
+ {action:'<unknown>',actorName:'<unknown actor>',comment:'<unknown comment>',at:'2026-10-16T11:03:00Z'},
+ {action:'constructor',actorName:{name:'bad actor'},comment:{text:'bad comment'},at:'2026-10-16T11:04:00Z'}
+];
+historyDraft.history=historyRows;const rawHistory=JSON.stringify(historyRows);
+for(const language of ['zh-Hant','vi']){
+ sandbox.document.documentElement.lang=language;const html=pure.masterView();
+ for(const token of ['Legacy &lt;label&gt;','Legacy &lt;note&gt;','Legacy &lt;actor&gt;','V3 &lt;submit&gt;','V3 &lt;approved&gt;','V3 &lt;returned&gt;','V3 &lt;withdrawn&gt;','Reason &lt;submit&gt;','Reason &lt;approved&gt;','Reason &lt;returned&gt;','Reason &lt;withdrawn&gt;','&lt;unknown&gt;','&lt;unknown actor&gt;','&lt;unknown comment&gt;','constructor'])assert.ok(html.includes(token),token);
+ for(const token of language==='vi'?['Gửi quản lý duyệt','Quản lý phê duyệt','Trả lại để sửa','Rút hồ sơ']:['送出主管審核','主管核准','發回修改','撤回送審'])assert.ok(html.includes(token),token);
+ assert.doesNotMatch(html,/ignored actor|ignored comment|hidden actor|hidden comment|\[object Object\]|<unknown>/);
+ assert.equal(JSON.stringify(historyRows),rawHistory);
+}
+historyDraft.history=oldHistory;
+console.log('PASS actual master history renderer: bilingual V3 fields, legacy precedence/empty values, unknown escaping, typed metadata and raw immutability.');
 console.log('PASS: grouped AB/C categories, empty categories, cancel-without-write, draft/history selection, line-specific ordered route choices, bilingual rendering.');
 
 // Accessible platform tabs are source-level regression checks, not DOM/browser acceptance.

@@ -208,7 +208,7 @@
         body: JSON.stringify(body),
       });
       v = await response.json();
-    } catch (e) {
+    } catch {
       try {
         const receipt = await read('?operationId=' + body.operationId);
         s.retry = null;
@@ -256,8 +256,8 @@
   let historySearch, historyLanguage, pendingHistoryItem;
   async function ensureHistorySearch() {
     if (!historySearch) {
-      const module = await import('/process/routine-fqc-search.mjs?v=20261013');
-      historySearch = module.createHistorySearch({getData: () => data, readPreview: () => read('?search-preview=1')});
+      const workflowModule = await import('/process/routine-fqc-search.mjs?v=20261013');
+      historySearch = workflowModule.createHistorySearch({getData: () => data, readPreview: () => read('?search-preview=1')});
     }
   }
   async function mount(container, historyMode = false) {
@@ -459,9 +459,11 @@
       categories = [
         ...catalog.categories,
         ...sources.map((v) => ({ name: v.category, line: v.line })),
-      ];
+      ],
+      options = itemOptions(sources),
+      selectedSource = sources.find((v) => v.id === s.item) || catalog.items?.find((v) => v.id === s.item);
     const select = (key, title, values) =>
-      `<label>${title}<select data-filter="${key}"><option value="">${t('全部', 'Tất cả')}</option>${[
+      `<label>${title}<select data-filter="${String(key)}"><option value="">${t('全部', 'Tất cả')}</option>${[
         ...new Set(values),
       ]
         .filter(Boolean)
@@ -473,17 +475,15 @@
     return `<div class="rf-toolbar"><label class="rf-query">${t('產品、錯誤代碼、項目或編號', 'Sản phẩm, mã lỗi, hạng mục, số hồ sơ')}<input data-filter="query" value="${h(s.query)}" placeholder="${t('搜尋涵蓋產品及歷史快照…', 'Tìm sản phẩm và bản chụp lịch sử…')}"></label>${select(
       'line',
       t('線別', 'Chuyền'),
-      [...catalog.lines, ...sources.map((v) => v.line)].sort(),
+      [...catalog.lines, ...sources.map((v) => v.line)].sort((a, b) => { const left = String(a), right = String(b); return left < right ? -1 : left > right ? 1 : 0; }),
     )}${select(
       'category',
       t('類別', 'Loại'),
       categories
         .filter((v) => !s.line || v.line === s.line)
         .map((v) => v.name)
-        .sort(),
-    )}<label>${t('檢查項目', 'Hạng mục')}<select data-filter="item"><option value="">${s.line || s.category ? t('所選範圍全部項目', 'Tất cả trong phạm vi') : t('跨線全部項目', 'Tất cả chuyền')}</option>${itemOptions(
-      sources,
-    )
+        .sort((a, b) => { const left = String(a), right = String(b); return left < right ? -1 : left > right ? 1 : 0; }),
+    )}<label>${t('檢查項目', 'Hạng mục')}<select data-filter="item"><option value="">${s.line || s.category ? t('所選範圍全部項目', 'Tất cả trong phạm vi') : t('跨線全部項目', 'Tất cả chuyền')}</option>${s.item && !options.some((v) => v.id === s.item) ? `<option value="${h(s.item)}" selected>${h([selectedSource?.name, selectedSource?.code, t('目前清單外的回查項目；可選全部解除', 'Hạng mục tra cứu ngoài danh sách hiện tại; chọn tất cả để bỏ lọc')].filter(Boolean).join(' · '))}</option>` : ''}${options
       .map(
         (v) =>
           `<option value="${h(v.id)}" ${s.item === v.id ? 'selected' : ''}>${h(v.name + ' · ' + v.line + ' · ' + v.category + ' · ' + v.errorCode + ' · ' + v.code + (v.historical ? t(' · 歷史版本', ' · Phiên bản lịch sử') : ''))}</option>`,
@@ -509,7 +509,7 @@
     ]
       .map(
         ([key, values]) =>
-          `<label>${t('狀態', 'Trạng thái')}<select data-filter="${key}"><option value="">${t('全部', 'Tất cả')}</option>${values.map((v) => `<option value="${v}" ${s[key] === v ? 'selected' : ''}>${label(v)}</option>`).join('')}</select></label>`,
+          `<label>${t('狀態', 'Trạng thái')}<select data-filter="${String(key)}"><option value="">${t('全部', 'Tất cả')}</option>${values.map((v) => `<option value="${v}" ${s[key] === v ? 'selected' : ''}>${label(v)}</option>`).join('')}</select></label>`,
       )
       .join(
         '',
@@ -879,7 +879,7 @@
       data.control.jobs.find((j) => j.id === l.jobId),
     );
     const complete = jobs.filter((j) => j.completion).length;
-    const pending = d.flow.cases.find((a) => a.id === d.flow.pendingId);
+    const _pending = d.flow.cases.find((a) => a.id === d.flow.pendingId);
     return `<article class="rf-document"><div class="rf-draft-header"></div>${issuePanels(d, c)}<div class="rf-operation-log"><ol>${(d.lifecycle || []).map((a) => `<li>${h(a.at)} · ${h(a.actor.name)} · ${h(label(a.action))}</li>`).join('')}${d.flow.cases.map((a) => `<li>${h(a.at)} · ${h(a.actor.name)} · ${h(a.reason)} · ${h(a.status)}${a.result ? ` · ${h(a.result.actor?.name)} · ${h(a.result.at)}` : ''}</li>`).join('')}</ol></div><div class="rf-actions">${status(d) === 'draft' ? btn('save', t('儲存', 'Lưu'), !p.save, 'primary') + btn('submit', t('送審', 'Gửi duyệt'), !p.submit || !d.flow.saved) : ''}${status(d) === 'draft' ? btn('discard', t('捨棄草稿', 'Bỏ bản nháp'), !p.edit || (!!d.flow.active.id && !p.revoke), 'danger') : ''}${status(d) === 'pending' ? btn('review', t('審核', 'Duyệt'), !p.approve && !p.return) + btn('withdraw', t('撤回', 'Rút lại'), !p.withdraw) : ''}</div>${cancellationPanel(d)}${approvalPanel(d)}<h3 class="rf-number ${reportType(d)}">${h(displayNumber(d))}</h3>${legacyNumber(d)}${btn('expand-report', s.wide ? t('回到左右明細', 'Về bố cục hai cột') : t('展開完整報告', 'Mở rộng báo cáo'))}<p class="rf-subtle">${reportLabel(d)} · ${h(d.owner.name)} · ${h(d.createdAt.slice(0, 16).replace('T', ' '))}</p>${d.correctionOf ? `<p>${t('更正來源', 'Sửa từ')} <button class="rf-report-link" data-doc="${h(d.correctionOf)}">${h(docs().find((o) => o.id === d.correctionOf)?.number)}</button></p>` : ''}${d.planId ? `<button class="rf-report-link" data-doc="${h(d.planId)}">${t('返回所屬計畫', 'Về kế hoạch gốc')}</button>` : ''}${d.caseId ? `<div class="rf-notice"><button class="rf-report-link" data-case="${h(d.caseId)}">${h(data.control.cases.find((a) => a.id === d.caseId)?.number)} →</button><p>${t('應複測樣品（尚待驗證；不是本次實測）', 'Mẫu cần thử lại (chờ xác minh; không phải mẫu đã thử lần này)')}：${h((data.control.cases.find((a) => a.id === d.caseId)?.requiredSamples || []).join(', ') || '—')}</p></div>` : ''}${d.kind === 'plan' ? `<div class="rf-progress"><span style="width:${(100 * complete) / Math.max(1, jobs.length)}%"></span></div><p class="rf-subtle">${t('計畫完成', 'Tiến độ kế hoạch')} ${complete}/${jobs.length} · ${t('異常是否結案另行確認', 'Đóng bất thường được xác nhận riêng')}</p>` : ''}<div class="rf-input-grid"><label>${t('文件名稱', 'Tên hồ sơ')}<input data-field="title" value="${h(c.title)}" ${edit ? '' : 'disabled'}></label><label>${t('實際日期', 'Ngày thực tế')}<input type="date" data-field="date" value="${h(c.date)}" ${edit ? '' : 'disabled'}></label></div>${c.lines.map((l, index) => lineHTML(l, index, d, edit)).join('')}<div class="rf-edit"><label>${t('備註', 'Ghi chú')}<textarea data-field="notes" ${edit ? '' : 'disabled'}>${h(c.notes)}</textarea></label>${['waiver', 'disposal'].includes(d.kind) ? `<label>${t('申請原因', 'Lý do đề nghị')}<textarea data-field="reason" ${edit ? '' : 'disabled'}>${h(c.reason)}</textarea></label>` : ''}${d.kind === 'disposal' ? `<label>${t('處置內容', 'Nội dung xử lý')}<textarea data-field="disposition" ${edit ? '' : 'disabled'}>${h(c.disposition)}</textarea></label><div><label>${t('處置照片（必填，至少一張成功上傳）', 'Ảnh xử lý (bắt buộc, tải thành công ít nhất một ảnh)')}</label><div class="rf-photos">${c.evidence.map(p => draftPhoto(p,edit)).join('')}${edit ? upload('evidence') : ''}</div></div>` : ''}</div><div class="rf-actions">${status(d) === 'approved' ? btn('export', t('↓ 匯出正式文件', '↓ Xuất hồ sơ chính thức'), !p.history) : ''}${d.kind === 'plan' && status(d) === 'approved' ? planActions(d) : ''}</div>${d.impact?.length ? `<div class="rf-notice error">${t('下游影響追蹤', 'Theo dõi ảnh hưởng')} ${d.impact.map((a) => `<p><button class="rf-report-link" data-doc="${a.id}">${h(a.id)}</button> ${h(a.reason)} ${a.resolvedAt ? '✓' : ''}</p>`).join('')}${btn('resolve-impact', t('確認影響處理', 'Xác nhận xử lý ảnh hưởng'), !p.approve || d.impact.every((a) => a.resolvedAt))}</div>` : ''}${data.control.cases
       .filter((a) => a.reportIds.includes(d.id))
       .map(
@@ -929,6 +929,7 @@
     return `<h3>${h(a.number)}</h3>${tag(a.status)} <p>${h(j.source.name)}</p>${coverage(j.source)}<p class="rf-subtle">${h(j.start + ' — ' + j.end)} · ${t('原不合格與每次複測都會保留', 'Lưu kết quả ban đầu và mọi lần thử lại')}</p><div class="rf-actions">${retestActions(a)}${btn('followup-waiver', t('申請本期免做', 'Đề nghị miễn kỳ'), done(a) || a.result !== 'unable' || a.unresolvedFailureSamples?.length || !data.permissions.edit)}${btn('followup-disposal', t('申請處置結案', 'Đề nghị đóng xử lý'), done(a) || (a.result !== 'fail' && !a.unresolvedFailureSamples?.length) || !data.permissions.edit)}${btn('close', t('確認結案', 'Xác nhận đóng'), a.status !== 'ready-close' || !data.permissions.approve, 'primary')}</div>${s.busy ? '<p role="status">' + t('正在處理，請稍候…','Đang xử lý, vui lòng chờ…') + '</p>' : ''}${s.error ? '<div class="rf-notice error" role="alert">' + h(s.error) + (s.retry ? btn('retry',t('查證／重試原操作','Kiểm tra / thử lại thao tác')) : '') + '</div>' : ''}<ol class="rf-timeline">${a.events.map((e) => `<li><b>${h(label(e.action))}</b><time>${h(e.at)} · ${h(e.actor.name)}</time><p>${h(e.reason)}</p>${e.documentId ? `<button class="rf-report-link" data-doc="${e.documentId}">${h(docs().find((d) => d.id === e.documentId)?.number || e.documentId)}</button>` : ''}</li>`).join('')}</ol>${a.improvements.map((i) => `<div class="rf-notice"><b>${t('改善紀錄', 'Ghi cải thiện')}</b><p>${h(i.notes)}</p><small>${h(i.actor.name + ' · ' + i.at)}</small><div class="rf-photos">${i.photos.map(photo).join('')}</div></div>`).join('')}`;
   }
   function choose(value, tab = s.tab) {
+    const leavingReviewForCase = s.reviewPlatform && tab === 'cases';
     if (tab !== s.tab) s.highlight = '';
     s.selected = value;
     s.tab = tab === 'documents' ? documentTab(docs().find((d) => d.id === value)) : tab;
@@ -938,6 +939,10 @@
     if (doc() && s.workState && status(doc()) !== s.workState) s.workState = '';
     s.error = '';
     s.issues = [];
+    if (leavingReviewForCase) {
+      window.ProcessDualSystem.go('quality-inspections');
+      return;
+    }
     paint();
     if (window.matchMedia('(max-width: 760px)').matches) root.querySelector('.rf-detail-panel')?.scrollIntoView({block:'start'});
     else root.querySelector('.rf-table tr.selected')?.focus({preventScroll:true});
@@ -1001,9 +1006,7 @@
       (b) =>
         (b.onchange = () => {
           s.selectionNotice = '';
-          b.checked
-            ? s.checked.add(b.dataset.job)
-            : s.checked.delete(b.dataset.job);
+          if (b.checked) { s.checked.add(b.dataset.job); } else { s.checked.delete(b.dataset.job); }
           paint();
         }),
     );
@@ -1100,12 +1103,15 @@
     root.querySelectorAll('[data-upload]').forEach(
       (el) =>
         (el.onchange = async () => {
-          const file = el.files[0];
-          if (!file) return;
+          const source = el.files[0];
+          if (!source) return;
+          let file = source;
           const photos = el.dataset.upload === 'evidence' ? c.evidence : row(el).photos;
           s.busy = true;
           el.disabled = true;
           try {
+            file = await window.ProcessPhotoUpload.prepare(source, { input: el });
+            if (!el.isConnected) return;
             const r = await fetch(endpoint + '/photo', {
                 method: 'PUT',
                 headers: { 'content-type': file.type },
@@ -1113,6 +1119,7 @@
               }),
               v = await r.json();
             if (!r.ok) throw Error(v.error || 'UPLOAD_FAILED');
+            if (!el.isConnected) return;
             if (!photos.includes(v.id)) photos.push(v.id);
             touch();
             s.error = '';
@@ -1203,7 +1210,7 @@
         s.dialogOpen = false;
         el.close();
         el.remove();
-        opener?.isConnected && opener.focus({preventScroll:true});
+        if (opener?.isConnected) opener.focus({preventScroll:true});
         resolve(v);
       };
       el.querySelector('[data-cancel]').onclick = () => close(null);
@@ -1514,10 +1521,13 @@
     for (const p of all) {
       const r = await fetch(endpoint + '/photo?id=' + p);
       if (!r.ok) throw Error('EXPORT_PHOTO_FAILED');
-      images[p] = await new Promise((resolve) => {
+      const blob = await r.blob();
+      images[p] = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve(reader.result);
-        r.blob().then((b) => reader.readAsDataURL(b));
+        reader.onerror = () => reject(reader.error || Error('EXPORT_PHOTO_READ_FAILED'));
+        reader.onabort = () => reject(Error('EXPORT_PHOTO_READ_ABORTED'));
+        reader.readAsDataURL(blob);
       });
     }
     const page = `<!doctype html><html lang="${document.documentElement.lang}"><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'"><title>${h(displayNumber(out.document))}</title><style>body{font:15px system-ui;max-width:1100px;margin:40px auto;color:#234}section{border:1px solid #ccd;padding:20px;margin:20px 0}img{max-width:240px;max-height:200px}pre{white-space:pre-wrap}</style><h1>${h(displayNumber(out.document))}</h1>${legacyNumber(out.document)}<h2>${h(c.title)}</h2><p>${h(c.date)} · ${h(out.document.flow.active.id)} · Asia/Ho_Chi_Minh</p>${c.lines.map((l) => `<section><h2>${h(l.source.name)}</h2><p>${h(l.source.code + ' / ' + l.source.version)}</p>${coverage(l.source)}${l.requiredSamples?.length ? `<p>${t('本份文件應複測樣品（不代表本次已實測）', 'Mẫu cần thử lại của hồ sơ (không có nghĩa đã thử lần này)')}: ${h(l.requiredSamples.join(', '))}</p>` : ''}<pre>${h(l.source.description)}</pre>${l.results.map((r) => `<hr><b>${label(r.outcome)}</b><p>${t('實測樣品', 'Mẫu thực thử')}: ${h(r.samples.join(', ') || '—')}</p><pre>${h(r.value + '\n' + r.notes)}</pre>${r.photos.map((p) => `<img src="${images[p]}" alt="${h(p)}">`).join('')}`).join('')}</section>`).join('')}<pre>${h(c.notes + '\n' + c.reason + '\n' + c.disposition)}</pre>${c.evidence.map((p) => `<img src="${images[p]}">`).join('')}<h2>${t('審核紀錄', 'Lịch sử duyệt')}</h2><pre>${h(
@@ -1774,10 +1784,18 @@
         );
     }
   }, 15000);
-  window.addEventListener('beforeunload', (e) => {
-    if (docs().some((d) => dirty(d))) {
-      e.preventDefault();
-      e.returnValue = '';
+  // The event-handler return contract retains legacy unload protection without
+  // writing the deprecated event.returnValue property. Preserve an existing
+  // host property handler; other addEventListener handlers keep running.
+  const previousBeforeUnload = window.onbeforeunload?.bind(window);
+  window.onbeforeunload = (event) => {
+    let previousResult, needsReminder;
+    try {
+      previousResult = previousBeforeUnload?.(event);
+    } finally {
+      needsReminder = docs().some((d) => dirty(d));
+      if (needsReminder) event.preventDefault();
     }
-  });
+    return previousResult ?? (needsReminder ? '' : null);
+  };
 })();
