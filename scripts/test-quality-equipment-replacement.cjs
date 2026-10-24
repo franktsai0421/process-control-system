@@ -30,16 +30,16 @@ const env = {
 const cache = new Map();
 function load(file) {
   file = path.resolve(file); if (cache.has(file)) return cache.get(file);
-  const module = { exports: {} }; cache.set(file, module.exports);
+  const workflowModule = { exports: {} }; cache.set(file, workflowModule.exports);
   const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022, esModuleInterop: true },
   }).outputText;
-  vm.runInNewContext(code, { module, exports: module.exports, require(id) {
+  vm.runInNewContext(code, { module: workflowModule, exports: workflowModule.exports, require(id) {
     if (id === 'cloudflare:workers') return { env };
     const target = id.startsWith('@/') ? path.resolve(id.slice(2)) : path.resolve(path.dirname(file), id);
     return target.endsWith('.mjs') ? require(target) : load(target.endsWith('.ts') ? target : `${target}.ts`);
   }, Request, Response, URL, crypto: webcrypto, Date, TextEncoder, TextDecoder, atob, btoa, console });
-  cache.set(file, module.exports); return module.exports;
+  cache.set(file, workflowModule.exports); return workflowModule.exports;
 }
 const now = new Date().toISOString();
 const version = (id, status, items) => ({ id, number: 1, status, revision: 1,

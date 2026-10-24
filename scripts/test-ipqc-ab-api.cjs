@@ -87,7 +87,7 @@ const image = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQ
 
   // A stale global revision must not overwrite a newer value.
   const stale=state.revision;
-  const latest=await read();
+  const _latest=await read();
   await post(second.line,second.name,'begin');
   const collision=await fetch(`${url}/api/ipqc-ab`,{method:'POST',headers,
     body:JSON.stringify({action:'begin',line:second.line,group:second.name,baseRevision:stale})});

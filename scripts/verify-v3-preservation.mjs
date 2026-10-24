@@ -1,3 +1,4 @@
+import {withFixtureCleanupSync} from './fixture-cleanup.mjs';
 // Read-only verification of the explicit task backup. Restores SQLite into a
 // disposable directory, then resolves its R2 reference against the backed-up blobs.
 import fs from 'node:fs';
@@ -11,7 +12,7 @@ let totalBytes=0;
 for(const file of manifest.files){const target=path.resolve(backupRoot,file.path);if(!target.startsWith(backupRoot+path.sep))throw Error('Unsafe manifest path');
   const bytes=fs.readFileSync(target);if(bytes.length!==file.bytes||sha(bytes)!==file.sha256)throw Error('Backup hash mismatch');totalBytes+=bytes.length;}
 const restored=fs.mkdtempSync(path.resolve('.wrangler/local-only/v3-restore-check-'));
-try {
+withFixtureCleanupSync(() => {
   const sqlFiles=manifest.files.filter(file=>file.path.endsWith('.sqlite'));
   let state;
   for(const file of sqlFiles){const source=new DatabaseSync(path.join(backupRoot,file.path),{readOnly:true});const to=path.join(restored,path.basename(file.path));
@@ -34,8 +35,8 @@ try {
   const report={result:'PASS',revision:state.revision,files:manifest.files.length,bytes:totalBytes,sqliteIntegrityChecks:sqlFiles.length,
     r2Objects:objects.length,businessKeys:Object.keys(values).length,restoredCurrentSnapshot:true,backupRoot};
   r2.close();console.log(JSON.stringify(report));
-} finally {
+}, () => {
   // Exact freshly-created disposable directory only; never backup or live state.
   if(path.dirname(restored)!==path.resolve('.wrangler/local-only')||!path.basename(restored).startsWith('v3-restore-check-'))throw Error('Unsafe cleanup target');
   fs.rmSync(restored,{recursive:true,force:true});
-}
+});

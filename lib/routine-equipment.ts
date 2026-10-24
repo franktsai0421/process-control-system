@@ -1,3 +1,4 @@
+import {legacyJsonValueText,type JsonValue} from './legacy-login-json';
 export type Equipment = Record<string, unknown> & {
   id: string; assetCode: string; pieceMark: string; groupId: string;
   calibrationMethod: string; calibratedAt: string; expiresAt: string;
@@ -207,15 +208,15 @@ export function checkedSnapshot(version: EquipmentVersion, incoming: unknown) {
         customCycle: String(raw.customCycle || ''),
         calibratedAt: String(raw.calibratedAt || ''),
         expiresAt: String(raw.expiresAt || ''),
-        intakeDate: String(raw.intakeDate || ''),
+        intakeDate: legacyJsonValueText((raw.intakeDate || '') as JsonValue),
         name: String(raw.name || '').trim(),
         quantity: 1,
         unit: String(raw.unit || '個').trim(),
-        owner: String(raw.owner || '').trim(),
+        owner: legacyJsonValueText((raw.owner || '') as JsonValue).trim(),
         enabled: typeof raw.enabled === 'boolean' ? raw.enabled : true,
         confirmed: typeof raw.confirmed === 'boolean' ? raw.confirmed : false,
-        spec: String(raw.spec || ''),
-        notes: String(raw.notes || ''),
+        spec: legacyJsonValueText((raw.spec || '') as JsonValue),
+        notes: legacyJsonValueText((raw.notes || '') as JsonValue),
         photoId: String(raw.photoId || ''),
         photoHidden: !!raw.photoHidden,
       };

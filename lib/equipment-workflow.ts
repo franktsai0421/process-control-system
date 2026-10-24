@@ -82,7 +82,7 @@ export const equipmentWorkflowAdapter:WorkflowAdapter<EquipmentSnapshot,Equipmen
          if(collection==='issues'||p.path.length!==2)throw new DraftConflict('SOURCE_PROVENANCE_PROTECTED',422);
          if(collection==='equipment'&&effectiveVersion(control)?.snapshot.equipment.some(e=>e.id===entity.id))throw new DraftConflict('EFFECTIVE_EQUIPMENT_DELETE_FORBIDDEN',422);
        }else if(p.op!=='set'||p.path.length!==3||typeof field!=='string'||!fields[collection as keyof EquipmentSnapshot].includes(field))throw new DraftConflict('UNSUPPORTED_ITEM_PATCH',422);
-       if(p.op==='remove'||typeof field!=='string'||!['name','nameZh','nameVi','notes','owner','spec','resolution'].includes(field))if(!(command.guards||[]).some(g=>stableDraftJSON(g.path)===stableDraftJSON(p.path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
+       if(!(command.guards||[]).some(g=>stableDraftJSON(g.path)===stableDraftJSON(p.path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
      }
    }
    return applyDraftCommand(flow,{...command,patches},{...context,commandFingerprint:context.commandFingerprint||stableDraftJSON(command)});

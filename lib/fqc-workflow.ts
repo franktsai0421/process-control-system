@@ -7,7 +7,6 @@ type Item=Row&{checkNo:string;errorId:string;equipmentId?:string|null;equipmentS
 export type FqcSnapshot={errors:(Row&{code:string})[];items:Item[]};
 type FqcLibrary={activeVersionId:string|null;versions:NumericVersion<FqcSnapshot>[];workflow?:SharedDraft<FqcSnapshot>};
 const fields={errors:['name','isDeleted'],items:['name','description','errorId','tool','equipmentId','equipmentSnapshot','mediaItems','isEnabled','rule','isMonthly','isQuarterly','isYearly','isCustomPeriod','customPeriodText','productCodes','productRefs','products','reason','note','isDeleted']};
-const free=new Set(['name','description','reason','note']);
 const text=(value:unknown)=>typeof value==='string'?value:typeof value==='number'?String(value):'';
 export function fqcWorkflowAdapter():WorkflowAdapter<FqcSnapshot,FqcLibrary>{
  let root:{schemaVersion:number;libraries:Record<string,FqcLibrary>},numbers:Map<string,number|string>,abGuard:{versionId:string;codes:string[]}|null=null;
@@ -68,7 +67,7 @@ export function fqcWorkflowAdapter():WorkflowAdapter<FqcSnapshot,FqcLibrary>{
      else{const row=p.value as Item,parent=flow.working.errors.find(e=>e.id===row.errorId&&!e.isDeleted)||patches.filter(q=>q.op==='insert'&&q.path[0]==='errors').map(q=>(q as Extract<DraftPatch,{op:'insert'}>).value as Row&{code:string}).find(e=>e.id===row.errorId&&!e.isDeleted);if(!parent)throw new DraftConflict('ERROR_PARENT_INVALID',422);const match=parent.code.match(/^(.*-FQC-L)0?(\d+)$/i),prefix=match?match[1]+Number(match[2])+'-':parent.code+'-';row.category=parent.category;row.line=parent.line;row.checkNo=prefix+String(Math.max(0,...allItems.filter(i=>i.errorId===row.errorId).map(i=>Number(i.checkNo.match(/-(\d+)$/)?.[1])||0))+1).padStart(2,'0');allItems.push(row);}
     }else{if(p.op!=='set'||p.path.length!==3||!entity||typeof entity==='string'||typeof field!=='string'||!fields[collection].includes(field))throw new DraftConflict('UNSUPPORTED_ITEM_PATCH',422);
      if(!flow.working[collection].some(r=>r.id===entity.id&&!r.isDeleted))throw new DraftConflict('ENTITY_REMOVED_OR_AMBIGUOUS');
-     if(!free.has(field)&&!(command.guards||[]).some(g=>stableDraftJSON(g.path)===stableDraftJSON(p.path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
+     if(!(command.guards||[]).some(g=>stableDraftJSON(g.path)===stableDraftJSON(p.path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
     }
    }return applyDraftCommand(flow,{...command,patches},{...context,commandFingerprint:context.commandFingerprint||stableDraftJSON(command)});
   }

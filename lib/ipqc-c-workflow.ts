@@ -98,8 +98,7 @@ export function applyIpqcWorkflow(control: IpqcWorkflowControl, command: IpqcWor
         !entity || typeof entity === 'string' || typeof field!=='string' || !fields.includes(field)) throw new DraftConflict('UNSUPPORTED_ITEM_PATCH',422);
     const rows=collection==='errors'?control.workflow.working.errors:control.workflow.working.items;
     if(!rows.some(row=>row.id===entity.id&&!row.deleted))throw new DraftConflict('ENTITY_REMOVED_OR_AMBIGUOUS');
-    if (['mediaItems','equipmentId','equipmentGroupId','rule'].includes(field) &&
-        !(command.guards || []).some(guard=>JSON.stringify(guard.path)===JSON.stringify(patch.path)))
+    if (!(command.guards || []).some(guard=>JSON.stringify(guard.path)===JSON.stringify(patch.path)))
       throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
   }
   const result = applyDraftCommand(control.workflow,command,context);

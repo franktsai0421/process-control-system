@@ -1,4 +1,4 @@
-import {can,parse} from './process-state';
+import {parse} from './process-state';
 import {applyDraftCommand,DraftConflict,stableDraftJSON,type DraftIssue} from './shared-draft';
 import {type WorkflowAdapter,type VersionedControl} from './versioned-shared-workflow';
 import canonicalBom from '../data/canonical/bom.json';
@@ -88,7 +88,7 @@ export function processAuthoringAdapter():WorkflowAdapter<Content,AuthoringContr
    if(p.path[0]!=='workspaces'||p.op==='set'&&!emptyStage&&(p.path.length<6||p.path[2]!=='stages'||typeof p.path[4]!=='object'))throw new DraftConflict('AUTHORING_PATCH_INVALID',422);
    const last=p.path.at(-1),field=typeof last==='string'?last:'';
    if(p.op==='set'&&['id','stageCode'].includes(field))throw new DraftConflict('IMMUTABLE_IDENTITY',422);
-   if(p.op!=='insert'&&!['name','instructions','ipqc'].includes(field)&&!(command.guards||[]).some(g=>equal(g.path,p.path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
+   if(!control.workflow!.receipts[command.operationId]&&p.op!=='insert'&&!(command.guards||[]).some(g=>equal(g.path,p.path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
   }return applyDraftCommand(control.workflow!,command,ctx);},
  };
 }

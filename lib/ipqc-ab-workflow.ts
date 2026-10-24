@@ -72,7 +72,7 @@ export function abWorkflowAdapter(key:string):WorkflowAdapter<AbSnapshot,AbShare
         const [collection,entity,field]=p.path,fields=collection==='errors'?['name']:['standard','methodText','inspectionMode','equipmentId','isEnabled','rules','standardPhotos','methodPhotos','productCodes','reason'];
         if(p.op!=='set'||p.path.length!==3||typeof collection!=='string'||!['errors','items'].includes(collection)||!entity||typeof entity==='string'||typeof field!=='string'||!fields.includes(field))throw new DraftConflict('UNSUPPORTED_ITEM_PATCH',422);
         if(!flow.working[collection as keyof AbSnapshot].some(r=>r.id===entity.id&&!r.deleted))throw new DraftConflict('ENTITY_REMOVED_OR_AMBIGUOUS');
-        if(!['name','standard','methodText','reason','isEnabled'].includes(field)&&!(command.guards||[]).some(g=>stableDraftJSON(g.path)===stableDraftJSON(p.path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
+        if(!(command.guards||[]).some(g=>stableDraftJSON(g.path)===stableDraftJSON(p.path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
       }
       return applyDraftCommand(flow,command,context);
     }

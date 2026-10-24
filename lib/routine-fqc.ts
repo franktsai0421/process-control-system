@@ -1,3 +1,5 @@
+import {legacyJsonValueText,type JsonValue} from './legacy-login-json';
+import type {FqcSnapshot} from './fqc-workflow';
 import {
   createSharedDraft,
   applyDraftCommand,
@@ -11,6 +13,10 @@ import {
   type DraftPermission,
 } from './shared-draft';
 import type { State } from './process-state';
+
+type RoutineSourceItem = Pick<FqcSnapshot['items'][number], 'id'|'name'|'checkNo'|'line'|'category'|'errorId'|'productCodes'|'isEnabled'> & {
+  isDeleted?:boolean;description?:string;rule?:{cadence?:string;timeFrequency?:string;customTimeText?:string};
+};
 
 export const RF_KEY = 'routineFqcControl';
 export type Frequency =
@@ -209,20 +215,20 @@ export function routineSources(state: State): Source[] {
     }[];
   return (version.snapshot?.items || [])
     .filter((i: Record<string, unknown>) => !i.isDeleted && i.isEnabled)
-    .map((i: Record<string, any>) => {
+    .map((i: RoutineSourceItem) => {
       const err = version.snapshot.errors?.find(
           (e: { id: string }) => e.id === i.errorId,
         ),
         rawFrequency = i.rule?.cadence === 'time' ? i.rule.timeFrequency : null,
         f = rawFrequency === 'half_yearly' ? 'semiannual' : rawFrequency;
-      const frequency = [
+      const frequency = typeof f === 'string' && [
         'weekly',
         'monthly',
         'quarterly',
         'semiannual',
         'yearly',
       ].includes(f)
-        ? f
+        ? f as Frequency
         : null;
       return {
         id: i.id,
@@ -291,7 +297,7 @@ export function routineCatalog(state: State) {
   }
   const items = (version?.snapshot.items || [])
     .filter((i: Record<string, unknown>) => !i.isDeleted)
-    .map((i: Record<string, any>) => ({
+    .map((i: RoutineSourceItem) => ({
       id: i.id,
       name: i.name || '',
       code: i.checkNo || '',
@@ -315,7 +321,7 @@ export function routineCatalog(state: State) {
       ]),
     ]
       .filter(Boolean)
-      .sort(),
+      .sort((a, b) => { const left = String(a), right = String(b); return left < right ? -1 : left > right ? 1 : 0; }),
     categories: [...categories.values()].sort(
       (a, b) => a.name.localeCompare(b.name) || a.line.localeCompare(b.line),
     ),
@@ -993,7 +999,7 @@ export function executeRoutine(
                     'reason',
                     'disposition',
                     'evidence',
-                  ].includes(String(p.path[0])) &&
+                  ].includes(legacyJsonValueText((p.path[0]) as JsonValue)) &&
                     p.path.length === 1) ||
                     (p.path.length === 3 &&
                       p.path[0] === 'lines' &&

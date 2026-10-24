@@ -5,18 +5,14 @@ import { beginIpqcWorkflow, applyIpqcWorkflow, ipqcWorkflowContext, publicIpqcWo
 import { DraftConflict, type DraftPermission } from '@/lib/shared-draft';
 import type { EquipmentVersion } from '@/lib/routine-equipment';
 import {compactWorkflowPayload,expandWorkflowCommand,workflowCommandFingerprint,isWorkflowDigestFingerprint} from '@/lib/workflow-wire';
-import {otherReviewerAvailable,workflowInterfaceMetadata} from '@/lib/versioned-shared-workflow';
+import {otherReviewerAvailable,workflowInterfaceMetadata,workflowAccess} from '@/lib/versioned-shared-workflow';
 import {recordJSONResponse} from '@/lib/state-records-response';
 
 const KEY='ipqcCMasterControl';
 const reply=(body:unknown,status=200)=>Response.json(body,{status,headers:responseHeaders});
 async function access(request:Request,state:State) {
-  const data=await can(request,state,'view:data'),review=await can(request,state,'view:approval');
-  const submit=data;
-  return {view:data||review,edit:data&&submit,save:data&&submit,submit:data&&submit,
-    withdraw:data||review&&await can(request,state,'approval.withdraw'),
-    approve:review&&await can(request,state,'approval.approve'),return:review&&await can(request,state,'approval.reject'),
-    history:(data||review)&&await can(request,state,'approval.compare'),delete:data&&submit&&await can(request,state,'master.delete')};
+  const permissions=await workflowAccess(request,state);
+  return {...permissions,delete:permissions.edit&&await can(request,state,'ipqc-c.delete')};
 }
 function readControl(state:State):IpqcWorkflowControl {const prepared=state.recordStorage?.models.get(KEY);return prepared?parseIpqcControl(state.values[KEY],prepared):copyIpqc(parseIpqcControl(state.values[KEY]));}
 function projection(control:IpqcWorkflowControl, actor:{id:string;name:string},at:string,closeRound=false) {

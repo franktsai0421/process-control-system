@@ -134,8 +134,8 @@ export function masterWorkflowAdapter(scope:string):WorkflowAdapter<Snapshot,Lib
      first==='categoryGroups'?['line','name','defaultStages']:path.length===5?['code','name','machine','assetNumber','operators']:['code','name'];
     if(!allowed.includes(str(field))||first!=='lines'&&path.length!==3||first==='lines'&&path.length!==3&&!(path.length===5&&path[2]==='stages'&&typeof path[3]==='object'))throw new DraftConflict('UNSUPPORTED_CATALOG_PATCH',422);
    }
-   // Descriptions are last-accepted writes; structural dependencies are revision guarded.
-   if(!(p.op==='set'&&['name','nameVi','description','note','specification'].includes(str(field)))&&p.op!=='insert'&&!(command.guards||[]).some(g=>stableDraftJSON(g.path)===stableDraftJSON(path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
+   // Every existing-field update must retain its original value as a dependency guard.
+   if(!control.workflow!.receipts[command.operationId]&&p.op!=='insert'&&!(command.guards||[]).some(g=>stableDraftJSON(g.path)===stableDraftJSON(path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
   }
    if(scope==='PROCESS')assertProcessLinkAvailable(root);
    const flow=control.workflow!,already=flow.receipts[command.operationId];

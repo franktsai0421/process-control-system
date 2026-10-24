@@ -4,7 +4,8 @@ export const roleDefaults = {
   staff: { name: '製程人員（STAFF）', lines: ['A'], views: ['dashboard','productStatus','approval','editor','data'], permissions: ['approval.viewLine','approval.compare','approval.submit','approval.withdraw','approval.revise','status.viewDetails','status.viewMedia'] },
 };
 type AccessScope={id?:string; name?:string; lines:string[]; views:string[]; permissions:string[];access?:Record<string,boolean>};
-type AccessUser=Partial<AccessScope> & {id:string; role:string; enabled?:boolean; inheritRole?:boolean; deletedAt?:string;authMode?:string;accessOverrides?:Record<string,boolean>};
+export type AccessUser=Partial<AccessScope> & {id:string; role:string; enabled?:boolean; inheritRole?:boolean; deletedAt?:string;authMode?:string;accessOverrides?:Record<string,boolean>};
+export type PlatformUser = AccessUser & { name: string; email?: string; password?: string; passwordHash?: string; authEpoch?: number };
 export function roleTemplates(values:Record<string,string>):Record<string,AccessScope> {return templates(values,roleDefaults);}
 export function effectiveAccess(user:AccessUser, values:Record<string,string>) {
   const role = user.role;

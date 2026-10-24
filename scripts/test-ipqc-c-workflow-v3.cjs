@@ -14,7 +14,9 @@ const snapshot={errors:[{id:'error-1',code:'C-P1-TIEN-L1',productCode:'P1',stage
 const control={schemaVersion:1,activeVersionId:'active-1',versions:[{id:'active-1',number:1,status:'approved',snapshot,baseVersionId:null,revision:1,creatorId:'admin',creatorName:'admin',createdAt:'2026-10-01T00:00:00Z',updatedAt:'2026-10-01T00:00:00Z',history:[]}],source:null,reservedErrorCodes:[],reservedItemCodes:[]};
 const initial={platformUsers:JSON.stringify(users),masterDataControl:JSON.stringify({active:{C:{products:[{code:'P1',stages:['C-TIEN']}],lines:[{stages:[{code:'C-TIEN'}]}]}}}),ipqcCMasterControl:JSON.stringify(control)};
 db.prepare('INSERT INTO shared_state(id,revision,"values",updated_at) VALUES(1,1,?,?)').run(JSON.stringify(initial),'fixture');
-let load=harness(env),api=load('app/api/ipqc-c/workflow/route.ts'),login=load('app/api/platform-login/route.ts');
+let load=harness(env);
+let api=load('app/api/ipqc-c/workflow/route.ts');
+const login=load('app/api/platform-login/route.ts');
 let dropOperation=null,base,server,browser;const sessions={};let cases=0;
 const results=[];
 async function check(name,fn){await fn();cases++;results.push({name,result:'PASS'});console.log('PASS '+name);}
@@ -23,6 +25,8 @@ async function read(who='editor-a'){const r=await sessions[who].request.get(base
 const sequences={};
 async function command(who,action,detail={}){const state=await read(who);return{action,operationId:randomUUID(),clientId:'client-'+who,generation:state.workflow.generation,sequence:(sequences[who]=(sequences[who]||0)+1),...detail};}
 const patch=(field,value)=>({op:'set',path:['items',{id:'item-1'},field],value});
+// Explicit captured fixture baseline only; never read/rebase a stale command here.
+function fixtureSetGuards(before,patches){return{patches,guards:patches.map(p=>({path:p.path,value:p.path.reduce((row,key)=>typeof key==='string'?row?.[key]:Array.isArray(row)?row.find(item=>item.id===key.id):undefined,before)}))};}
 async function ok(who,action,detail={}){if(action==='apply'&&!(await read(who)).workflow.editable)assert.equal((await send(who,{action:'begin'})).status,200);const c=await command(who,action,detail),r=await send(who,{command:c});assert.equal(r.status,200,JSON.stringify(r.body));return r.body;}
 (async()=>{
   if(process.env.V3_STORAGE==='records'){const core=load('lib/process-state.ts'),state=await core.readState();db.prepare('UPDATE shared_state SET "values"=?').run(await load('lib/state-records.ts').encodeRecordValues(env.STATE_ARCHIVE,state.values));}
@@ -53,7 +57,7 @@ async function ok(who,action,detail={}){if(action==='apply'&&!(await read(who)).
     assert.ok(replies.every(r=>r.status===200),JSON.stringify(replies));assert.equal(replies[0].body.control.workflow.generation,replies[1].body.control.workflow.generation);
   });
   await check('T02/T08: concurrent distinct fields merge and B saves A+B with correct authors',async()=>{
-    const a=await command('editor-a','apply',{patches:[patch('description','Nội dung do người A chỉnh sửa')]}),b=await command('editor-b','apply',{patches:[patch('note','Ghi chú của B')]});
+    const baseline=(await read()).workflow.working;const a=await command('editor-a','apply',fixtureSetGuards(baseline,[patch('description','Nội dung do người A chỉnh sửa')])),b=await command('editor-b','apply',fixtureSetGuards(baseline,[patch('note','Ghi chú của B')]));
     const responses=await Promise.all([send('editor-a',{command:a}),send('editor-b',{command:b})]);assert.ok(responses.every(r=>r.status===200),JSON.stringify(responses));
     const saved=await ok('editor-b','save');const wf=saved.control.workflow;
     assert.equal(wf.saved.content.items[0].description,'Nội dung do người A chỉnh sửa');assert.equal(wf.saved.content.items[0].note,'Ghi chú của B');assert.equal(wf.saved.actor.id,'editor-b');
@@ -63,16 +67,16 @@ async function ok(who,action,detail={}){if(action==='apply'&&!(await read(who)).
     load=harness(env);api=load('app/api/ipqc-c/workflow/route.ts');const state=await read();assert.equal(state.workflow.working.items[0].note,'Ghi chú của B');assert.ok(state.workflow.saved.id);
   });
   await check('T14/T16/T18: submit exact saved snapshot; admin cannot edit pending; reviewer C approves',async()=>{
-    const saved=(await read()).workflow.saved.id;await ok('editor-a','apply',{patches:[patch('note','Excluded unsaved')]});
+    const saved=(await read()).workflow.saved.id;await ok('editor-a','apply',fixtureSetGuards((await read('editor-a')).workflow.working,[patch('note','Excluded unsaved')]));
     const submit=await ok('editor-a','submit',{savedId:saved,reason:'Cập nhật phương pháp kiểm tra'});const id=submit.receipt.caseId;
     assert.equal(submit.control.workflow.cases.at(-1).content.items[0].note,'Ghi chú của B');
-    assert.equal((await send('admin',{command:await command('admin','apply',{patches:[patch('note','bad')]})})).status,409);
+    assert.equal((await send('admin',{command:await command('admin','apply',fixtureSetGuards(submit.control.workflow.working,[patch('note','bad')]))})).status,409);
     assert.equal((await send('editor-a',{command:await command('editor-a','approve',{caseId:id})})).status,403);
     const approved=await ok('reviewer-c','approve',{caseId:id});assert.equal(approved.control.activeVersionId,id);
     assert.equal(approved.control.versions.find(v=>v.id===id).snapshot.items[0].note,'Ghi chú của B');
   });
   await check('T20/T41/T42: withdraw reason, original resubmission, immutable old case and stale review rejection',async()=>{
-    await ok('editor-a','apply',{patches:[patch('note','resubmit content')]});await ok('editor-b','save');
+    await ok('editor-a','apply',fixtureSetGuards((await read('editor-a')).workflow.working,[patch('note','resubmit content')]));await ok('editor-b','save');
     const saved=(await read()).workflow.saved.id;const submitted=await ok('editor-a','submit',{savedId:saved,reason:'First case'});const id=submitted.receipt.caseId;
     assert.equal((await send('editor-b',{command:await command('editor-b','withdraw',{caseId:id})})).status,422);
     const withdrawn=await ok('editor-b','withdraw',{caseId:id,reason:'Xác nhận lại'});assert.equal(withdrawn.control.workflow.pendingId,null);
@@ -81,13 +85,13 @@ async function ok(who,action,detail={}){if(action==='apply'&&!(await read(who)).
     assert.equal(again.control.workflow.cases.find(c=>c.id===id).status,'withdrawn');await ok('reviewer-c','return',{caseId:again.receipt.caseId,reason:'Bổ sung thêm'});
   });
   await check('T18: admin self-review requires explicit confirmation and records audit',async()=>{
-    await ok('admin','apply',{patches:[patch('note','admin change')]});const saved=await ok('admin','save');
+    await ok('admin','apply',fixtureSetGuards((await read('admin')).workflow.working,[patch('note','admin change')]));const saved=await ok('admin','save');
     const submitted=await ok('admin','submit',{savedId:saved.control.workflow.saved.id,reason:'Admin self review'});const id=submitted.receipt.caseId;
     assert.equal((await send('admin',{command:await command('admin','approve',{caseId:id})})).status,409);
     const approved=await ok('admin','approve',{caseId:id,selfReviewConfirmed:true});assert.equal(approved.control.workflow.cases.at(-1).result.selfReview,true);
   });
   await check('T33: successful save response lost; receipt resolves unknown without duplicate save',async()=>{
-    await ok('editor-a','apply',{patches:[patch('note','response lost')]});const cmd=await command('editor-b','save');dropOperation=cmd.operationId;
+    await ok('editor-a','apply',fixtureSetGuards((await read('editor-a')).workflow.working,[patch('note','response lost')]));const cmd=await command('editor-b','save');dropOperation=cmd.operationId;
     await assert.rejects(()=>send('editor-b',{command:cmd}));
     const receipt=await sessions['editor-b'].request.get(base+'/api/ipqc-c/workflow?operationId='+cmd.operationId);assert.equal(receipt.status(),200);
     const retried=await send('editor-b',{command:cmd});assert.equal(retried.status,200);assert.equal(retried.body.unchanged,true);
@@ -108,7 +112,7 @@ async function ok(who,action,detail={}){if(action==='apply'&&!(await read(who)).
     await a.waitForFunction(()=>document.querySelector('#ipqcc-shared-status')?.textContent.includes('cửa sổ'),{},{timeout:12000});
     assert.equal(await a.locator('[name="description"]').inputValue(),long.repeat(3));
     await a.locator('#ipqcc-editor button[type="submit"]').click();await a.locator('#ipqcc-editor').waitFor({state:'detached'});
-    let state=await read();assert.equal(state.workflow.working.items[0].note,'Nội dung của B không được A ghi đè');assert.equal(state.workflow.working.items[0].description,long.repeat(3));
+    const state=await read();assert.equal(state.workflow.working.items[0].note,'Nội dung của B không được A ghi đè');assert.equal(state.workflow.working.items[0].description,long.repeat(3));
     await b.locator('#ipqcc-save').click();await b.waitForFunction(()=>document.querySelector('.ipqcc-message')?.textContent.includes('Đã lưu bản chụp'));
     await a.reload();await a.locator(edit).click();assert.equal(await a.locator('[name="description"]').inputValue(),long.repeat(3));
     await a.locator('[name="note"]').fill('cancelled');await a.locator('#ipqcc-cancel').click();assert.equal((await read()).workflow.working.items[0].note,'Nội dung của B không được A ghi đè');
@@ -137,9 +141,9 @@ async function ok(who,action,detail={}){if(action==='apply'&&!(await read(who)).
     assert.deepEqual(errors,[]);await a.close();await b.close();
   });
   await check('T15/T19: true HTTP save-submit and approve-withdraw races have one outcome',async()=>{
-    await ok('editor-a','apply',{patches:[patch('note','race initial')]});await ok('editor-a','save');
+    await ok('editor-a','apply',fixtureSetGuards((await read('editor-a')).workflow.working,[patch('note','race initial')]));await ok('editor-a','save');
     const saved=(await read()).workflow.saved.id;
-    await ok('editor-b','apply',{patches:[patch('note','race next')]});
+    await ok('editor-b','apply',fixtureSetGuards((await read('editor-b')).workflow.working,[patch('note','race next')]));
     const save=await command('editor-b','save'),submit=await command('editor-a','submit',{savedId:saved,reason:'race'});
     const raced=await Promise.all([send('editor-b',{command:save}),send('editor-a',{command:submit})]);
     assert.equal(raced.filter(r=>r.status===200).length,1,JSON.stringify(raced));
@@ -152,7 +156,7 @@ async function ok(who,action,detail={}){if(action==='apply'&&!(await read(who)).
     assert.equal((await read()).workflow.pendingId,null);
   });
   await check('T33: lost submit and approve responses resolve durable receipts without duplicate cases',async()=>{
-    await ok('editor-a','apply',{patches:[patch('note','unknown submit and approval')]});await ok('editor-a','save');
+    await ok('editor-a','apply',fixtureSetGuards((await read('editor-a')).workflow.working,[patch('note','unknown submit and approval')]));await ok('editor-a','save');
     const submit=await command('editor-a','submit',{savedId:(await read()).workflow.saved.id,reason:'lost submission response'});dropOperation=submit.operationId;
     await assert.rejects(()=>send('editor-a',{command:submit}));
     const receipt=await sessions['editor-a'].request.get(base+'/api/ipqc-c/workflow?operationId='+submit.operationId);assert.equal(receipt.status(),200);
@@ -196,11 +200,11 @@ async function ok(who,action,detail={}){if(action==='apply'&&!(await read(who)).
   await check('T23: restore preview, stale revision rejection, desktop/mobile unsaved apply and immutable case',async()=>{
     const page=await sessions.admin.newPage();page.on('dialog',d=>d.accept());
     for(const width of [1366,390]){
-      await ok('admin','apply',{patches:[patch('note','Before restore '+width)]});
+      await ok('admin','apply',fixtureSetGuards((await read('admin')).workflow.working,[patch('note','Before restore '+width)]));
       const before=(await send('admin',{command:await command('admin','save')})).body.control.workflow;
       const source=before.cases[0],immutable=JSON.stringify(source);
       const preview=await (await sessions.admin.request.get(base+'/api/ipqc-c/workflow?restoreSaveId='+source.savedId)).json();
-      await ok('admin','apply',{patches:[patch('note','Intervening edit '+width)]});
+      await ok('admin','apply',fixtureSetGuards((await read('admin')).workflow.working,[patch('note','Intervening edit '+width)]));
       const stale=await send('admin',{command:await command('admin','restore',{restoreSaveId:source.savedId,expectedRevision:preview.expectedRevision})});assert.equal(stale.status,409);assert.equal(stale.body.error,'RESTORE_RECONFIRM');
       await page.setViewportSize({width,height:844});await page.goto(base+'/fixture');await page.locator('#ipqcc-case-history').click();
       await page.locator(`[data-ipqcc-case="${source.id}"]`).click();await page.locator('#ipqcc-case-restore').click();await page.locator('.shared-restore-dialog').waitFor();

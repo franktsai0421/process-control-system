@@ -1,5 +1,6 @@
+import {legacyJsonValueText,type JsonValue} from './legacy-login-json';
 import { env } from 'cloudflare:workers';
-import { effectiveAccess } from './user-access';
+import { effectiveAccess, type PlatformUser } from './user-access';
 import {isPrimary,moduleForURL,operationForLegacy,accessKeys,catalog} from '../public/process/access-policy.mjs';
 import {verifyPassword} from './passwords';
 import { demoLoginAllowed, demoIdentity, isDemoUser } from './demo-identities.mjs';
@@ -10,8 +11,8 @@ export type State = { revision: number; values: Record<string, string>; storage?
 let localSessionSecret = '';
 const loopback = (request: Request) => ['localhost','127.0.0.1'].includes(new URL(request.url).hostname);
 // Test phase: absent flag is open. Only Frank decides the production cutover.
-export const demoEnabled = (_request: Request) => demoLoginAllowed((env as any).DEMO_LOGIN_ENABLED);
-const sessionSecret = (request: Request) => (env as any).PROCESS_SESSION_SECRET || (loopback(request) ? (localSessionSecret ||= crypto.randomUUID() + crypto.randomUUID()) : '');
+export const demoEnabled = (_request: Request) => demoLoginAllowed(env.DEMO_LOGIN_ENABLED);
+const sessionSecret = (request: Request) => env.PROCESS_SESSION_SECRET || (loopback(request) ? (localSessionSecret ||= crypto.randomUUID() + crypto.randomUUID()) : '');
 type SessionIdentity = { id: string; sessionType: 'demo' | 'platform'; authEpoch:number };
 export const sessionCookieName = (request:Request) => loopback(request)&&new URL(request.url).port==='3040'?'process_demo_3040':'process_demo';
 const requestSessionToken = (request: Request) => request.headers.get('cookie')?.split(';').map(c=>c.trim()).find(c=>c.startsWith(sessionCookieName(request)+'='))?.slice(sessionCookieName(request).length+1) || '';
@@ -88,7 +89,7 @@ export const backupCoverage = [
     data: 'AB／C 類別、產品、BOM、線別、工段、流程資料、使用者與角色權限',
   },
 ];
-export const parse = (s: string | undefined, fallback: any) => {
+export const parse = (s: string | undefined, fallback: unknown) => {
   try {
     return s ? JSON.parse(s) : fallback;
   } catch {
@@ -101,7 +102,7 @@ export async function encodeValues(values:Record<string,string>,previous?:State,
   if(previous?.storage)return encodeChunkedValues(env.STATE_ARCHIVE,values,previous.storage);
   const raw=JSON.stringify(values);
   if(raw.length<512*1024 && new TextEncoder().encode(raw).length<512*1024)return raw;
-  const bucket=(env as any).STATE_ARCHIVE;
+  const bucket=env.STATE_ARCHIVE;
   if(!bucket)throw Error('Large snapshot requires STATE_ARCHIVE storage');
   const bytes=new TextEncoder().encode(raw);
   const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
@@ -116,7 +117,7 @@ export async function decodeValues(raw:string):Promise<Record<string,string>> {
   if(!stored.__processR2)return stored;
   const ref=stored.__processR2;
   if(!/^snapshots\/[a-f0-9]{64}\.json$/.test(ref.key))throw Error('Invalid snapshot reference');
-  const object=await (env as any).STATE_ARCHIVE?.get(ref.key);
+  const object=await env.STATE_ARCHIVE?.get(ref.key);
   if(!object)throw Error('Snapshot unavailable; database was not modified');
   const bytes=await object.arrayBuffer();
   const digest=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
@@ -125,7 +126,7 @@ export async function decodeValues(raw:string):Promise<Record<string,string>> {
   if(stored.maintenanceMode!==undefined)values.maintenanceMode=stored.maintenanceMode;
   return values;
 }
-const normalizeUserId = (value: unknown) => String(value || '').trim().toLowerCase();
+const normalizeUserId = (value: unknown) => legacyJsonValueText((value || '') as JsonValue).trim().toLowerCase();
 export async function readState(options:RecordRead={}): Promise<State> {
   // Schema is owned by the checked-in Drizzle migrations, never by public reads.
   const row = await env.DB.prepare(
@@ -141,10 +142,12 @@ export async function readState(options:RecordRead={}): Promise<State> {
   const values = await decodeValues(row.values);
   return { revision: row.revision, values };
 }
+export const readPlatformUsers = (raw: string | undefined): PlatformUser[] => parse(raw, []);
+
 export async function identity(request: Request, state: State) {
   const session = await verifiedSession(request);
   if (session) {
-    const user = parse(state.values.platformUsers, []).find((u:any)=>normalizeUserId(u.id)===session.id && u.enabled!==false && !u.deletedAt);
+    const user = readPlatformUsers(state.values.platformUsers).find((u)=>normalizeUserId(u.id)===session.id && u.enabled!==false && !u.deletedAt);
     if (!user || (session.authEpoch!==(user.authEpoch||0)) || (session.sessionType==='demo' ? !isDemoUser(user) : user.authMode==='demo')) return null;
     return {id:session.id,name:user.name,role:user.role,primary:isPrimary(user),authMode:user.authMode,sessionType:session.sessionType};
   }
@@ -158,8 +161,8 @@ export async function identity(request: Request, state: State) {
     platformPassword = request.headers.get('x-process-admin-password') || '';
   const platformUser =
     platformId && platformPassword
-      ? parse(state.values.platformUsers, []).find(
-          (user: any) =>
+      ? readPlatformUsers(state.values.platformUsers).find(
+          (user) =>
             normalizeUserId(user.id) === platformId &&
             user.enabled !== false &&
             !user.deletedAt &&
@@ -195,23 +198,23 @@ export async function identity(request: Request, state: State) {
     };
   const user =
     verified &&
-    parse(state.values.platformUsers, []).find(
-      (u: any) => u.enabled !== false && !u.deletedAt && u.email?.toLowerCase() === email,
+    readPlatformUsers(state.values.platformUsers).find(
+      (u) => u.enabled !== false && !u.deletedAt && u.email?.toLowerCase() === email,
     );
   return user ? { id: user.id, name: user.name, role: user.role, email } : null;
 }
 export async function can(request: Request, state: State, key: string) {
   const user = await identity(request, state);
   if (!user) return false;
-  const stored = parse(state.values.platformUsers, []).find((item: any) => normalizeUserId(item.id) === user.id);
+  const stored = readPlatformUsers(state.values.platformUsers).find((item) => normalizeUserId(item.id) === user.id);
   const role = stored ? effectiveAccess(stored, state.values) : null;
   if(stored&&isPrimary(stored))return true;
   // Preview actors retain existing business preview access, never account access.
   if(!stored&&user.id==='admin')return !key.startsWith('users.')&&!key.startsWith('user-');
-  const module=moduleForURL(request.url),op=operationForLegacy(key);
-  if(role&&module&&op&&accessKeys.includes(module+'.'+op))return role.cells[module+'.'+op]===true;
+  const workflowModule=moduleForURL(request.url),op=operationForLegacy(key);
+  if(role&&workflowModule&&op&&accessKeys.includes(workflowModule+'.'+op))return role.cells[workflowModule+'.'+op]===true;
   if(role&&accessKeys.includes(key))return role.cells[key]===true;
-  if(role&&module&&key==='view:data'&&catalog.find(row=>row.id===module)?.view==='data')return role.cells[module+'.view']===true;
+  if(role&&workflowModule&&key==='view:data'&&catalog.find(row=>row.id===workflowModule)?.view==='data')return role.cells[workflowModule+'.view']===true;
   return (
     !!role &&
     (key.startsWith('view:')
@@ -253,7 +256,7 @@ export function publicState(state: State,actorId?:string) {
     master.versions=master.versions.filter((v:{scope:string;status:string;snapshot:unknown})=>!adopted.has(v.scope)||v.status==='approved'&&JSON.stringify(v.snapshot)===JSON.stringify(master.active[v.scope]));
     values.masterDataControl=JSON.stringify(master);}
   values.platformUsers = JSON.stringify(
-    parse(values.platformUsers, []).filter((u:any)=>actorId&&u.id===actorId).map(({ password,passwordHash, ...u }: any) => ({
+    readPlatformUsers(values.platformUsers).filter((u)=>actorId&&u.id===actorId).map(({ password: _password,passwordHash: _passwordHash, ...u }) => ({
       ...u,...effectiveAccess(u,state.values),
     })),
   );

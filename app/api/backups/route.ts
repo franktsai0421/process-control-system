@@ -1,3 +1,5 @@
+import {legacyJsonValueText,type JsonValue} from '@/lib/legacy-login-json';
+import type {PendingVersion} from '@/lib/legacy-master-types';
 import { env } from 'cloudflare:workers';
 import {verifiedRecordRestore} from '@/lib/state-records-restore';
 import {
@@ -45,7 +47,7 @@ export async function POST(request: Request) {
       { error: '只有 ADMIN 可以管理備份' },
       { status: 403, headers },
     );
-  let body: any;
+  let body: {action?:unknown;id?:unknown;confirm?:unknown;baseRevision?:unknown;settings?:{enabled?:unknown;frequency?:unknown;dayOfWeek?:unknown;time?:unknown}};
   try {
     body = await request.json();
   } catch {
@@ -64,7 +66,7 @@ export async function POST(request: Request) {
     const enabled = body.settings?.enabled === true,
       frequency = body.settings?.frequency,
       dayOfWeek = Number(body.settings?.dayOfWeek),
-      time = String(body.settings?.time || '');
+      time = legacyJsonValueText((body.settings?.time || '') as JsonValue);
     if (
       frequency !== 'weekly' ||
       dayOfWeek !== 6 ||
@@ -142,8 +144,8 @@ export async function POST(request: Request) {
   const collections=controls.flatMap(control=>control.libraries?Object.values(control.libraries):control.scopes?Object.values(control.scopes):[control]) as {workflow?:{pendingId?:string|null};versions?:{status:string}[]}[];
   const routinePending=parse(state.values.routineFqcControl,{documents:[]}).documents.some((d:{flow?:{pendingId?:string}})=>d.flow?.pendingId);
   if (
-    routinePending || (master.versions || []).some((v: any) => v.status === 'pending') ||
-    process.some((v: any) => v.status === 'pending') || collections.some(control=>control.workflow?.pendingId||control.versions?.some(version=>['pending','pending-test'].includes(version.status)))
+    routinePending || (master.versions || []).some((v:PendingVersion) => v.status === 'pending') ||
+    process.some((v:PendingVersion) => v.status === 'pending') || collections.some(control=>control.workflow?.pendingId||control.versions?.some(version=>['pending','pending-test'].includes(version.status)))
   )
     return Response.json(
       { error: '尚有送審中的版本，請先完成或解除送審再回復。' },

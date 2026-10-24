@@ -40,7 +40,7 @@ async function auth(role){
   console.log('PASS deleted error code not reused');
 
   const operator=await auth('staff');
-  let snapshot=target.versions.find(v=>v.status==='draft').snapshot;
+  const snapshot=target.versions.find(v=>v.status==='draft').snapshot;
   await post(line,group,'submit-test',{snapshot,reason:'Test withdrawal'},200);
   await post(line,group,'approve',{},403,operator);
   await post(line,group,'withdraw');

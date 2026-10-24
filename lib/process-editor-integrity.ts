@@ -1,11 +1,12 @@
+import {legacyJsonValueText,type JsonValue} from './legacy-login-json';
 import {DraftConflict,stableDraftJSON} from './shared-draft';
 import type {Workspace,Operation} from './process-authoring-workflow';
 
 type Master=Record<string,{id?:string;presetKey?:string;equipment?:{id:string}[]}[]>;
 export type EditorIssue={code:string;workspace:string;stage:string;operation:string;detail:string;key:string};
-const key=(v:unknown)=>String(v??'').trim().toUpperCase();
+const key=(v:unknown)=>legacyJsonValueText((v??'') as JsonValue).trim().toUpperCase();
 export function editorKind(op:Operation,master:Master){
- const code=String(op.editorType||master[op.stageCode]?.find(t=>t.id===op.templateId)?.presetKey||op.presetKey||(op.mode==='machine'?'machine':''));
+ const code=legacyJsonValueText((op.editorType||master[op.stageCode]?.find(t=>t.id===op.templateId)?.presetKey||op.presetKey||(op.mode==='machine'?'machine':'')) as JsonValue);
  if(code==='entry'||code==='exit')return code;
  if(['machine-assembly','machine-setting','machine'].includes(code))return 'machine';
  return code||'custom';
@@ -15,10 +16,10 @@ export function editorIntegrity(workspaces:Workspace[],master:Master,bom:(code:s
  const add=(w:Workspace,stage:string,op:Operation,code:string,detail:string)=>issues.push({code,workspace:w.id,stage,operation:op.id,detail,key:JSON.stringify([w.id,stage,op.id,code,detail])});
  for(const w of workspaces)for(const [stage,ops]of Object.entries(w.stages)){
   const byId=new Map(ops.map(op=>[op.id,op]));
-  for(const kind of ['entry','exit']){const found=ops.filter(o=>editorKind(o,master)===kind);if(found.length>1)for(const o of found)add(w,stage,o,'DUPLICATE_ENDPOINT',kind+':'+found.map(x=>x.id).sort().join(','));}
+  for(const kind of ['entry','exit']){const found=ops.filter(o=>editorKind(o,master)===kind);if(found.length>1)for(const o of found)add(w,stage,o,'DUPLICATE_ENDPOINT',kind+':'+found.map(x=>x.id).sort((a, b) => { const left = String(a), right = String(b); return left < right ? -1 : left > right ? 1 : 0; }).join(','));}
   for(const op of ops){const kind=editorKind(op,master),next=Array.isArray(op.nextIds)?op.nextIds:[],incoming=ops.filter(o=>o.nextIds?.includes(op.id));
-   if(kind==='entry'&&incoming.length)add(w,stage,op,'ENTRY_HAS_INPUT',incoming.map(o=>o.id).sort().join(','));
-   if(kind==='exit'&&(next.length||incoming.length>1))add(w,stage,op,'EXIT_CONNECTION_INVALID',JSON.stringify([next,[...incoming.map(o=>o.id)].sort()]));
+   if(kind==='entry'&&incoming.length)add(w,stage,op,'ENTRY_HAS_INPUT',incoming.map(o=>o.id).sort((a, b) => { const left = String(a), right = String(b); return left < right ? -1 : left > right ? 1 : 0; }).join(','));
+   if(kind==='exit'&&(next.length||incoming.length>1))add(w,stage,op,'EXIT_CONNECTION_INVALID',JSON.stringify([next,incoming.map(o=>o.id).sort((a, b) => { const left = String(a), right = String(b); return left < right ? -1 : left > right ? 1 : 0; })]));
    if(kind!=='entry'&&next.length>1)add(w,stage,op,'SINGLE_SUCCESSOR_REQUIRED',JSON.stringify(next));
    if(new Set(next).size!==next.length)add(w,stage,op,'DUPLICATE_CONNECTION',JSON.stringify(next));
    for(const id of next){if(id===op.id)add(w,stage,op,'SELF_CONNECTION',id);else if(!byId.has(id))add(w,stage,op,'CONNECTION_TARGET_INVALID',id);
@@ -47,7 +48,7 @@ export function editorIntegrity(workspaces:Workspace[],master:Master,bom:(code:s
    }
   }
  }
- for(const [pair,list]of owners){const unique=new Map(list.map(x=>[JSON.stringify([x.w.id,x.stage,x.op.id]),x]));if(unique.size>1){const detail=pair+':'+[...unique.keys()].sort().join('|');for(const {w,stage,op}of unique.values())add(w,stage,op,'BOM_OCCUPIED',detail);}}
+ for(const [pair,list]of owners){const unique=new Map(list.map(x=>[JSON.stringify([x.w.id,x.stage,x.op.id]),x]));if(unique.size>1){const detail=pair+':'+[...unique.keys()].sort((a, b) => { const left = String(a), right = String(b); return left < right ? -1 : left > right ? 1 : 0; }).join('|');for(const {w,stage,op}of unique.values())add(w,stage,op,'BOM_OCCUPIED',detail);}}
  return issues;
 }
 export function assertEditorIntegrity(next:Workspace[],previous:Workspace[],master:Master,bom:(code:string)=>string[]){

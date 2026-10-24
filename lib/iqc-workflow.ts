@@ -82,7 +82,7 @@ export const iqcWorkflowAdapter:WorkflowAdapter<IqcSnapshot,IqcWorkflowControl>=
       }else if(patch.op==='set'){
         if(patch.path.length!==3||!entity||typeof entity==='string'||typeof field!=='string'||!editableFields[collection as keyof IqcSnapshot].includes(field))throw new DraftConflict('UNSUPPORTED_ITEM_PATCH',422);
         const old=rows.find(row=>row.id===entity.id);if(!old||'isDeleted' in old&&old.isDeleted)throw new DraftConflict('ENTITY_REMOVED_OR_AMBIGUOUS');
-        if(!['nameVi','specificationVi','toolVi','methodVi','inspectionSpecVi','isEnabled'].includes(field)&&!(command.guards||[]).some(g=>stableDraftJSON(g.path)===stableDraftJSON(patch.path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
+        if(!(command.guards||[]).some(g=>stableDraftJSON(g.path)===stableDraftJSON(patch.path)))throw new DraftConflict('DEPENDENCY_GUARD_REQUIRED',422);
       }else throw new DraftConflict('UNSUPPORTED_ITEM_PATCH',422);
     }
     return applyDraftCommand(flow,command,context);
