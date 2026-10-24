@@ -25,9 +25,9 @@ Read relevant sources and direct dependencies, not all history.
 
 ## Autonomy and boundaries
 
-### Persistent Codex with ChatGPT connection
+### Codex with ChatGPT disabled
 
-User preference (updated 2026-10-09): keep this workspace connected to the saved 「規劃資料庫同步上傳 merge」 conversation (chat ID `6ac767b0-4a20-83ec-b1b8-71c813181817`), replacing the earlier conversation opt-out and saved 「設計例行檢查流程」 pointer. At the first active turn after opening/resuming this workspace, use the `codex-with-chatgpt` skill, check connection health and recover when needed, then open/reuse the saved chat in the visible in-app browser. Reuse that same chat even in a new Codex conversation; do not create a new chat merely because the default Project workflow suggests one. Keep the tab marked for handoff/delivery at turn end. Do not stop/unpair or switch the saved chat unless the user requests it. Local C2C session settings are the canonical chat pointer; see HANDOFF for the latest verification and recovery evidence. Preserve unrelated task checkpoints; a checkpoint belonging to another chat is not authorization to resume that task here. Login/consent may still require the user; this preference does not guarantee uninterrupted service while offline, powered off, or before a Codex turn starts.
+User preference (updated 2026-10-24): do not use Codex with ChatGPT for this workspace. The user explicitly disabled it; workspace access tokens were revoked and its bridge stopped. Do not run connection health/recovery, reconnect, reopen its planning chat, or send project information through it unless the user explicitly asks to enable it again. This supersedes the 2026-10-09 persistent-connection preference. Preserve unrelated checkpoints; do not resume another chat's task.
 
 Continue authorized local reads, reversible edits, link repairs and targeted isolated checks without stepwise approval. Inspect scripts before running: local does not mean disposable. Ask only for consequential missing information or actions outside authorization; finish independent work first.
 

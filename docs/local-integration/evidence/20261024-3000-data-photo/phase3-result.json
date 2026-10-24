@@ -1,0 +1,80 @@
+{
+  "format": "PROCESS_OS_PHASE3_PHOTO_TRIAL_RESULT_V1",
+  "status": "PHOTO_TRIAL_COMPLETE_SPEC_PROPOSAL_NOT_IMPLEMENTED",
+  "inventoryImages": 765,
+  "realSampleRecords": 13,
+  "uniqueRealImages": 11,
+  "syntheticImages": 4,
+  "profiles": {
+    "png2400": {
+      "uniqueRealImages": 11,
+      "originalBytes": 29207630,
+      "outputBytes": 47555450,
+      "weightedSavingsPercent": -62.82,
+      "medianSavingsPercent": -54.97,
+      "largerThanOriginal": 11,
+      "minPSNR": null
+    },
+    "webp1600q82": {
+      "uniqueRealImages": 11,
+      "originalBytes": 29207630,
+      "outputBytes": 1375144,
+      "weightedSavingsPercent": 95.29,
+      "medianSavingsPercent": 95.7,
+      "largerThanOriginal": 0,
+      "minPSNR": 39.03664359562459
+    },
+    "webp1600q90": {
+      "uniqueRealImages": 11,
+      "originalBytes": 29207630,
+      "outputBytes": 2377534,
+      "weightedSavingsPercent": 91.86,
+      "medianSavingsPercent": 92.55,
+      "largerThanOriginal": 1,
+      "minPSNR": 41.81361477245714
+    },
+    "webp2400q90": {
+      "uniqueRealImages": 11,
+      "originalBytes": 29207630,
+      "outputBytes": 3634092,
+      "weightedSavingsPercent": 87.56,
+      "medianSavingsPercent": 87.47,
+      "largerThanOriginal": 1,
+      "minPSNR": 41.81361477245714
+    }
+  },
+  "browserCanvasOutputs": 68,
+  "browserCanvasEncoderActuallyUsed": true,
+  "originalSelectedPhotosHashUnchanged": true,
+  "sourceApplicationFilesHashUnchanged": 1309,
+  "sourceApplicationFilesChanged": [],
+  "noUpscalingAllOutputs": true,
+  "syntheticExifOrientation6Corrected": true,
+  "outputExifAbsent": true,
+  "transparentFixtureAlphaUnchanged": true,
+  "visualCropsReviewed": [
+    "S08 label",
+    "S04 annotated text",
+    "S09 surface markings",
+    "T01 synthetic fine text and thin lines"
+  ],
+  "visualFindings": "normal photographs and sampled labels remain readable at 1600/82; fine synthetic text and thin colored lines degrade when downscaled; 2400/90 improves detail but is not proof of equivalence; PNG preserves same-size pixels but all 11 real photos grow",
+  "originalPhotosOrHistoricalEvidenceReplaced": false,
+  "uniformUploadImplementation": "NOT_RUN",
+  "fullUploadWorkflowIntegration": "NOT_RUN",
+  "physicalPhoneHEICAnimatedFormatsAndPrintAcceptance": "NOT_RUN",
+  "sampleBias": "purposive sample includes large PNG files; weighted savings is not an estimate for all 765 images or the database",
+  "psnrLimitation": "same-resized-geometry encoding error only; does not measure information lost by downscaling",
+  "backupDeletion": {
+    "status": "NOT_EXECUTED_AUTOMATIC_APPROVAL_REJECTED",
+    "action": "delete one named 8.15 GB duplicate private backup",
+    "toolReason": "blocked by policy; no detailed reason provided",
+    "targetStillExists": true,
+    "alternateDeletionMethodsAttempted": false,
+    "original3000DataDeleted": false,
+    "at": "2026-10-24T15:25:51.300673+07:00"
+  },
+  "completedAt": "2026-10-24T15:31:56.500135+07:00",
+  "trialServerNormallyClosed": true,
+  "source3000HTTPAfterTrial": 200
+}

@@ -1,5 +1,11 @@
 # 專案文件索引與整理結果
 
+## 2026-10-24 3000 資料包與照片規格整理
+
+[分階段計畫](local-integration/20261024-3000-data-photo-plan.md) 保存容量盤點、備份／精簡包與各階段驗證。最新主要精簡包319.62MB已實際還原核對，8.15GB備份保留；[PHOTO_UPLOAD](specs/current/PHOTO_UPLOAD.md) 是使用者已確認的三模式規格，共用前端已接入，限定隔離驗證及未驗範圍見內文。原庫與既有照片不改，未正式發布；其他任務按原交接索引續接。
+
+## 2026-10-05 歷史整理基準
+
 2026-10-05。唯一repository基準：<WORKSPACE>/中控系統，codex/ipqc-ab-local，HEAD 2685b4044141ee3abc328cd4e5202c42eee36864。起始已有大量功能及3份AI_CONTEXT未提交修改；本次保全，不切換checkout／branch，不以GitHubmain替代。
 
 ## 2026-10-10 權限目前來源

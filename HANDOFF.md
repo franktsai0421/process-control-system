@@ -1,8 +1,222 @@
-## 2026-10-14 GitHub流程候選收尾中
+## 2026-10-24 GitHub分支清理與目前審閱入口
 
-最新候選改採遠端 main `51a3979c` 的獨立 Git database，原工作區及所有本機歷史保留。冷啟動相對匯入修正與真實隔離初始化 PASS；current source 與 51 個遠端歷史 commit preflight 零 findings。獨立 11 scope handler 尾段及 Tooling/BOM 協作 PASS，GUI network denied 保留 BLOCKED；25 lint 經引用分類仍 FAIL。完整去敏開發包及單一 PR/CI/Frank review 尚在收尾；以 [最新矩陣](docs/local-integration/20261014-evidence-matrix.json) 為準。
+使用者進一步明確授權GitHub分支備份、已合併／淘汰盤點與清理，主保留`main`及`codex/consolidated-20261024`。14條原遠端分支及目前本機整合head已封存Git bundle，並在全新bare repository實際重建15條refs、逐SHA比對及full fsck通過；私人備份與復原指標為忽略的`Temp/github-branches-20261024/backup-pointer.private.json`。
 
-交接已解除，使用目前dirty工作樹與獨立來源保全；整合分支codex/github-upload-20261014已納入最新remote main。新播放器初選／legacy匯入等待安全修正及V3未知Save快照共20項定向PASS，tsc PASS；25項既有受影響lint及完整GUI／去憑證開發包缺口保留。唯一本階段進度見[GitHub整合紀錄](docs/local-integration/20261014-github-upload.md)。舊4a7bb／31756b包保留，不能冒稱含新修正；日常資料、3040／3050、C2C及正式環境未操作。
+主保留main及codex/consolidated-20261024；已合併11條、淘汰PR #11、被整合分支取代的PR #13均先備份，按[唯一分支清理紀錄](docs/local-integration/20261014-github-upload.md)逐SHA處理。新整合Draft PR接續舊#13背景與已分類提交，舊案只關閉，不合併。原main SHA、資料庫、照片、8.15GB備份及主要精簡包不變；C2C保持停用。Git安全／可攜檢查、36項合成建置控制與Git bundle全還原不等於新source的正式build／功能全面驗收；下列第4階段限制與其他chat HOLD保留。
+
+## 前階段：2026-10-24 本機Git提交整理
+
+已依使用者要求將目前工作集中於`codex/consolidated-20261024`；以GitHub既有整合提交3b2ac09為提交基底，保留opened checkout的全部working檔案內容。按工程環境、後端流程、前端／照片、文件四類提交；原始Office／業務照片與大量原生測試輸出只留本機，不納入來源Git。原main不改；舊分支與838份未提交檔、index及完整refs／reflog已有專案外SHA備份與已驗Git bundle。私人指標：忽略的`Temp/git-consolidation-20261024/backup-pointer.private.json`。
+
+GitHub實際14條分支的盤點與已淘汰PR #11處置，唯一說明見[上傳與提交紀錄](docs/local-integration/20261014-github-upload.md)。本輪只有本機提交／分支整理，不push、不刪遠端branch、不改main／PR或部署。原3000資料、照片、319.62MB主要包與8.15GB備份不變；C2C保持停用。第4階段照片驗證、Spinner lint FAIL1與遭使用者停止的原生離頁補驗，仍按下一節界線，不因提交而結案。
+
+## 2026-10-24 第4階段：照片主要流程通過，兩個驗收界線保留
+
+Codex with ChatGPT 已依使用者明確要求停用：工作區令牌撤銷、bridge停止；AGENTS已更新，不健康檢查、不重連、不開規劃chat。8.15GB備份仍保留，主要精簡包319,619,087 bytes不變。原3000的4表、rev495、100份備份及1,726個R2物件metadata與開始前一致；1,155個保留body共310,286,234 bytes全SHA一致，原資料／照片沒有批次修改。
+
+照片相關原失敗已修：品質測試fixture補正field guards、151-cell動作權限及AB全庫流程；另修IPQC-C誤用data／approval權限，改沿用共用workflowAccess。Routine FQC改用onbeforeunload屬性回傳契約保留legacy提醒與既有host callback；沒有關lint或縮browser floor。實際GUI另找到透明toast遮擋設備套用，styles.css讓純提示不攔截滑鼠。
+
+隔離合成資料、實際SPA與TS API通過：FQC、IQC零件／方法、IPQC-AB/C、檢具分類／設備、模具、流程模板／設備、製程共用／產品照片，以及例行FQC報告／處置附件的上傳→套用→Save→重開→Submit→Approve。一般／高清／保真、EXIF方向與小圖皆有案例；品質／製程採不同帳號核准，例行計畫／報告／處置驗明確自審閘門。回報選檔＋Ctrl+V→收合重開→送出→後台已完成；此入口沒有版本核准，不能假稱同一workflow。入口派工、產品狀態、播放端顯示核准V3及兩種照片。5模組100項權限、30條欄位／CAS、8組離頁函式契約及14個照片body SHA／MIME通過；手機390×844 iframe的中越文選單44px、無頁面橫向溢出。
+
+**未全數結案**：完整lint實跑713檔／208規則仍FAIL1，只剩既有Spinner prefer-tag-over-role；原生dirty/clean reload、取消保留及繼續離頁驗證，在Chrome補驗時使用者停止Computer Use，未完成，不沿用舊H25當作新handler接受。未驗正式D1/R2部署、服務重啟持久性、實體手機、HEIC／動圖／最大像素壓測。QA為memory SQLite/R2，沒有連原3000；不把UI重開當服務重啟。測試fixture缺reservedCodes／製造商欄位只修隔離fixture；切帳號的ACCOUNT_CHANGED_REOPEN_REQUIRED依既有fence重開處理，未放寬守門。
+
+安全彙總與逐入口矩陣：[phase4-result](docs/local-integration/evidence/20261024-3000-data-photo/phase4-result.json)。規格與限制：[PHOTO_UPLOAD](docs/specs/current/PHOTO_UPLOAD.md)。直接收據及照片／截圖在私人phase4證據目錄，索引為忽略的Temp/phase4-photos-20261024/delivery.private.json。沒有schema／migration、業務模型、Git提交／PR／合併或部署；其餘chat checkpoint及HOLD維持。
+
+## 前階段：2026-10-24 照片三模式已接入、主要精簡包V2
+
+最新使用者決定：8.15GB備份保留、之後不作主要來源，撤回先前刪除要求；不要重試刪除。主要compact-private-recovery已由322,214,696降為319,619,087 bytes（82個無引用record移除），實際新目標還原及1,073物件／4表／current values驗證通過；所有照片及100份庫內歷史保留。這次6個候選／還原工作副本已清理，原3000 storage未替換／刪改，rev495／4表與1,155個保留body hash相同。
+
+共用photo-upload.js／CSS先載入，手動照片及feedback貼圖使用一般1600/.82、高清2400/.90或保真；Excel／來源SHA及歷史還原保留原件。限定helper、實際客戶端函式、6 photo API42項、feedback45項、CAS／media／delete fence與桌面／窄iframe的共用UI已驗；既有整體permissions fixture的DEPENDENCY_GUARD_REQUIRED 422及routine-fqc deprecated lint仍FAIL，未完成每模組的完整GUI送審核准或正式發布，不標全站接受。
+
+3000因還原停止閘門經原受控終端短暫停止，現已由原scripts/local-server.mjs --port 3000重啟（執行session34299；服務以OS／HTTP現況為準），入口、helper／CSS HTTP200。私有路徑及直接收據見忽略的Temp/phase3-photos-20261024/delivery.private.json；規格與安全彙總見[PHOTO_UPLOAD](docs/specs/current/PHOTO_UPLOAD.md)／[計畫](docs/local-integration/20261024-3000-data-photo-plan.md)。分支codex/github-upload-20261014，未stage／commit／push／PR／merge／部署，無資料模型變更。先前其他checkpoint保留；下方刪除受阻記錄為歷史，已被最新保留決定取代。
+
+## 2026-10-24 照片副本實測／規格建議完成；具名備份刪除遭自動審查阻擋（本對話）
+
+使用者要求刪上一輪8.15GB完整備份並開始第3階段，原照片不改。已重新驗原庫4表、全部1,726個R2物件SHA／metadata、必要設定及精簡包1,174檔pin，該備份仍為重複副本；但精確目錄的刪除命令在執行前遭自動批准審查`blocked by policy`，原因未進一步說明。備份仍在、沒有換方法重試、不能宣稱釋放8.15GB。照片765張唯讀盤點，13份實際樣本（11不重複）＋4合成圖×4Canvas方案共68輸出；同批一般1600/WebP82為29,207,630→1,375,144 bytes（95.29%），樣本偏大型PNG，不能推論全庫。放大細字／細線有縮圖損失，高清2400/90及保真例外建議見[PHOTO_UPLOAD](docs/specs/current/PHOTO_UPLOAD.md)；全站共用上傳未實作。原13份照片及1,309產品來源SHA未變，3000原庫／其他備份／322MB包保留；安全彙總及私有報告指標見[計畫](docs/local-integration/20261024-3000-data-photo-plan.md)。原R20與下列歷史成果不改，不上傳或發布。
+
+## 2026-10-24 3000 資料包與照片規格分階段整理（本對話前階段）
+
+使用者已在本對話直接授權第2階段：備份目前3000完整資料、另製精簡包並確認獨立還原，保留原資料。完整備份1,745檔／8,145,514,191 bytes，精簡payload1,174檔／322,214,696 bytes（96.04%減少）均經既有實體流程實際還原；完整1,726及保留1,155個R2物件全部經公開SDK驗body SHA／metadata，4表與100份庫內備份保留，15項定向HTTP通過。早期開發快取啟站失敗及修復、實測界線及SHA見[分階段計畫](docs/local-integration/20261024-3000-data-photo-plan.md)；私人路徑指標為忽略的Temp/phase2-3000-20261024/delivery.private.json。測試6072正常關閉exit0及OS缺席，3000已恢復HTTP200，原庫4表／R2集合及1,309來源檔未變。此包保留原憑證、僅本機私有復原，employeeDistributionReady=false；不是可直接給員工／上雲的分發包。未清理原庫、未壓縮舊照片、未改產品程式／schema／帳密或3040／3050，未Git寫入或發布。下一步第3階段照片抽樣；[照片草案](docs/specs/current/PHOTO_UPLOAD.md)尚未實作。原R20／GitHub任務及唯一索引保留，本段不授權續跑其他chat工作，也不解除其HOLD。
+
+## 2026-10-20 R20 本機交付驗收（進行中）
+
+主代理為唯一整合及執行者。使用者已批准 R20 v3、I5 與 F1 的 QA 主要資料總額16；六組混用資料原樣保留。當前直接證據、來源凍結、程序與額度，以唯一索引 `Temp/current-github-upload-continue-20261015.json` 及其 R20 交接為準；下列舊階段段落是歷史，不代表目前仍待原批准。
+
+R20 QA 已由正常GUI完成測試主檔的儲存重開與AB／連帶PROCESS核准；4a3來源的QA04亦完成FQC標準、計畫發回修正重送、初測發回修正重送、失敗複驗與不合格處置結案，三張合成照片重新讀取及歷史保留已有獨核。這是具名16筆額度內的限定證據，不代表全站、員工帳號或最後ZIP冷裝通過。審核報告的異常案件連結另發現頁面切換缺口，最小路由修正的實際GUI與新來源建置／製包仍須獨立接受，不能套用修正前4a3結果。QA資料另存TEST證據，現有curated496交付副本與原包保留，不自動合併兩個全庫審核快照。
+
+Miniflare 4.20260515.0 下的 Undici 7.30.1 精確 override 正進入本機待驗候選。乾淨依賴及限定公開 consumer／Miniflare 正向測試已有窄證據；仍須以最後凍結來源補完整容量更新、備份恢復、實際 SOURCE-ONLY 配對包與冷安裝，不能借舊包宣稱通過。安全 audit 仍 FAIL18、全專案 lint 仍 FAIL2，詳見 [依賴門](docs/testing/DEPENDENCY_RELEASE_GATES.md)及[lint 契約](docs/testing/LINT_CONTRACT_POLICY.md)。
+
+IQC UNKNOWN、Master AB HOLD、未完成的真 GUI 分支及上傳目錄差異各別列管；不清除 HOLD、不代接受風險。原 rev495 與清理後496私有快照及舊包保留，依使用者追加批准，r20-qa 的16筆主要 QA 測試資料及其關聯歷史、合成照片可納入新的交付資料副本；須保留TEST標示、精確清單與關聯核對，原495／496包不覆寫，測試帳密、session secret與其他私密憑證仍不得入包。日常3000、3040／3050、C2C 與原帳密不動；本輪不執行任何 Git 寫入、部署或對外分發。實機及跨電腦擱置，GitHub clone／PR 留待後續。服務只依具名工作窗實際執行，沒有另設背景續跑。
+
+## 2026-10-19 安全修正與交付副本清理（進行中）
+
+由 eaf7f7bab290 的實際 SOURCE-ONLY 包接續。主代理仍是唯一整合者；目前工作來源已變更，尚未凍結新版本。三處借用方法擷取以 Reflect.get 保留原動態 call/apply 與網路拒絕契約，限定控制及獨立源碼核對通過；實際全專案 lint 尚 FAIL2（Spinner 語意標籤與 FQC legacy beforeunload 相容寫法），不是全行為驗收通過。鎖檔僅更新 MCP 1.30.0→1.31.0 與 shadcn 內層 Undici 7.29.1→7.30.1；官方新 audit 仍 FAIL19（13 high／6 moderate）。Miniflare 的 Undici 7.24.8 及其餘風險未解除，新的乾淨安裝與建置仍待實測。
+
+使用者已批准另建交付資料副本，移除經核對的 C07／C08／11111111 當前測試內容與測試專用草稿；原 rev495、14 個身分權限、正常資料、圖片與歷史不可改動。已按獨立核對的來源另存 revision 496 與新私有 TEST 資料 ZIP，保留原 495 祖先與舊內容，歷史仍可顯示舊測試名稱；混合 FQC 兩個父項及 33 個正常子項保留。製包者完整讀回只屬封裝證據，另一代理的實際包獨核、新來源建置及冷匯入／登入仍各自需要收據。新包雜湊與當前驗證結果由唯一索引定位，不能概稱全部驗收或正式交付完成。
+
+已確認隔離編譯產物與先前原始差異輸出涉及每次建置產生的 revalidation bearer、preview bypass ID、prerender bearer；未證明員工密碼曝光，也未證明 preview signing／encryption 值已曝光。舊服務停止不等於認證值失效；舊編譯包維持私有、禁止分發部署。安全診斷、正常建置入口與 client 邊界檢查已整合並通過獨立源碼核對及 64 項合成控制，實際新依賴建置尚待驗證，詳見 docs/testing/BUILD_AUTH_BOUNDARY.md。原 eaf7 實際建置已走官方 npm build，舊摘要的「direct adapter」為外層入口名稱，不能誤稱繞過 npm；新掛鉤不在舊建置中，不沿用舊結果作安全修正 PASS。
+
+目前唯一索引新增 activeReadOrderSecurityCleanDelivery，直接證據位於忽略的 Temp/sol61-security-clean-delivery-root-20261019/。I4 新冷安裝目標及額外一個 bootstrap、G6 真 GUI 故障測試、S2 原生 Spinner 測試已集中提出精確批准，未獲批准前不執行；原 I2／I3 額度各 1／1。原業務隔離服務已停止，未建立新業務站或背景續跑。IQC UNKNOWN、Master AB HOLD、main-only 整樹清潔 HOLD 仍保留；不執行任何 Git 寫入或對外發布。下列為歷史階段，不覆蓋目前索引。
+
+## 2026-10-19 安全修正與交付副本清理（進行中）
+
+由 eaf7f7bab290 的實際 SOURCE-ONLY 包接續。主代理仍是唯一整合者；目前工作來源已變更，尚未凍結新版本。三處借用方法擷取以 Reflect.get 保留原動態 call/apply 與網路拒絕契約，限定控制及獨立源碼核對通過；實際全專案 lint 尚 FAIL2（Spinner 語意標籤與 FQC legacy beforeunload 相容寫法），不是全行為驗收通過。鎖檔僅更新 MCP 1.30.0→1.31.0 與 shadcn 內層 Undici 7.29.1→7.30.1；官方新 audit 仍 FAIL19（13 high／6 moderate）。Miniflare 的 Undici 7.24.8 及其餘風險未解除，新的乾淨安裝與建置仍待實測。
+
+使用者已批准另建交付資料副本，移除經核對的 C07／C08／11111111 當前測試內容與測試專用草稿；原 rev495、14 個身分權限、正常資料、圖片與歷史不可改動。清理候選採不可變內容另存及原生版本狀態轉換，歷史仍可顯示舊測試名稱；混合 FQC 兩個父項及 33 個正常子項保留。候選改寫器尚在獨立源碼核對，尚未產出新資料 ZIP，不得將準備完成寫成資料已清理。
+
+已確認隔離編譯產物與先前原始差異輸出涉及每次建置產生的 revalidation bearer、preview bypass ID、prerender bearer；未證明員工密碼曝光，也未證明 preview signing／encryption 值已曝光。舊服務停止不等於認證值失效；舊編譯包維持私有、禁止分發部署。安全診斷與正常建置入口修正尚在製作、未以重新建置驗證結案。
+
+目前唯一索引新增 activeReadOrderSecurityCleanDelivery，直接證據位於忽略的 Temp/sol61-security-clean-delivery-root-20261019/。I4 新冷安裝目標及額外一個 bootstrap、G6 真 GUI 故障測試、S2 原生 Spinner 測試已集中提出精確批准，未獲批准前不執行；原 I2／I3 額度各 1／1。原業務隔離服務已停止，未建立新業務站或背景續跑。IQC UNKNOWN、Master AB HOLD、main-only 整樹清潔 HOLD 仍保留；不執行任何 Git 寫入或對外發布。下列為歷史階段，不覆蓋目前索引。
+
+## 2026-10-19 發布阻擋項收斂與 source-map 安全候選
+
+原 0f819／process-os-paired-test-20261019-c3-v3 的限定冷安裝、正常 ADMIN／三 DEMO 與正常收尾保留；新候選另精確修補 source-map-js 1.2.1→1.2.2，未變 SDK/native／匯入器／更新器／角色。離線官方函式庫對照已完成，新的乾淨依賴、建置、實際 ZIP 及受影響安裝驗證尚須各自取得證據，不能沿用舊包名稱宣稱通過。發布檢查見 `docs/testing/DEPENDENCY_RELEASE_GATES.md`。
+
+H28 指定的計畫／報告發回重送、複驗失敗及處置核准已有真 GUI 限定證據；不再概括列為全未測。真 GUI 斷線／回覆遺失／V3 結果不明仍未驗。原 rev495 疑似測試內容及正式／草稿差異已唯讀盤點，未清理或重包，待資料 owner 決定；IQC UNKNOWN、Master AB 原值 HOLD、lint 五項、安全稽核及上傳目錄嚴格清潔 HOLD 均保留。
+
+唯一現況索引仍為忽略的 `Temp/current-github-upload-continue-20261015.json`；本輪直接證據在 `Temp/sol61-release-blockers-root-20261019/` 及其連結。沒有新增 bootstrap 或重匯，既有服務已停止；任何新工作窗須在啟動前具名記錄，不承諾背景續跑。所有 Git 寫入與對外發布繼續禁止。下列為歷史階段。
+
+## 2026-10-19 新版 ZIP 冷安裝與發布前問題收斂
+
+主代理為唯一整合者；本輪 I3 已直接批准單一新短目標 c3-20261019 與額外最多一個 bootstrap ADMIN，原 I2 額度不重用。原 cde／rev495 配對 ZIP 保存不覆寫；FQC 摘要計數已最小修正並完成程式回歸，新版來源、建置、實際 ZIP 與冷安裝必須分別核對，不沿用舊包的通過聲明。
+
+最新版本、程序狀態、實際包與直接證據以忽略的 `Temp/current-github-upload-continue-20261015.json` 為唯一索引，本輪收據在 `Temp/sol61-coldinstall-root-20261019/`。既有完整容量更新依受影響來源及依賴逐項決定沿用，安裝尚未取得的證據不得提前列 PASS。原 rev495 含草稿／待審，保留更新拒絕；IQC UNKNOWN、Master AB HOLD、lint、依賴稽核與其他未測項分別列管。
+
+不動日常3000、3040／3050、C2C、原帳密與原包，不執行 stage／commit／push／PR／merge／部署／刪分支。實體手機及跨電腦依使用者決定擱置，GitHub clone 留待下一階段。沒有未建立的背景續跑。以下段落保留各版歷史，不替代唯一索引的現況。
+
+## 2026-10-18 I1／U1 分層驗收與最終交付待完成
+
+工程與驗收來源：17e06098a104…（1,560 檔；`Temp/sol61-i1-u1-execution-root-20261017/current-u1-source-checkpoint-v5.json`），完整容量更新器行為證據另屬 f722。這是已具名版本的證據，不是最終文件凍結或新版程式包指紋。
+
+原 42de 程式 ZIP／rev495 資料包的 I2 短目標已完成完整首次匯入與自有 SDK／程序收尾；正常私有 ADMIN 及三個既有 DEMO 帳號的登入／登出、限定唯讀頁面已有真 GUI 證據。這些證據屬 42de，不代表 Git clone、新版 ZIP 冷安裝或全站功能通過。
+
+f722 的隔離完整容量 TEST A／B 已完成正向更新、同包重複不重套、完整 B 物件／影像／歷史／角色與私有設定讀回；本機修改、草稿及 pending 的拒絕與完整實體還原、真階段匯入失敗後恢復、NEW_ACTIVE 中斷後由完整備份實際複製恢復並完整讀回 A，均依各次實際收據限定接受。未新增帳號，不把這些 TEST 結果當正式業務快照更新。原 rev495 含既有 pending／草稿，註冊／更新應拒絕；未清理原業務資料來取得通過。
+
+17e0 的啟站程序已將本程序 SIGINT／SIGTERM 清理順序化：先等候既有 Vite／公開資料引擎與 HTTP 關閉及租約釋放，再透過原 EventEmitter 執行原有回呼。原安裝執行環境 Node 24.19.0 的實際正常啟站／關站已通過；七個自有程序全部退出、主程序回傳 0、無強制停止，私有安全檔未變。69 項純時序控制與該檔 lint 0 另有證據。這不證明全部 SDK 私有佇列或舊版原生失敗根因；舊失敗保留。直接證據依唯一索引的 `serialized-signal-normal-root-actual.json`。
+
+配對包只作私有 TEST 保存，不代表正式發布或全站驗收。實際來源／建置清單、程式／資料 ZIP、版本、大小、SHA-256 及另一代理的實際核對結果，以外置 `PAIR-RESULT.json` 與唯一交接索引為準。資料固定為使用者接受的 2026-10-14 rev495，不混入 QA 站或日常3000；新版 ZIP 全新匯入及 Git clone 尚未重跑。
+
+完整 lint 最後實測仍 FAIL5；三項接收端契約及 FQC 真人 Ctrl+R 提示取消／輸入保全僅在原範圍沿用，Spinner 的 SSR／ref／callback 測試不是原生通過，S1 瀏覽器協定拒絕仍保留。IQC UNKNOWN、Master AB 原值 HOLD 與其他未測項不得洗成 PASS。實體手機／第二電腦由使用者擱置，只接受單機範圍；Git clone 安裝未驗。
+
+唯一當前狀態與直接收據依忽略的 `Temp/current-github-upload-continue-20261015.json`；下列舊段落是各版本歷史，不覆蓋當前狀態。未 stage／commit／push／PR／merge／部署／刪分支，不動日常3000、原包、帳密或 C2C，不承諾背景續跑。
+
+## 2026-10-17 FQC 真畫面計畫閉環完成；兩項小修正已整合待 GUI 回歸
+
+F1 已精確批准並正常啟用一次、產生兩項預覽工作；同一份 QA-H25-FQC 計畫已儲存重開，由 RD 完成來源撤回，再由不同的 QA ADMIN 完成審核端撤回、再送審及核准，兩次解鎖內容與可見歷史保留。真人 Ctrl+R 出現原生離頁提示，取消後標記仍在，已還原本機備註。僅接受該測試計畫／離頁行為，不擴稱全部報告、免做或全站通過；核准後來源頁重讀仍待續站。G1／G2、G3／G4／G5 與製程／模具有效窄證據沿用，不重清理兩筆 QA。
+
+H25 已正常 root-control 收尾，原 exec exit0、SDK dispose 與全部捕獲資源關閉另有新鮮 OS 缺席證據；保留資料未重還原。H23 stale READY／cleanup UNKNOWN 不回填。新兩項修正是檢具晚到讀取不得重開／重設表單，以及 FQC 清單外歷史篩選明示，實作與測試見[品質](AI_CONTEXT/modules/QUALITY.md)。9 組續用、41 案延遲開窗、7 組篩選的實際 CLI 與五檔語法通過；定向 lint 仍有原有 beforeunload 1 項，最後完整 lint 仍 FAIL5，Spinner 原生使用畫面缺口保留。
+
+目前中間來源、main-only 精確副本／未 stage 清單、程序與原時窗、新修 GUI、真正未完與精確批准只依忽略的 `Temp/current-github-upload-continue-20261015.json`；舊18e5的510產物不能作新來源建置通過。IQC 舊結果未知、AB 原值 HOLD、B-only／設備／跨電腦／未知儲存結果與正式員工配對包等關卡不得自行豁免。未 stage／commit／push／修改 PR／merge／部署／刪分支；不動日常3000、原包、帳密與C2C，不承諾沒有背景機制的跨回合續跑。
+
+## 2026-10-17 G1／G2 完成；檢具刪除權限修正後待新來源驗證
+
+G1 已精確批准並解除原生確認焦點阻點；保全 STAFF 舊輸入後正常關閉、true reload 重開，A 的 RD 新值與 B 的 STAFF 修改均保留。G2 另經精確批准，以正常 RD 頁完成兩筆 QA-H20-SYNC-A／B 的引用防護、各兩次確認、Save ACK 及 true reload 精確搜尋0筆；正式V17／草稿V18保留。兩筆清理已完成，不要重做或整庫還原。H20 正常停止 exit0／SDK及資源收尾有獨審，OS缺席另證；H21沿保留資料與原61361續站，未改帳密、角色或日常3000。當前站台、期限與各次原件只依忽略的 `Temp/current-github-upload-continue-20261015.json`。
+
+真畫面另確認 STAFF 編輯視窗刪除鈕漏前端 gate，原API仍拒，未用STAFF試刪。唯一整合者已最小補三處 gate／入口／等待後刪除權檢查，保留其他修改與所有防護。新九情境實際函式／client 測試先在舊程式精確失敗、修後通過，原18項引用防護通過；仍需修後 STAFF／RD 真畫面、凍結新來源與建置。d98 的510產物／303候選六組commit單PR草案及39次正常API限定PASS均是既有基準，不是修後版全面驗收。其他 IQC unknown／F1直接批准／AB HOLD／實機跨電腦效能／正式員工配對包等缺口維持最新索引。沒有stage、commit、push、PR修改、merge、部署、刪分支或新ZIP。
+
+## 2026-10-17 檢具續用、末列避讓與 CJS 規則適用性
+
+沿用同份隔離資料與既有三個 QA 帳號，沒有重還原或重設帳密。H18／H19 真畫面補驗新增表單正常離頁返回、實際停站讀取失敗、斷線後補字、失敗重讀、同身分續站後明確重讀，以及新增、手動儲存、true reload 與同 ID 重開；原始空白、多行中越文與同照片預覽保留至正常套用，持久照片為非 blob 的80×60 HTTP影像。該次新增 QA 記錄另經兩次正常刪除確認、Save及true reload精確搜尋0筆；較早 QA-H16 記錄仍待末列操作回歸與清理。H17照片增改刪及小幫手一次回報的既有窄證據保留，未擴成全站接受。
+
+檢具新增／編輯確認區既有82px避讓已實測563與390尺寸、中越文不重疊；另發現清單最大捲動時末列刪除被固定回報鈕遮擋，新增只匹配檢具清單的76px底部留白。新版面實測狀態依最新索引，不能用幾何預測代替真畫面。九組續用與18項刪除引用防護的既有CLI證據依未變更JS沿用。CJS只調整單一檔型規則，七檔正反控測與完整lint已實跑：468→5／692檔，精確移除463 require、0新增、原5逐診斷相同，仍exit1。其他規則、typeAware／typeCheck、plugins與ignore不變，詳見[lint政策](docs/testing/LINT_CONTRACT_POLICY.md)。
+
+H18、H19正常root-control停止均有原程序exit0及SDK／刪除Promise drain與捕獲資源收尾證據；H18另有獨審及新鮮OS缺席。H17及更早UNKNOWN原件不改標，OS缺席不代替原cleanup。920e5的舊build通過只綁舊來源；43e7的新來源／CI7依賴精確副本已實際copy成功，獨立全檔讀回另行記錄；後續CSS與lint設定變更需新來源凍結及精確重綁，不能沿用舊包或舊build為新版通過。
+
+當前來源、站台／期限、原生驗收、建置、包版本與真正未完項，只依[整合進度](docs/local-integration/20261014-github-upload.md)及忽略的 `Temp/current-github-upload-continue-20261015.json` 最新收據。新正式包、乾淨員工匯入、完整角色/API、未知儲存結果、實體手機、跨電腦及效能仍按逐項證據處理；不先打包。保護日常3000、原包、封存與現有修改，不重連C2C，不stage／commit／push／建立更新PR／merge／部署／刪分支。資料模型無變更。
+
+## 歷史階段：2026-10-16 STAFF／RD 指定製程與模具四分支及原值恢復完成；其餘驗收與交付待完成
+
+沿用同一份已還原私有資料，未重跑完整還原。R4 三個 QA 帳號經正常 GUI 與使用者憑證步驟建立；STAFF／RD 沿用既有角色，QA ADMIN 僅 users.edit 個別開啟，原帳號與全域角色未改。H14 已由 STAFF／RD 正常登入，並以兩個不同身分完成指定製程與模具的發回、來源撤回、審核端撤回及核准四分支；兩頁原值恢復案件已由RD正常核准，true reload分別確認製程activeV27／模具activeV30且無pending，原QA-B內容與指定照片保留；三個QA帳號仍啟用供餘測，尚未由frank正常停用。H13 原 exec exit1／late cleanup unknown 與各次歷史 unknown 保留；OS 缺席證據只證當時指定程序／完整 native 集合及監聽不存在。當前站台、期限及原始收據以忽略的最新整合索引為準。
+
+H13 正常登入後 BOM 直接354主件／6105列、重載一致，以及中越文歷史載入無假空訊息，已有窄原生接受。H14 正常 STAFF／RD 登入及指定不同人流程按收據接受，QA ADMIN 的主要管理員唯讀保護與僅新 QA STAFF 姓名修改／精確恢復另有證據。製程查看審核曾捕捉舊權限而停用按鈕，正常關閉／重載／等候案件完整後重開恢復；單一 view 入口修正經23組實際 module／client 記憶體測試與獨審，H15 exact1來源已依真plan啟站；同恢復案STAFF正常查看的approve／return仍停用，RD第一次開啟即啟用，無reload workaround，正常196原生確認後核准並恢復P0。此為限定原生接受，不涵蓋所有race時序。最新完整 lint 仍真 FAIL468；IQC僅C1、master AB整份HOLD、F1確認啟用已遭本日自動審查拒絕（啟用0寫入／未建計畫，待直接批准及正式審查）、實體設備與未覆蓋角色/API等缺口保留，詳見[整合進度](docs/local-integration/20261014-github-upload.md)。A73歷史來源已凍結，本次F1證據文件重綁中；最終build與程式／私有員工資料包尚未完成，GitHub發布動作未授權。
+
+[整合進度](docs/local-integration/20261014-github-upload.md)統一記錄來源、lint、驗收缺口與下一步。A73歷史來源已凍結；最新文件重綁、建置與新正式包仍未完成；日常 3000、原包、C2C 與 GitHub 發布限制維持。沒有 commit／push／PR／merge／部署／刪分支。
+
+## 歷史階段：2026-10-16 隔離站 H6 就緒；frank 正常登入，製程／模具同一操作者四案例完成
+
+沿用 C 已完成的隔離還原資料，沒有重跑完整還原。R1、R2 的失敗與 G、H4、H5 的原 cleanup unknown 均保留；後續成功的獨立 OS absence 查詢只證當時程序／監聽已消失，不把原清理流程改標成功。使用者另直接授權的 R3 已執行一次官方帳號工具；釘選 stdout filter 觀察到通過 APPLIED 497／keys／私有備份 metadata 檢查的固定完成訊息，隨後真 tool exit 7。最後保存的 raw 仍為 RUNNING／officialApplied=false，沒有 cleanup／finished／controllerExit，未保存的 closure 仍為 false；不回填、不重跑 recover，也不把訊息觀察當收尾 PASS。
+
+R3 真退出後的成功 OS 查詢確認 controller、完整已知 native PID、目標標記及監聽均不存在，未停止其他程序。H6 經精確後繼前置及原 guard 在同一保留資料啟動；啟動就緒的六項真 HTTP PASS，當時實際讀回 revision 497。root 在正常 Chrome 登入表單以既有 frank 登入，畫面確認 FRANK TSAI／ADMIN；沒有 DEMO 或 cookie 注入替代。這證明正常登入可用，不把 R3 原 unknown、完整角色或全部功能改標 PASS。受驗產品仍為 live e183，原安裝／冷還原與 F 的證據仍綁 2cd；H6 執行中不等於其收尾已接受。
+
+root 在正常 Chrome 以同一 frank 並明確勾選自審，完成製程與模具各自四案例：C1 退回、C2 來源端撤回、C3 審核派送端撤回、C4 核准。取消、A 手動儲存重開、未儲存 B 排除於固定 C1、退回 A 解鎖，以及 S2 儲存 B 重開後兩個撤回端保留 B 均有真畫面證據。製程 active V17；正常重新載入的 entry dispatch 在 A-ASSY 兩個現有產品顯示 B。模具 active V20，歷史真畫面顯示 V14 退回／V16 撤回／V18 撤回／V20 核准及操作者、時間、送審與決定理由；製程 195／模具 518 項既有 advisories 保留。
+
+這是現有目標及相同操作者的限域接受，不代表全角色、不同審核人、多人同時操作、一般 CRUD／照片、完整桌面、實體裝置、效能或最終 build／package。最新逐項狀態以忽略的 `Temp/github-upload-resume-20261016/gui-native-checkpoint.json` 為準；不把本段快照擴大為全站完成。
+
+完整來源、當前入口／期限、收據與驗收界線見[同一整合進度](docs/local-integration/20261014-github-upload.md)及忽略的 `Temp/current-github-upload-continue-20261015.json`。先前 21 個正式工段標題的越文與中文還原 UI 證據保留；裁切截圖不當完整桌面接受，全螢幕、實體手機、跨電腦及其他未完成項不升級。尚未最終凍結、實建或製作新正式包；原包、日常 3000、C2C、Git／PR／部署均未動。以下各階段保留歷史時點，不替代本段及最新 checkpoint。
+
+## 2026-10-15 持續執行：上傳可攜性修正與一次批准還原失敗
+
+使用者要求持續工作後，已完成244項 Git 真實換行規則核對及267項上傳 target 三方相容準備，保留所有既有 dirty／untracked／index；沒有寫 Git。正確52個歷史 commit 的安全掃描無診斷；兩份驗收 JSON 的512個本機路徑已最小修正，原件在專案外，1742 hash與測試資料／狀態不變、87個原證據仍存在。員工完整資料包文件補上第一次安裝／登入、正常與DEMO身分、後續更新及失敗還原的界線，未把文件完成當功能接受。
+
+本對話直接批准操作A，原固定 controller／approval 經正式工具審查放行後執行一次，於native參數guard停止；沒有HTTP／帳密產生，incomplete保留且cleanup總體未確認。不重試、不換控制器或放寬安全，也不把該目標作GUI入口。唯一現況、來源指紋、收據與仍未完成項見[同一整合進度](docs/local-integration/20261014-github-upload.md)文首及忽略的 `Temp/current-github-upload-continue-20261015.json`；a75ff與以下較早「待批准／未執行」段落保留為歷史，不再代表目前狀態。
+
+後續安全驗證：0b8c來源1,540檔與正確52歷史的原CLI preflight真exit0／findings0；GitHub連接器16:00:54 UTC成功GET確認private、PR13 open draft／head3b／main51a。舊CI在DEMO測試builtin被當檔名失敗，目前同測試的memory handler實跑exit0，未重跑遠端CI。原native guard的registry→debug參數及stop→dispose靜態相容衝突已有未套用提案，A實際參數分支仍unknown，cleanup false不改標。這些結果不等於GUI、建置、資料包或完整驗收完成；沒有Git mutation。
+
+## 2026-10-15 新對話接手與開啟 checkout 整合
+
+目前工作分支 `codex/github-upload-20261014`／HEAD `a09b0e69f1b1fc8aeb797f8dab59f2002aa66cac`，未 commit 或操作遠端。原工作非執行中；本輪 root 為唯一整合者，兩位 SOL 6.1 子代理只作獨立 lint／GitHub 準備審查。dd4b 1,539 檔核對、10 檔成果整合及專案外原檔備份已完成。新增兩個精確 lint 規則例外及必要文件後已不再是 dd4b，不能把舊 build／ZIP 改標最新版。
+
+現況與所有未完成關卡見[單一整合進度](docs/local-integration/20261014-github-upload.md)文首、[lint 政策](docs/testing/LINT_CONTRACT_POLICY.md)。完整 checkout 實跑 FAIL 415，正反對照 PASS；共同來源減四項、歷史證據另四項皆如實保留。瀏覽器可讀取，但使用者確認未另備隔離站；原遭拒還原未重試，具體批准準備在忽略的 `Temp/github-upload-resume-20261015/`。GitHub 最新唯讀連線失敗；禁止直接從含私有原稿歷史的 daily Git database 推送。
+
+本階段沒有產品行為／schema／業務資料變更、服務啟動、還原、帳號或 secret 建立、build、ZIP、C2C、commit／push／PR／merge／部署。下方各階段保留歷史證據；其「下一步」不替代本段最新範圍。
+
+## 2026-10-15 本組 lint 收尾，轉回功能驗收
+
+本組接續 9fa14d6a884e，只處理 final-manifest 同步工具與必要回歸入口／工程文件。新副本查 Temp/current-next-cjs-group-20261015.json；舊來源與封存不覆寫。兩 Node 各 30 項選測、同步 cache／exports／helper／spawn／錯誤對照及實際 source closure 21→22 scripts／24→25 union 通過；Git stub，未驗產品 runtime。第一次 fixture 自我來源污染造成 SHA 差異已修正外部執行，原失敗保留，已通過選測未重跑。全 lint 真 exit 1／415，本次減 3、累計減 6；410 為 CJS 寫法，另 a11y1／deprecated1／accepted receiver3，不能直接視為五個已證實功能缺陷。
+
+依最新使用者時間優先順序停止新增 lint 批次與 ZIP。兩 core／測試／文件是相對 4cc417 唯一差異，須核對後才沿用既有產品 build；不得改標最終 source hash 的實建。新來源 ZIP 尚未更新，V5、restore approval、3000／3070、暫停 3040／3050、C2C、Git／PR／部署保持不動。其餘 button／草稿送審／同步缺口依既有驗收清單核對，提出不需受阻還原／新帳密／提權的直接項，不以額外 lint 填時間。詳細收據在候選旁 delivery.json。資料模型無變更；其他 OS／GUI／手機／跨電腦／實際還原未驗。
+
+## 2026-10-15 普通權限 build 與第一檔 CJS lint 減量
+
+本段取代以下歷史段落的下一步判斷：4cc417 的 build 先前未安排，並未遭拒；目前已完成實際普通權限離線 build。新副本與完整命令、stdout／stderr、退出碼、產物 SHA 查 Temp/current-ordinary-build-4cc417-20261015.json 及其 build-receipt.json。來源 SHA 4cc417827cc595acd39a79b245f87bebd522bbbdc160467d8ca119962ad85a37，exit 0、dist 510 檔、另有 .wrangler/deploy/config.json；未見 network guard 連線紀錄或新 DB／session／restore marker。原來源與受保護指標雜湊未變。準備腳本最初有 Windows 斜線判斷錯誤，在 build 前停止；修正路徑驗證後才啟動唯一一次 build，並非權限拒絕或換路徑重試。
+
+工具候選另放 Temp/current-first-cjs-lint-20261015.json 所指副本；只將 canvas-task-diff 實作移入同步 ESM core，保留 CJS facade。Node 22.13／24.19 各 67 項離線檢查與原生同步／cache 契約對照通過；fixed golden 不變。首檔 require 診斷 5→2；全站實查 421→418，其他診斷排序後完全相同，完整 lint 仍 FAIL。第一版比對器因平行輸出順序不同而停下，已保存結果排序核對，未重跑通過檢查；當時全 lint 子 exit 未在 assertion 前保存，定向補驗另明錄 before／after exit 1。其他工具、三項已接受 receiver 診斷與規則均未改。細節見[測試說明](docs/testing/CANVAS_EVIDENCE_TOOLS.md)。
+
+此新工具候選沒有重新 build／封裝來源 ZIP／重綁 V5，也沒有 restore、HTTP、GUI、實體手機或跨電腦驗收。現有 source ZIP 封存已完成且保留原 bytes，4cc417 build 也已補足；不能再泛稱所有原範圍工作都受 restore 阻擋。完整上傳仍受既有 runtime／驗收及 Git 凍結界限限制，後續依實際授權處理。日常 3000／3070 與暫停的 3040／3050 不操作，C2C 不重連，未執行 commit／push／PR／merge／部署。資料模型無變更。
+
+## 2026-10-15 可攜式 Canvas 證據回歸已納入新工作副本
+
+本段接續 b0b4cef Canvas 工具 V2；舊候選保留原始位元組。新來源關係、最小五檔差異及收據查 Temp/current-github-upload-portable-canvas-20261015.json。新增 scripts/test-canvas-evidence-tools.mjs、相對固定 fixture 及[簡短用法](docs/testing/CANVAS_EVIDENCE_TOOLS.md)，並更新 CHANGELOG／HANDOFF；三工具與 local-evidence-paths、package／產品入口均未改。先前段落提出的可攜式入口工作於本段交付，不再視為待辦。
+
+入口只使用 Node 內建模組，在自有 synthetic 目錄執行，預設 OS Temp；需要跨命令保留證據時使用 --artifacts-dir 既存絕對目錄。初次 native 預載器 URL 路徑不相容的失敗保留，已修正並要求 child audit 證明故障實際觸發；不得以單純 nonzero／空 stdout 判定負向案例通過。正常移位執行及舊工具故障負對照的結果以新收據為準。
+
+沒有應用服務、真網路／Git、業務資料、提權或憑證操作，沒有再試被拒還原，也沒有 commit／push／PR／merge／部署。產品 GUI、實體手機、跨電腦、最低 Node／其他 OS、完整初始化與還原仍未完成；既有 lint FAIL421 及三工具 FAIL12 的證據不改標。新來源未重建產品或重新還原 V5，沿用界線與 b0b4cef 相同。
+
+原範圍內下一個可獨立完成的實質缺口：新來源 ZIP 尚未重封裝，舊來源包不含本次入口／fixture。可將固定新候選封裝並獨立核對內容，使員工取得的來源包包含實際測試；V5 保持原封存版本，不藉此重啟受阻還原或增加無關功能。
+
+## 2026-10-15 Canvas 工具 V2 新候選；完整上傳流程仍未完成
+
+目前三個工具與本段工程文件位於新的可修改隔離候選，查 Temp/current-github-upload-tools-candidate-20261015.json 取得路徑、來源 SHA、五檔差異、patch 及收據。Root 為唯一寫入者。舊凍結來源／建置／V5／restore approval 不更新；日常工作目錄、Git 遠端、main 與既有 PR 保持原狀。本階段沒有 commit／push／PR／merge／部署、應用程式 runtime 或業務資料寫入。
+
+工具修正：workspace baseline id；Git status 1 空 stdout 的失敗；雙報告暫存／備份／發布／例外回復；輸出 lstat 僅 ENOENT 代表不存在，拒絕有效與失效連結。獨佔 lock 防止採用同一協定的寫入者互搶；回復不完整時保留可還原備份並停止。這不是斷電原子交易，ACL／inode 等檔案 metadata 相等性仍未驗證。
+
+驗證範圍：21 項回歸（16 項重測＋5 項未變 SHA 證據沿用）、8 項正常輸出契約、30 項隔離 IO、8 項實際 Windows synthetic CLI；四種 Git diff 結果在全新離線 Temp 檔案觀察，沒有 init／commit 或業務 repo Git 命令。三檔語法通過；lint 實際 exit 1／12 項既有診斷，沒有新增；全站 FAIL 421 未重跑。Node 22.13、產品 GUI、實體手機、跨電腦與本候選實際還原仍未驗證。既有 restore 啟動遭 auto-review 拒絕兩次，未再次嘗試；UI turn/start 絕對路徑錯誤亦未宣稱修復。
+
+舊 build 只能沿用其既有 artifact 與未變產品輸入的證據：三工具不是產品入口；app／public／lib／設定／package／lock／build 啟動來源須逐項核對。不得把舊 build PASS 改標為新 source hash 的實際 build PASS。V5 六個 productionDependencyHashes 未變，只支持既有 rev495 封存資料包相容性證據；不表示新候選已實際匯入／還原或當前 Local 3000 資料未變。具體靜態掃描及沿用範圍列在新候選交付收據。
+
+下一項可獨立安全工作：把已驗證的 Temp harness 整理成 scripts/test-canvas-evidence-tools.mjs 可攜式離線回歸入口，讀取當前工具、使用 synthetic／stub 及自有 Temp 目錄，維持 package.json 與產品入口不變；完成前不把暫存 harness 宣稱為已整合測試。Main 3000／3070 不操作，3040／3050 維持暫停，C2C 不重新連線。
+
+## 2026-10-15 私有資料包指引修正與隔離入口阻擋
+
+[私有資料包指南](docs/local-integration/PRIVATE_DEVELOPMENT_PACKAGE.md)已移除過時的固定目錄版本，改由同次交付 README／最新指標確認實際目錄與 manifest；還原工具及命令不變。本輪只改該指南與此交接紀錄；程式、schema、建置及 V5 資料內容不變，既有有效證據沿用，僅更新文件來源封裝。
+
+限定依賴 junction 經批准重試一次成功；新的隔離還原在本機 Miniflare proxy 就緒前回覆 fetch failed，incomplete marker 保留，未完成資料匯入或啟動站台。原執行會話已中斷；CIM 查詢遭拒，子程序清理未獨立確認。完整失敗與下一步見忽略的 Temp/github-upload-human-gui-authorized-followup-20261015.json；不推定為產品或瀏覽器故障。GUI、實機、跨電腦、效能及 lint421 FAIL 各自保留；Gitfreeze、Local3000／舊3070保護及正式發布門檻不變。
+
+## 2026-10-15 三區按鈕補驗與交付刷新
+
+已按 14 個實際入口核對舊證據，補齊本輪指明的有限事件／隔離資料缺口，並修正 IQC/FQC 三個表單的身分切換與 FQC 部分上傳顯示缺陷。既有 PASS 僅在明確 function／branch／依賴雜湊不變時沿用；所有產品 before 與 fixture 失敗收據保留。各案不等於不同按鈕，raw rows／families 不作 PASS 分母。
+
+現況以[整合說明](docs/local-integration/20261014-github-upload.md)、[單一按鈕證據](docs/local-integration/20261015-button-coverage.json)及忽略檔 Temp/current-github-upload-local-delivery-20261014.json 為準。新 Source／build／V5 envelope 必須完成最後獨立逐檔核對；文件不固化仍會變動的 archive hash。完整 lint 仍 FAIL421；兩個新改品質 UI targeted lint 為0。原生 GUI／實機／跨電腦／全站效能與 Git／發布門檻另列，不能稱13步完成。
+
+持續遵守 Git 暫停；未 commit／push／改PR／merge／部署。Main3000 無 SQLite handles／寫入，3040/3050 保持暫停，不開啟或重連 C2C；生產資料、schema、credentials、既有歷史及未核准的正式環境皆未變更。
+
+## 2026-10-15 原任務契約修復、工具收斂與Git暫停
+
+唯一現況見[整合紀錄](docs/local-integration/20261014-github-upload.md)。2026-10-15 UTC續修：Spinner本任務新增output包裝、focus／keyboard currentTarget及tabIndex移轉、強制SVG hidden／focusable均撤回，恢復修改前exact SVG bytes；7項element／prop／ref／callback／SSR核對及現行TypeScript PASS，非native DOM接受。112工具遷移中7支既有normalpositive沿用，test-local-backup在清外部backup env、固定owned TMP／SQL／tar／delete防護後，原／新版真正API／SQLite／tar／encryption／backup／restore／failed rollback normal流程各exit0且stdout相同；總共保留8支。其餘104非必要未驗遷移逐SHA備份後恢復原CJS，僅刪本任務生成且無其他Source consumer的core，全部可還原。67cold原收據保留，其中65不是normalacceptance，未強迫跑歷史GUI／缺資料工具。
+
+收斂早期快照421診斷／678 lint files／1533source（416literal require＋1 SVG prefer-tag-over-role＋3dynamic receiver＋1beforeunload deprecated），設定SHA b27badef835862a105b58ad08a924b366fba7ae7fb0bdef7cfee0398b3829db6未改。從20回升是收回未驗遷移與API變更後的誠實警告，不以消除lint擴大重構。三個receiver另補Node22.13／24純memory等價評估；apply/call-bound adapter雖保留普通this／args／return／throw，會提早捕捉method.apply/call，具體custom property變更反例證明非strict等價。保持原每次lookup契約，仍未解屬技術問題，不是需user批准的選擇；scoped candidate type-aware lint缺tsgolint未跑。
+
+完整新V5 cold／24signedHTTP／27業務鍵及14原帳號／100history保留證據適用未改產品runtime與payload，不重跑。新的source／build／envelope及獨立核對以最新忽略Temp指標為準，4cc5舊包不能冒稱此修正；舊版本／備份／失敗原件保留。PR13仍draft3b2ac099，Main51a3979c，dailyHEADa09b0e69；Git全暫停、Main0SQLhandles／write、3040／3050暫停、不連C2C、不繞GUI政策。GUI／crossPC／physical iPhone／CWV未驗，skill canonical save與support-reference provider阻擋、reference5human／2vendor／author-editor flags仍維持私有；無schema或正式migration/deploy。
 
 ## 2026-10-14 3035剩餘未同步輸入恢復已完成
 

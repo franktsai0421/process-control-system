@@ -22,6 +22,10 @@ npm run collaboration:setup
 npm run dev
 ```
 
+上述 Clone／dev 是空白 Canonical 開發環境流程。若收到程式 ZIP 與完整私有公司快照，ZIP 安裝無須先 clone；請依[私有完整開發資料包](docs/local-integration/PRIVATE_DEVELOPMENT_PACKAGE.md)核對同次程式／資料指標，在未啟動 dev、未建立 Local storage 前匯入；不要先啟動 Canonical 再覆蓋完整資料。ZIP 安裝的驗收結果不代表 Git clone 流程已驗證。獨立開發 ADMIN 與一般員工身份不同，登入檔不進 Git／資料包，正常員工帳密及角色依獲授權管理流程處理。
+
+已安裝完整私有快照後，取得核准新版資料包的操作依[離線完整快照更新](docs/local-integration/OFFLINE_SNAPSHOT_UPDATE.md)。f722 隔離 TEST 的完整容量更新、重複、拒絕及恢復已有分項實證；正常服務關站與最終來源／建置／製包仍須依 [HANDOFF](HANDOFF.md)分別接受，不能沿舊來源結果宣稱新版 ZIP 冷安裝或 Git clone 通過。原 rev495 含既有 pending／草稿時仍應拒絕更新，不清理原資料求通過，也不要對已有資料重跑首次匯入器。
+
 ## Canonical 圖片同步
 
 資料與圖片版本、來源限制、tombstone及備份／同步保護，以[Local資料協作](AI_CONTEXT/LOCAL_DATA_COLLABORATION.md)為正式來源。不要將歷史初始數量當目前資料量。

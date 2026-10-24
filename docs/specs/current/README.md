@@ -21,6 +21,7 @@
 | 模具設備 | [TOOLING](TOOLING.md) | 20261006 新版 Excel、3030 隔離匯入與共用草稿 |
 | 群組預設路線／產品例外 | [GROUP_ROUTES](GROUP_ROUTES.md) | AB/C、IPQC工段、畫布排列與相容投影 |
 | 帳號／角色／個人權限 | [PERMISSIONS_ADMIN](PERMISSIONS_ADMIN.md) | 2026-10-10 ZIP確認需求；151有效格，真實移轉未套用 |
+| 新照片上傳規格 | [PHOTO_UPLOAD](PHOTO_UPLOAD.md) | 2026-10-24 使用者確認；共用前端已接入，限定隔離驗證，未正式發布 |
 | BOM／主資料 | [BOM Digiwin 重建](BOM_REBUILD.md)、[主資料](../../../MASTER_ADMIN_UI.zh-TW.md) | 翻譯是閱讀版本，不另定業務規則 |
 
 實作：[AI_CONTEXT](../../../AI_CONTEXT/AI_CONTEXT.md)；持久化：[DATA_MODEL](../../../AI_CONTEXT/DATA_MODEL.md)；進度：[HANDOFF](../../../HANDOFF.md)。未解衝突見[文件索引](../../DOCUMENTATION_INDEX.md)，不得自行用程式取代確認需求。部署、協作及工程規則由根目錄 DEPLOYMENT、EMPLOYEE_WORKFLOW、AGENTS 負責。

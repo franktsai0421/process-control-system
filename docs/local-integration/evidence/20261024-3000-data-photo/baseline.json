@@ -1,0 +1,80 @@
+{
+  "format": "PROCESS_OS_DATA_PHOTO_PLANNING_BASELINE_V1",
+  "status": "ASSESSMENT_ONLY_NOT_A_DELIVERY_PACKAGE",
+  "recordedAt": "2026-10-24T14:44:34.097063+07:00",
+  "branch": "codex/github-upload-20261014",
+  "head": "a09b0e69f1b1fc8aeb797f8dab59f2002aa66cac",
+  "sourceIncludesExistingUncommittedWork": true,
+  "storageAuditSource": "same-chat read-only metadata-copy audit on 2026-10-24",
+  "sourceRevisionAtStorageAudit": 495,
+  "storageAudit": {
+    "current_reachable_storage": {
+      "objects": 177,
+      "bytes": 72893496
+    },
+    "current_and_100_backups_reachable_storage": {
+      "objects": 303,
+      "bytes": 87362558
+    },
+    "snapshot_reference_audit": {
+      "all": {
+        "objects": 333,
+        "bytes": 4891477374
+      },
+      "protected": {
+        "objects": 0,
+        "bytes": 0
+      },
+      "candidate_unreferenced": {
+        "objects": 333,
+        "bytes": 4891477374
+      }
+    },
+    "rebuildable_delivery_json_cache": {
+      "objects": 238,
+      "bytes": 2928806313
+    },
+    "preserve_all_other_objects": {
+      "objects": 1155,
+      "bytes": 310286234
+    },
+    "integrity_errors": {},
+    "audited_d1_backup_rows": 100,
+    "external_backup_dependencies_checked": false,
+    "runtime_behavior_after_cleanup_tested": false,
+    "no_source_mutations": true,
+    "source_database_and_wal_unchanged_since_copy": false,
+    "current_physical_storage_bytes": 8137524625,
+    "candidate_reduction_bytes": 7820283687,
+    "estimated_remaining_physical_bytes": 317240938,
+    "estimated_reduction_percent": 96.1,
+    "live_wal_bytes_changed_during_audit": true,
+    "final_stable_metadata_copy": true,
+    "business_and_backup_tables_unchanged_on_final_copy": true,
+    "changed_table_names": [],
+    "assessment_only_no_cleanup_or_restore_executed": true
+  },
+  "photoSourceSHA256": {
+    "public/process/app.js": "0a80b4ba39051fc643c1b79941e4e608689f47d9e88760bd3c10359be9c2a7dd",
+    "public/process/process-equipment.js": "085328159cec0dbba08e11e0b3368f5629f0d42cfa8b8f418450668110bb36ce",
+    "public/process/iqc-master.js": "689ecfa7b8ddc478561c043428d2230e2296f73d85e2d8c899b45e1c6b3899e8",
+    "public/process/ipqc-ab.js": "57f4f706e1d2cd20ef704c22d5154745db7863aff0992d60f0626c7d26522dfc",
+    "public/process/ipqc-c.js": "89de9dd64f988183aad09344187c635419b10e2e007fcd75c17526e03a18f625",
+    "public/process/tooling.js": "424965cf7eb6eea480f02fa9e572eaf721a3783659bd1d387636820be57cbf05",
+    "public/process/routine-equipment.js": "839347a42d5074f5735127f7705c9e80a10e8f4dfd979d4db42fb1c64e2010ec",
+    "public/process/routine-fqc.js": "ed671b7c5d7e0534b20d6438e401c2f9c24906340abb9f28b8595798e37b0e71",
+    "public/process/web-feedback.js": "8edd5e28f9bdc34699ec474bd6783476fde5691bb4233f506e67809774d0359a",
+    "lib/canonical-images.mjs": "17e7331d193eeda80e5629ce9565309f4fa39d488c3b7ccdaafb58869e3e485d",
+    "lib/state-media.ts": "f0174c59707b628731db2aa8974539046b7d7d9fb56726fe02d5ef4888c1e6f3",
+    "lib/state-records.ts": "592abd89a622f5f4bafc26812f7d91ae674e677a5c7fe539c88bc511215ccec8",
+    "lib/process-state.ts": "4faa500011030f70d928c79a3910745b53b9546de9dcbe05a749701c8626b728",
+    "package.json": "bd11c0e82fa56416b84d28b9eb9f1d47652bdbb754942c76c51758e636b7c942",
+    "package-lock.json": "5fad2ccfec0e42522b5c0258df09f5ce7231f7d1d81d08c66a3ee468899e8f73",
+    "vite.config.ts": "2c084acdf412c548fa325838daf0345726f10dc24e7fd4ba98fc5d25fda379dc"
+  },
+  "originalDataDeleted": false,
+  "deliveryPackageCreated": false,
+  "newPhotoRulesImplemented": false,
+  "sourceApplicationEdited": false,
+  "remoteWritesPerformed": false
+}

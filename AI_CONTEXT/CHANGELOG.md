@@ -1,8 +1,158 @@
-## 2026-10-14 GitHub候選收尾
+## 2026-10-24 GitHub舊分支封存與整合工作分支
 
-補修 local-init 的 source-relative module resolution，隔離空白／重複／保留初始化 PASS。上傳 source 從現行 remote main 的獨立 Git database 整合，Chrome 預設與外部 QA evidence 路徑改可攜配置；機器歷史與原始大型 Excel 保留於私有恢復材料。11 scope 審核尾段及 Tooling/BOM CAS 協作補驗 PASS；實際 GUI、實體裝置及既有 lint 缺口沒有升格為 PASS。
+依使用者新授權，14條遠端分支及目前工作head先封存並在新Git儲存庫實際還原驗SHA。11條已合併、已取消PR #11與被目前整合內容取代的舊工作分支分開處理，保留main及codex/consolidated-20261024、單一現行Draft PR入口；不合併main或部署。上傳前將建置測試的假Windows絕對路徑改為可攜fixture，36項合成控制通過；未改產品行為、資料模型或業務資料。具體分類及復原見[分支整理](../docs/local-integration/20261014-github-upload.md)。
 
-實際播放器首次自選唯一有效派送線，保留手選／固定設備；legacy流程主資料入口等待begin成功及權限／操作者重核。新增V3 Save失ACK的持久快照與receipt補驗。7＋8＋5定向案例及tsc PASS；既有37 lint、完整GUI、完整去憑證開發包及發布尚未完成，詳見[整合紀錄](../docs/local-integration/20261014-github-upload.md)。沒有新增schema或業務資料操作。
+## 2026-10-24 本機提交與分支集中
+
+保留目前working檔案內容，以GitHub既有整合基底整理四類本機提交，集中`codex/consolidated-20261024`；原分支歷史及未提交檔另有外部逐檔／Git bundle備份。原始Office、參考照片與大量診斷輸出留本機，不收入程式提交；已淘汰的PR #11不重新引入。盤點與類別見[提交紀錄](../docs/local-integration/20261014-github-upload.md)。沒有業務資料、schema／模型、main、GitHub PR／遠端分支或部署變更，既有驗收缺口保留。
+
+## 2026-10-24 照片第4階段修復與隔離流程驗收
+
+修正IPQC-C未逐動作遵循權限格、透明toast遮擋操作，以及Routine FQC直接寫deprecated returnValue；保留host handler與legacy回傳契約。補正品質workflow測試fixture，照片主要入口已在實際SPA／API合成資料完成Save重開及核准，含製程派工播放、例行不合格報告及保真處置附件。原3000資料／照片SHA不變，C2C依使用者要求停用。原生離頁補驗因使用者停止Computer Use未完成，完整lint仍FAIL1（既有Spinner）；不是全面或發布接受。精確範圍見[PHOTO_UPLOAD](../docs/specs/current/PHOTO_UPLOAD.md)及[HANDOFF](../HANDOFF.md)，無資料模型／schema／migration變更。
+
+## 2026-10-24 新照片三模式實作與精簡包V2
+
+依使用者確認接入共用一般1600/WebP82%、高清2400/WebP90%與保真原件，涵蓋手動照片及回報貼圖；來源校驗／還原例外與舊照片不變。補入處理期間身分、視窗目標及回報並行／送出防護。主要私有精簡包再排除82個無引用record，322.21MB→319.62MB；實際隔離還原與全物件讀回通過，8.15GB備份保留不再刪除。日常原庫4表／rev495／100份備份與1,155個保留物件hash一致，3000已重啟。限定測試、既有workflow fixture及deprecated lint失敗、未驗全模組GUI／手機／發布見[規格](../docs/specs/current/PHOTO_UPLOAD.md)與[計畫](../docs/local-integration/20261024-3000-data-photo-plan.md)。無schema／migration或業務模型變更。
+
+## 2026-10-24 全站照片規格的副本實測
+
+在可見內建瀏覽器以13份實際入口樣本（11張不重複）及4張合成圖產生68個Canvas輸出，整理一般1600/WebP82、高清2400/WebP90及細字保真例外的建議；原照片、歷史與產品程式未改。容量統計、偏差、視覺裁切及未驗範圍見[照片規格草案](../docs/specs/current/PHOTO_UPLOAD.md)。使用者另授權具名8.15GB備份刪除，但自動批准審查在執行前阻擋，尚未刪除；來源完整性核對及狀態見[分階段計畫](../docs/local-integration/20261024-3000-data-photo-plan.md)。沒有schema／資料模型變更、全站功能實作或發布。
+
+## 2026-10-24 3000 私有完整備份與精簡復原包
+
+沿既有實體備份／還原流程製作目前3000完整私有備份，另在獨立副本移除無引用舊整站快照及可重建傳送JSON快取；原庫、完整備份、照片、全部庫內歷史、帳號及角色保留。完整約8.15GB與精簡約322MB皆實際還原、全物件SDK雜湊／metadata及4表核對通過，另有15項HTTP窄證據。私有包包含原登入設定，不作員工分發或雲端資料包；新電腦／完整GUI等未驗界線及初次預覽失敗、恢復記於[分階段計畫](../docs/local-integration/20261024-3000-data-photo-plan.md)。沒有產品程式、資料模型、schema／migration或遠端變更，照片規格仍為草案。
+
+## 2026-10-20 FQC 審核案件連結導覽修正
+
+修正審核報告的異常案件連結只換選取、未離開審核 renderer 造成空白明細。僅此分支走既有例行檢查路由，維持路由權限、原樣品／照片／歷史與所有核准規則。抽碼正反控制與獨立來源核對屬限定證據；修正後 GUI、建置及實際包另行驗證，詳見[品質實作](modules/QUALITY.md)與[交接](../HANDOFF.md)。無資料模型或帳密變更。
+
+## 2026-10-20 FQC 空白環境讀取修正
+
+修正合法空檢具庫阻擋整個FQC頁，以及冷瀏覽器只依本機快取而缺少正式AB產品的問題。保留API失敗／權限／格式錯誤，使用現有正常唯讀入口載入唯一正式AB快照至RAM，維持身分與掛載競態保護；原草稿、審核、角色與CAS規則不變。可攜正反回歸及適用範圍見[品質實作](modules/QUALITY.md)，實際GUI與最終包證據由[交接索引](../HANDOFF.md)定位。沒有資料清理、schema、migration或帳密變更。
+
+## 2026-10-20 Miniflare Undici 精確安全修補候選
+
+以專案 override 將 Miniflare 4.20260515.0 所用 Undici 7.24.8 精確解析為7.30.1，既有 image-size override 保留；SDK／native 本體、儲存格式、角色與審核規則不變。這是專案待驗候選，並非上游相容性承諾。乾淨安裝、13項公開離線 consumer 與4項公開 Miniflare 正向測試有各自限定證據；完整容量、最後ZIP及冷裝仍依當次實測接受。audit 18與lint 2仍FAIL，未放寬檢查或豁免風險。詳見[依賴門](../docs/testing/DEPENDENCY_RELEASE_GATES.md)、[lint 契約](../docs/testing/LINT_CONTRACT_POLICY.md)及[唯一交接入口](../HANDOFF.md)。無業務資料、schema、migration、帳密或權限變更。
+
+## 2026-10-19 建置認證輸出防護
+
+正常 npm build 保留框架原認證與網路防護，子程序輸出改由有容量限制的記憶體捕獲產生固定欄位診斷；原始行、錯誤視窗、認證值及個別值雜湊不進日誌。接入建置後 client 已知認證邊界檢查，缺少／重複結果與捕獲超限皆失敗。新增診斷及入口／掛鉤兩個離線測試，合成正反控制 64 項通過；實際新依賴建置、最終 ZIP 與冷安裝仍需各自證據，不將模擬視為實建通過。詳見[建置認證邊界](../docs/testing/BUILD_AUTH_BOUNDARY.md)。舊編譯包私有保留、禁止分發部署；不把停止服務當撤銷，也未修改員工帳密或正式權限。
+
+## 2026-10-19 借用方法契約與兩項命令列依賴安全修正
+
+三處借用方法改以 Reflect.get 擷取，保留原動態 call／apply、接收端、參數及拒絕行為；TLS 邏輯未改。限定正反控制與獨立源碼核對通過，實際全專案 lint 由五項降為兩項，未關閉規則；Spinner 與 FQC legacy 離頁提醒仍列管，不宣稱原生功能全面通過。
+
+鎖檔僅更新 MCP SDK 1.30.0→1.31.0 與 shadcn 內層 Undici 7.29.1→7.30.1，package.json 及其餘節點保持原樣。官方套件完整性及限定函式對照通過；官方 audit 仍 FAIL19，Miniflare 根部 Undici 風險保留。新版本乾淨安裝、正常建置入口、實際 ZIP 與完整資料驗證尚待取得證據，詳見[發布檢查](../docs/testing/DEPENDENCY_RELEASE_GATES.md)及[HANDOFF](../HANDOFF.md)。本項沒有業務資料、權限、schema 或 migration 變更。
+
+## 2026-10-19 source-map-js 有限範圍安全修補
+
+將 lock 中 source-map-js 由 1.2.1 精確升為 1.2.2，採官方 tarball SRI／SHA1，修補 GHSA-68fv-2mgg-jv7q 的異常 indexed source map offset 資源耗盡風險；只改該節點的 version／resolved／integrity，不更動 SDK/native、其他 lock 節點或 package.json。新增不展開超大映射的離線回歸及[發布檢查](../docs/testing/DEPENDENCY_RELEASE_GATES.md)。已知 indexed 邊界／轉換限制與原失敗測試保留；新安裝、建置、ZIP 及剩餘安全風險分別驗證，未宣稱 audit 或 lint 全通過。無業務資料、角色、schema 或 migration 變更。
+
+## 2026-10-19 FQC 摘要計數與新版 ZIP 冷安裝查驗
+
+修正 FQC 審核摘要前後使用不同計數母體造成的假刪除提示，兩側都排除舊墓碑；不修改業務資料、歷史或審核規則。完整 renderer 7 組、兩檔語法及定向 lint 通過，實作見[品質](modules/QUALITY.md)。
+
+格式工具 oxfmt 固定升至 0.67.0／tinypool 2.1.2，以修補已公告的工具依賴漏洞；lock 僅替換官方解析的 21 個 formatter 節點及根引用，其餘 764 節點與 SDK 不變。這不是完整稽核歸零，實際乾淨安裝、CLI 與依賴讀回需另有收據；未放寬檢查或更換 Cloudflare SDK。
+
+本輪固定使用原 2026-10-14 rev495 私有資料，不混入 QA 或日常資料。舊 42de 首次安裝、f722 完整更新及 17e0 關站證據依程式與依賴差異限定沿用；新版實際 ZIP 的冷安裝須另有收據。IQC UNKNOWN、Master AB HOLD、完整 lint 五項與依賴風險保留；唯一當前狀態與版本依[HANDOFF](../HANDOFF.md)索引，沒有 GitHub 或部署操作。
+
+## 2026-10-18 離線完整快照更新分層驗收與交付待完成
+
+離線更新保留版本／來源相容性、完整實體備份、交易切換及精確恢復守門；正常儲存入口以存活期間互斥保護 SDK／SQLite，未知關閉保持 HOLD。業務格式、SQL schema、原角色／個別權限與首次匯入語意不變。
+
+f722 的完整容量 TEST A→B、同包重複、修改／草稿／pending 拒絕與實體還原、階段匯入失敗恢復及 NEW_ACTIVE 真備份複製恢復已分別取得完整讀回證據；42de 的首次 ZIP 匯入及正常／三 DEMO 登入 GUI 另有窄證據。原 rev495 的 pending／草稿仍應拒絕更新，未清理原業務資料。不能把 TEST 或舊來源結果外推成新版 ZIP 冷安裝通過。
+
+工程來源：17e06098a104…（1,560 檔；`Temp/sol61-i1-u1-execution-root-20261017/current-u1-source-checkpoint-v5.json`），完整容量更新器行為證據另屬 f722。17e0 的啟站程序已將本程序 SIGINT／SIGTERM 清理順序化：先等候既有 Vite／公開資料引擎與 HTTP 關閉及租約釋放，再透過原 EventEmitter 執行原有回呼。原安裝執行環境 Node 24.19.0 的實際正常啟站／關站已通過；七個自有程序全部退出、主程序回傳 0、無強制停止，私有安全檔未變。69 項純時序控制與該檔 lint 0 另有證據。這不證明全部 SDK 私有佇列或舊版原生失敗根因；舊失敗保留。直接證據依唯一索引的 `serialized-signal-normal-root-actual.json`。 配對包只作私有 TEST 保存，不代表正式發布或全站驗收。實際來源／建置清單、程式／資料 ZIP、版本、大小、SHA-256 及另一代理的實際核對結果，以外置 `PAIR-RESULT.json` 與唯一交接索引為準。資料固定為使用者接受的 2026-10-14 rev495，不混入 QA 站或日常3000；新版 ZIP 全新匯入及 Git clone 尚未重跑。
+
+完整 lint 保留原五項診斷與規則，IQC UNKNOWN、Master AB HOLD、實機擱置及 Git clone 未驗等限制保留。操作契約見[快照更新](../docs/local-integration/OFFLINE_SNAPSHOT_UPDATE.md)，當前與歷史證據的版本界線依[HANDOFF](../HANDOFF.md)及其唯一索引。
+
+## 2026-10-17 檢具延遲開窗防護與 FQC 歷史篩選顯示
+
+檢具引用讀取晚到時，核對操作序號、頁面、身分／世代、版本與目前視窗，防止重開已關閉表單、接管其他視窗或重設原編輯基線；重取當前檢具，不改引用等待、照片、CAS 或業務權限。FQC 清單外的歷史回查條件改為可見選項，由正常「全部」解除，避免畫面顯示全部但仍被隱藏條件篩掉。詳見[品質實作](modules/QUALITY.md)。
+
+新增回歸實際 CLI 為 41 案／7 組通過，原續用 9 組與五檔語法通過；定向 lint 保留既有 FQC returnValue 1 診斷。H25 FQC 測試計畫兩端撤回、再送審、不同人核准及真人原生離頁取消已有窄 GUI 證據；新修正原生回歸、新來源建置與正式包依[整合進度](../docs/local-integration/20261014-github-upload.md)逐項接受。沒有 schema、帳號或角色變更，marker 消失原因未證，舊 v1 HOLD 與失敗證據保留。
+
+## 2026-10-17 檢具同步狀態與未修改表單誤判
+
+修正檢具讀取失敗後同步標籤仍顯示已同步，以及含換行的舊名稱在未修改時誤觸關閉確認。僅更新失敗標籤和名稱 dirty 比較基線，保留原始多語名稱、Apply／Save、照片、權限、CAS 與確認規則，詳見[品質實作](modules/QUALITY.md)。受影響九組記憶體回歸及兩檔 lint 通過，fixture 初始化原失敗保留；修後真 GUI、新來源建置與正式包尚待各自驗證，不能沿用18e5建置為新版通過。資料模型無變更。
+
+## 2026-10-17 檢具編輯視窗刪除權限一致性
+
+修正 STAFF 可編輯但無刪除權時，編輯視窗刪除鈕仍啟用的前端缺口；補既有 delete gate，並在入口及等待／確認後重核刪除權。保留引用、來源、雙確認、CAS 與原 API 拒絕規則，詳見[品質實作](modules/QUALITY.md)。新增真產品函式／client 反例與撤權回歸，原18項引用防護保留；修後原生驗收、新來源／建置及交付狀態依[整合進度](../docs/local-integration/20261014-github-upload.md)，不沿用 d98 為修後全面通過。資料模型無變更。
+
+## 2026-10-17 檢具末列避讓與 CommonJS lint 適用性
+
+檢具搜尋結果捲到最底時，末列刪除按鈕會與全站回報浮鈕重疊；只在有浮鈕時為該清單保留76px底部空間，既有視窗82px確認區避讓保留，排序、分頁與刪除／引用防護不變。新原生幾何、操作及裝置接受依[整合進度](../docs/local-integration/20261014-github-upload.md)逐項記錄。H18／H19同身分真離線表單恢復至正常新增／Save／true reload已有窄真GUI證據；內部File identity、全頁與多人未知結果不由此擴稱。
+
+僅對 `**/*.cjs` 調整 `typescript/no-require-imports` 適用性，保留非CJS及所有其他檢查。七檔正反控測證明CJS require不報、非CJS仍報、CJS no-var仍報；完整lint468→5／692files，精確移除463項、0新增、原5診斷不變，仍FAIL exit1。[單一lint政策](../docs/testing/LINT_CONTRACT_POLICY.md)保存契約、舊FAIL及SVG／beforeunload未驗界線。沒有產品JS、API、角色、CAS、審核或資料模型變更；舊build／ZIP不替代新來源驗證。
+
+## 2026-10-17 檢具表單續用與確認區避讓
+
+新增檢具在登入讀取失敗後，可明確重讀並保留未套用文字、群組與照片；重讀核對同身分、權限、版本及同步狀態，保留舊欄位基線與未知結果限制。離頁／返回和延後請求只處理原操作，輸入事件不重畫或干預組字。檢具新增／編輯確認區為全站回報浮鈕預留空間。沒有 API、角色、CAS、審核或資料模型變更。
+
+新增可攜 ESM 回歸入口，實際 CLI 九組與既有18項刪除引用防護通過；完整 lint 仍 FAIL468，與前次完整診斷逐項相同，這次產品／測試檔無診斷。H17 QA 檢具中越文、日期、頻率及照片增改刪各有正常儲存／true reload 證據；新續用／版面不因此改標真 GUI 通過。H17 正常停止仍 late cleanup UNKNOWN，當下自有程序與監聽缺席另證，不混為收尾成功。實作見[品質](modules/QUALITY.md)，來源、建置與交付界線見[整合進度](../docs/local-integration/20261014-github-upload.md)。
+
+## 2026-10-16 欄位原值防護與流程名稱排程
+
+master AB／C／PROCESS、process authoring、equipment、FQC、IQC、IPQC-AB／C 的既有欄位 Apply 帶入並要求原值 guard；過期同欄位拒絕，無關欄位可合併，保留原角色、pending、CAS、operation identity／fingerprint 與成功命令 replay。缺 guard 的新命令會拒絕，屬驗證行為收緊；持久 schema／資料關係未改。共用兩個衝突碼只在顯示出口轉中越文，raw error、unknown、receipt、retry 維持。PROCESS 名稱輸入固定編輯基線，逐次 ACK 才推進；Save 等待完整輸入鏈，Submit 仍只送最後成功儲存快照。
+
+保留欄位 old-value guard、PROCESS repaint 輸入保全與品質 editor 初始路由等最小修正；歷史 renderer 相容 V3 actor／動作／理由，依當頁中越文顯示並保留使用者原文。H13 真畫面補驗正常登入後 BOM 即時投影與共用歷史假空訊息修正。shared-state GET 在原公開期限後，額外接受既有 identity 驗證通過的正常 platform session；原 ADMIN、匿名期限、DEMO、其他身分通道、角色、POST/CAS及審核規則不變。18項 handler／HMAC與既有 auth suite、TypeScript、定向 lint及獨審通過，H14 已限域接受正常 STAFF／RD 登入；指定製程／模具不同人四分支及P0恢復已依各自真收據接受，其他模組／角色／API不由此擴稱。另僅修改製程 review view 入口：等候既有讀取後，以同 client 正常 fresh GET 取得權限／案件，重核 owner、generation、pending 與頁面，失敗維持 HOLD、STAFF false 不升權；23組實際 module／client 記憶體測試及獨審通過，H15同件STAFF deny／RD首次查看可審且無reload workaround、正常196確認與P0核准／true reload已限域通過；其他timing／失敗／換身分情境仍按記憶體與未驗範圍區分。實作見[主資料](modules/MASTER_DATA.md)、[品質](modules/QUALITY.md)及[入口](modules/RUNTIME.md)，各來源驗收與限制集中於[整合進度](../docs/local-integration/20261014-github-upload.md)。未改持久 schema；舊 build／ZIP 不作新來源結果。
+
+## 2026-10-16 隔離還原、有限真 GUI 與兩項顯示修正
+
+原 2cd 來源完成乾淨 npm ci、V5 冷還原及 F 啟動／8 項 HTTP 與兩條私有哨兵檔拒絕讀取；原來源與證據保持不變。65527 真 Chrome 已可進行有限匿名 GUI 觀察；依實際畫面處理入口／播放頁越文與工段 label 混語，以及非全螢幕空播放頁／LIVE 對比。原 FAIL、V1 鄰接選項回歸與後續候選／修後結果分別保留。兩個靜態檔的[實作範圍](modules/RUNTIME.md)與[當前整合證據](../docs/local-integration/20261014-github-upload.md)為準，未改審核、身份、角色、資料模型或 schema；來源持續另建檢查點，不重標原 HTTP。當時正常後台 GUI 登入尚待接手；其後 H6 已經正常 frank 表單登入核對，最新現況見整合進度，完整驗收與最終建置／封裝尚未完成。
+
+## 2026-10-15 上傳證據索引可攜性與員工操作說明
+
+修正兩份驗收 JSON 的512個本機絕對路徑表示，保留所有hash、資料、狀態與原收據，原件在專案外可恢復；[整合進度](../docs/local-integration/20261014-github-upload.md)定義證據路徑基準。補足完整私有快照的安裝順序、ADMIN／正常／DEMO登入區別、後續更新與失敗還原說明。244個純換行差異已由Git真clean證明無有效提交變更，267個內容候選保留原target變更。無產品行為或schema修改；一次直接批准的隔離還原仍遭native參數guard停止，沒有功能或GUI接受。
+
+## 2026-10-15 Canvas 成果整合與精確 lint 契約例外
+
+將已驗證 dd4b 候選的兩個同步 core、CJS facade、內容比對修復、可攜式測試及工程文件備份後整合至開啟 checkout。只對兩個 facade 的四個確切 require specifier 增加 anchored allow，保持 error 與所有其他規則；正反對照 PASS，完整 checkout 仍 FAIL 415（共同來源 411、manifest 外歷史證據四項）。[單一 lint 政策](../docs/testing/LINT_CONTRACT_POLICY.md)保留分類、契約與未驗界線。另明確更正私有還原會新增開發用 ADMIN，不能誤作普通員工。無產品行為、schema、資料或 Git 發布變更；隔離環境尚待直接批准，尚未最終建置／封裝。
+
+## 2026-10-15 第二支同步 Canvas 工具收尾
+
+新增 final-manifest ESM core 並保留同步 CJS facade／空 exports／逐次 helper、spawnSync 及錯誤退出契約。Node 22／24 各補 30 項定向案例，另驗原生 cache／同步錯誤與實際目錄新增後重載；固定 golden／規則及既有有效案例不變。真 exit 1，全 lint 418→415，其他診斷 multiset 不變；兩支同步工具累減 6。方法與限制見[測試說明](../docs/testing/CANVAS_EVIDENCE_TOOLS.md)。資料模型與業務資料無變更；停止額外 lint／重包，把後續重點交回功能驗收。
+
+## 2026-10-15 Canvas task diff：首檔同步 ESM core
+
+保留 canvas-task-diff.cjs 同步入口、空 exports 與逐次 helper 解析，實作移入無頂層業務 IO 的 ESM core；不改寫另外兩個工具或 lint 規則。Node 22.13／24.19 的原生輸出、cache／重載、同步錯誤與回復契約對照通過；兩版各 67 項離線 fixture 通過，Git 使用 stub。全 lint 實查由 421 降至 418，首檔由 5 降至 2；其餘診斷 multiset 不變。載入圖差異與範圍見[測試說明](../docs/testing/CANVAS_EVIDENCE_TOOLS.md)。
+
+封存 4cc417 已另在新副本普通權限離線 build，exit 0／dist 510 檔。該實際 build 屬於 4cc417，不能改標為本次工具／工程文件候選的實際 build。舊來源 ZIP、V5、restore approval 與原工作目錄均未修改；沒有還原、服務、Git 寫入或部署。
+
+## 2026-10-15 Canvas 證據工具：可攜式離線回歸入口
+
+新增單一 Node ESM 入口及相對 synthetic fixture，沿用已驗證的 21 項回歸、8 項固定輸出契約、30 項 IO 與 8 項 native CLI 案例。所有 native 子程序都先載入 Git／網路 stub，並以 child audit 核對指定故障確實觸發，避免環境錯誤造成負向案例誤報成功。支援從其他 cwd 執行及指定持久證據目錄；只有 Node 內建模組，不新增套件或更動 package.json。用法、退出碼及範圍見[測試說明](../docs/testing/CANVAS_EVIDENCE_TOOLS.md)。
+
+本階段只在 b0b4cef 之後的新工作副本整合測試與工程文件，三工具產品碼未變。舊候選、建置、V5 及 restore approval 保持不動；不是產品功能、真 Git、GUI 或還原的新增 PASS。
+
+## 2026-10-15 Canvas 證據工具 V2：Git 失敗判斷與跨檔回復
+
+在新的隔離候選修正三個工具：內容比對依 workspace id 取得 baseline，找不到即停止；兩個 diff 工具拒絕 Git 執行失敗與 status 1 但 stdout 空白，保留合法的 CRLF 警告。兩份報告先完整暫存，以獨佔 lock、備份及 rename 發布；可捕捉的寫入或發布例外會回復舊檔。回復失敗保留 lock／backup 並明確報錯，發布後清理失敗則提示警告。輸出檔以 lstat 檢查，只有 ENOENT 視為不存在；拒絕一般／失效符號連結、目錄及多重 hard link。正常 CLI／JSON 輸出契約保持一致。
+
+驗證：實際 Git 的新 Temp fixture 觀察同檔 exit 0、差異 exit 1、非 repository exit 129、缺少輸入 exit 1 且 stdout 空白。21/21 隔離回歸（重測受影響的 16 項，沿用 SHA 未變的內容工具 5 項）、8/8 輸出位元組／console／require 契約、30/30 IO 故障案例、8/8 Windows synthetic CLI 與三檔語法檢查通過。三檔 lint 仍為 exit 1／12 項既有 CJS 診斷，沒有新增，設定未變；先前全站 FAIL 421 僅沿用紀錄，未宣稱 lint clean。
+
+新候選與來源指紋由 Temp/current-github-upload-tools-candidate-20261015.json 指向；舊 01b904 來源、build、V5 與 restore approval 均保持原始位元組。沒有修改 schema、業務資料、歷史、圖片或產品入口。此次僅完成本機工具候選，未 commit／push／PR／merge／部署或啟動應用程式。回復保證限可捕捉的例外；不保證斷電交易原子性、inode／Windows ACL／ownership metadata 完全相同，也不支援繞過 lock 的其他寫入者。
+
+## 2026-10-15 最低Node相容與三區按鈕驗收
+
+最低 Node22.13 sqlite backup 相容修復及先前引用／設備／Editor／IPQC-C ownership 修正保留。本輪再修正 IQC item／part、FQC item 舊表單跨使用者送出，以及 FQC 多檔部分成功照片未顯示卻被保存；修正範圍限瀏覽器擁有者核對、錯誤顯示與輸入保全，不放寬 server 規則。
+
+14入口有限補驗含品質25、Master/users26、Tooling/AB23個具名 VM 案例；Editor新節點3、IPQC-C2、BOM File/field2、範本照片5、Routine transfer2、Tooling nested form2另有簽章隔離持久化或明列的 callback 證據。範本5含 data-only reorder，並非5案全為 UI caller；Routine2只有 working Apply／stale-preview，不含正式 Save／Submit／Approve。BOM另8事件案例，現版Master入口生命週期為7 checks／13 requests。這些是各自限定場景，不能加總成不同按鈕或整頁 GUI 已通過。詳見[驗收／未驗界限](../docs/local-integration/20261015-button-coverage.json)。資料模型、正式 records、核准／回滾規則未變更；Git／正式發布仍暫停。
+
+## 2026-10-15 收回Spinner API變更與未驗工具遷移
+
+2026-10-15 UTC續修：Spinner本任務新增output包裝、focus／keyboard currentTarget及tabIndex移轉、強制SVG hidden／focusable均撤回，恢復修改前exact SVG bytes；7項element／prop／ref／callback／SSR核對及現行TypeScript PASS，非native DOM接受。112工具遷移中7支既有normalpositive沿用，test-local-backup在清外部backup env、固定owned TMP／SQL／tar／delete防護後，原／新版真正API／SQLite／tar／encryption／backup／restore／failed rollback normal流程各exit0且stdout相同；總共保留8支。其餘104非必要未驗遷移逐SHA備份後恢復原CJS，僅刪本任務生成且無其他Source consumer的core，全部可還原。67cold原收據保留，其中65不是normalacceptance，未強迫跑歷史GUI／缺資料工具。
+
+收斂早期快照421診斷／678 lint files／1533source（416literal require＋1 SVG prefer-tag-over-role＋3dynamic receiver＋1beforeunload deprecated），設定SHA b27badef835862a105b58ad08a924b366fba7ae7fb0bdef7cfee0398b3829db6未改。從20回升是收回未驗遷移與API變更後的誠實警告，不以消除lint擴大重構。三個receiver另補Node22.13／24純memory等價評估；apply/call-bound adapter雖保留普通this／args／return／throw，會提早捕捉method.apply/call，具體custom property變更反例證明非strict等價。保持原每次lookup契約，仍未解屬技術問題，不是需user批准的選擇；scoped candidate type-aware lint缺tsgolint未跑。
+
+沒有Main／schema／正式migration／Git或部署變更；完整V5不變payload/runtime的cold及HTTP證據沿用，新的來源／建置／binding由獨立檔案核對。詳細版本與未驗界線只維護[整合紀錄](../docs/local-integration/20261014-github-upload.md)。
+
+## 2026-10-14 GitHub本機候選持續修復
+
+補正式begin的authoring／tooling隔離生命週期29項，與原八頁124項共153項scoped HTTP；保留來源綁定，無Main假案件。修shared-state非object body回400且無資料異動；FQC／equipment VM/memory、canvas journal及BOM fixture按現行流程補正，逐項失敗與復驗保留。JSON轉字串、排序與unused整理保留runtime契約；React SSR不冒稱GUI。
+
+官方image-size 2.0.2→2.0.4，鎖檔只有該依賴版本變動、原依賴及來源可逐SHA還原，daily／candidate正常圖片四格式四入口各16PASS；漏洞重現／Maincache／罕見格式未驗。20:52最新runtime另23項真HTTP PASS；現行typecheck／四SSR、clean-init／微型Miniflare還原PASS且保留原身份／policy／history。全庫lint23:21 20／782仍FAIL，原規則未降；三組builtin-only sidecar保留公開sync函式反射／getter／cache，Node22.13及24定向PASS。完整新V5真冷還原、24正常signedHTTP與27業務鍵／14原身份／100history事後精確保留PASS。參考圖120unique全覆蓋，5human／2vendor flags保留，不作公開READY；技能可重用修訂僅可審閱草稿、原writer不可用。112個actual-diagnostic工具完成分範圍原／新版對照，另12組定向修正及現行UI-reader fixture修復；未驗GUI仍列未驗。同步guard反射契約FAIL保留原件，6個零診斷fixture遷移已撤回。PR13仍草稿，使用者Git暫停有效；新修正無schema/Main資料變動。詳細來源、證據與未完成項僅維護[整合紀錄](../docs/local-integration/20261014-github-upload.md)。
 
 ## 2026-10-14 正常重開後的未同步輸入恢復入口
 

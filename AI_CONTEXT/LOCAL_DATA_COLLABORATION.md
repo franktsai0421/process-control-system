@@ -2,6 +2,8 @@
 
 `data/canonical/` is the reviewed, shared business baseline. Git merge updates this package, not any database. Each computer owns its ignored Local D1/R2. Staging is a separately synchronized test mirror; Production requires its own approved complete release and remains outside Local data commands.
 
+Private complete snapshot replacement is a separate opt-in, stopped-target flow documented in [offline snapshot updates](../docs/local-integration/OFFLINE_SNAPSHOT_UPDATE.md). The f722 isolated TEST flow has scoped full-capacity update, repeat, refusal and recovery proofs; these do not authorize updating the original rev495 business snapshot with existing pending/drafts. Canonical projection, sync and export contracts remain unchanged. Normal shutdown and final package acceptance are separate current gates recorded in [HANDOFF](../HANDOFF.md). Normal supported storage openers hold a lifetime lease on update-enabled targets and refuse incomplete transactions or `.u1s` staging. Unknown SDK or native SQLite closure retains the lease. These controls are cooperative entry guards, not an OS access boundary for raw Wrangler or historical tools.
+
 ## First clone
 
 The Local TypeScript loader resolves imports relative to each loaded source file. A copied test/bootstrap workspace that includes `lib/user-access.ts` must also include its real `public/process/access-policy.mjs` dependency; do not substitute a permission stub. See [the 2026-10-14 upload record](../docs/local-integration/20261014-github-upload.md).

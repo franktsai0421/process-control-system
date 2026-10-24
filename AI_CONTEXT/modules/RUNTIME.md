@@ -1,6 +1,30 @@
-## 2026-10-14 帳號專屬未同步輸入入口
+## 2026-10-24 照片驗證隔離與工作區連線偏好
 
-恢復下載入口由applyPlatformIdentity（含自動登入恢復）、process-sync-status與process-language-change更新；僅currentUser、ProcessSync identity及recovery actor一致且有updates時顯示，點擊時再核owner，舊按鈕不能跨帳號下載。不增加讀寫API或自動補送／套用；沿用best-effort tab sessionStorage格式。ZH／VI分開短標籤，完整title與44px觸控目標保留。真合成3035失ACK、保全登出、正常同tab reload、不同actor及原actor精確下載驗收見[唯一進度](../../docs/local-integration/20261010-permissions-admin.md)。關閉tab前需自行下載，未新增跨關閉tab持久保證；不宣稱直接dirty-page原生beforeunload已自動通過。
+使用者明確停用Codex with ChatGPT；已撤銷工作區token並停止bridge，依[AGENTS](../../AGENTS.md)不自動健康檢查或重連。第4階段以6084合成memory SQLite/R2和實際SPA／TS handlers測試，不借用3000 binding。4表、R2metadata與1,155保留body hash前後一致；原資料與照片保留。完整lint目前只剩Spinner一項；原生離頁後續因使用者停止Computer Use未完成，精確範圍與交接見[HANDOFF](../../HANDOFF.md)。無runtime部署、schema或資料模型變更。
+
+## 2026-10-17 離線完整快照更新與儲存入口
+
+`scripts/dev-package-update.mjs` 提供 register／plan／apply／status／recover 及隔離 TEST install-test。管理者核對的固定輸入與雜湊限制目標、來源、相容版本及發布包；不是 Canonical 同步或帳號管理入口。`local-update-guard` 拒絕未完成交易，`local-storage-lease` 讓已啟用目標的正常 SDK／SQLite／server 入口在實際關閉前持有互斥；`local-storage-sqlite` 保留未提供 options 的原生建構語意。未知建構或關閉結果留 HOLD，不從 catch 推定資源安全。舊未啟用目標不建立新互斥檔，但仍檢查未知交易。
+
+`local-data`、初始化／server、備份／還原／排程及 feature-upgrade 依此共同契約；未支援的直接 Wrangler／歷史診斷入口不等於受到 OS 強制隔離。交易的 .u1s 與 .process-update 不允許當一般專案根，也不進備份／Git／交付程式。完整容量更新、SDK 暫存關閉搬移及中斷恢復仍依實際收據驗收；不得從原生小型 SQLite 回歸外推。操作與保全見[更新說明](../../docs/local-integration/OFFLINE_SNAPSHOT_UPDATE.md)，資料模型見[本機操作紀錄](../DATA_MODEL.md)。
+
+## 2026-10-16 入口、正常平台登入與品質編輯路由
+
+i18n 顯示修正限 DEMO 關閉提示、播放完整句／計數與正式工段 code/name 完整 label；保留代碼、中文、計數及空白，不改主資料。21個工段的42個 option/header label採完整比對，避免 substring 搶先消耗較長線別／工段文字。早期 B選項尾字及 C標題混語 FAIL 保留原收據；修後真 GUI 與 synthetic 範圍依[整合進度](../../docs/local-integration/20261014-github-upload.md)區分。
+
+styles.css 僅調整非全螢幕空播放頁卡片／文字／標題及 LIVE 對比；真 Chrome 深綠 rgb(40,114,50) 對原紙色背景為5.30:1，原1.44:1 FAIL保留，全螢幕不由此接受。DEMO入口關閉、後端正常／demo身分、角色及CAS規則不變；H6正常 Chrome 表單登入既有 frank 的證據可依差異沿用，H9 retained session 不是另一次登入。dual-system.js 在原 canView(editor) 通過時保留品質側合法初始 editor 路由；H8真 reload／新分頁停在editor，sidebar／go／popstate／login及其他 quality views權限不改。PROCESS重繪的 binding保全契約集中於[主資料](MASTER_DATA.md)，最新來源、站台生命週期與驗收限制集中於[整合進度](../../docs/local-integration/20261014-github-upload.md)。 EQ／FQC的語言來源改為當前分頁document已知zh／zh-*／vi優先，僅unknown才fallback共享storage；不改global i18n或寫storage。H11 已真雙分頁以相反語言及正常搜尋重繪確認當頁語言保留；此限域PASS不代表所有輸入／IME、全站雙語或實體裝置接受。共用唯讀快照使用i18n-skip以保留原始使用者文字，與UI局部翻譯分開。 shared-state GET 過期判斷僅追加 user.sessionType===platform 的既有已驗證正常session通道；sessionType先經HMAC、有效期、撤銷、帳號啟用／刪除、authEpoch及stored-DEMO區分，不採偽造header。匿名、DEMO關閉、普通OAI或credential-header-only通道仍依原期限拒絕，原ADMIN保留。POST、角色、CAS、scheduledBackup與privacy projection不改；18項真handler／HMAC記憶體及TypeScript通過後，H14另有正常STAFF／RD各一次既有憑證表單登入與dashboard投影的窄原生接受；不同人流程、暫態查看入口與後續修正狀態集中於[整合進度](../../docs/local-integration/20261014-github-upload.md)，不擴成全角色/API接受。
+
+## 2026-10-15 最低 Node 的明確升級備份
+
+`local-feature-upgrade.mjs` 透過 node:sqlite namespace 判斷 backup 能力。Node22.13缺API時在交易開始前用轉義目的地的 VACUUM INTO；Node24保留原生backup，其失敗直接拋出，不換路徑。兩者驗全部表值、明確ID、schema/index與integrity；邏輯snapshot不保證隱含rowid或page/byte相同。DDL中途失敗回滾；COMMIT後flags發布失敗會停止、保留舊flags與備份，可明確新備份路徑重試，不能宣稱跨DB／檔案整體原子性。無schema或正式資料migration變更。[驗收範圍](../../docs/local-integration/20261014-github-upload.md)。
+
+## 2026-10-15 本機候選契約與工具範圍
+
+Spinner恢復原React.ComponentProps<svg>及单Loader2Icon，defaults後props spread、ref／tabIndex／focusable及focus／key／pointer callback/currentTarget原樣留SVG。曾試驗OUTPUT wrapper／statusProps與強制SVGhidden／focusable均撤回，不為lint改公開API。exactbytes＋7element／SSR定向及typecheckPASS；nativeDOM未宣稱。
+
+112組standalone試驗只留8組有actualpositive，104非必要未驗core已在outside備份後恢復原CJS；冷入口截停不是normalworkflowPASS。test-local-backup兩版本以正式API、syntheticSQLite及System32tar完成加密backup／restore／rollback，外部PROCESS_BACKUP_PATH清除、TMP／FS／SQL／tar／delete限ownedrunner，無MainSQL。CJS UI factory與guard/browser fixedbuiltin sidecars維持同步契約；複製完整scripts必含必要adjacentcores／sidecars，未保證未知外部單檔copy。
+
+三dynamicdelegate仍保留captured method與每次apply/call lookup；bound adapter反例表示提早捕捉並非strict等價，未套用。合法CJS／beforeunload／原SVG status lint警告誠實保留，規則未降。完整V5payload/importer/productionAPI不變，保留之前真cold/normalHTTP與history保全的來源證據；最新binding以[整合紀錄](../../docs/local-integration/20261014-github-upload.md)／忽略pointer為準。
 
 ## 2026-10-13 受保護工作區啟動
 
@@ -21,6 +45,10 @@ inline legacy readState避免同request第二次JSON解析，R2/chunks/records�
 # 執行、權限與備份現況
 
 狀態：Current source notes；整理自本 checkout 既有現況文件。2026-10-05只定向核對來源，不重跑功能測試；歷史數量／版本與PASS僅屬原日期證據。確認需求見[現行規格](../../docs/specs/current/README.md)。
+
+## 新照片處理（2026-10-24）
+
+index.html先同步載入photo-upload.js／CSS，再載入既有SPA。共用helper以明確accept=image的file input加入中越文三模式選單，change capture固定每個File的模式；各既有上傳函式明確委派prepare，不攔截fetch或重送事件。一般1600/WebP.82、高清2400/.90、保真原件；手動選檔及feedback貼圖已接入，來源匯入／還原保留原SHA例外。身分generation、固定表單目標、回報六張／處理中送出及舊草稿權限閘門保留。最終API格式、bytes去重及業務模型不變，原照片不轉碼。規則、入口及限定驗證／未驗範圍見[PHOTO_UPLOAD](../../docs/specs/current/PHOTO_UPLOAD.md)，資料包V2及服務狀態見[計畫](../../docs/local-integration/20261024-3000-data-photo-plan.md)。前端處理不代表伺服器強制像素規格或完整上線接受。
 
 ## Runtime and Architecture
 

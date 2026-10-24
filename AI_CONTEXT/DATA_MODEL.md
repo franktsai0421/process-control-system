@@ -1,3 +1,7 @@
+## 2026-10-17 離線完整快照的本機操作紀錄
+
+更新器新增私有 `.process-update` 版本基準、交易指標、雜湊鏈事件、完整實體備份與恢復證據，以及交易期間的 `.u1s` SDK 暫存；成功基準置於 `.wrangler/local-only/installed-package.json`。這些不是業務記錄或 Git 資料，不增加 SQL 表、migration 或 shared_state 鍵。業務格式、身分角色與個別權限不變；本機 CAS revision 與發布來源 revision 分別記錄。私有憑證不進資料包，較新的撤銷紀錄在恢復時保全。f722 的隔離完整容量 TEST 更新、拒絕、實體還原與備份複製恢復已有分項完整讀回證據；這不接受原 rev495 含 pending／草稿的業務更新，也不代表正常服務關站或新版製包通過。當前階段依 [HANDOFF](../HANDOFF.md)，操作見[操作契約](../docs/local-integration/OFFLINE_SNAPSHOT_UPDATE.md)。
+
 ## 2026-10-12 傳輸與授權補充
 
 BOM 匯入 command.input 新增 `baseDigest` 與 `importMode:incremental-v1`；只影響傳輸及比對規則，持久 BOM occurrence、版本／快照／引用 ID 與 SQL schema 不變。一般缺列保留，新兄弟接至穩定父位置。角色範本更新依有效授權差異遞增既有 authEpoch；名稱／說明與不受範本影響的主要管理員不遞增。無 migration、遠端 binding 或真實帳號／業務資料移轉。見[BOM 規格](../docs/specs/current/BOM_REBUILD.md)、[權限規格](../docs/specs/current/PERMISSIONS_ADMIN.md)。

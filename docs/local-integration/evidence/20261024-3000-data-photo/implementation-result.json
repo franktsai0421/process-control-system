@@ -1,0 +1,467 @@
+{
+  "format": "PROCESS_OS_PHOTO_IMPLEMENTATION_AND_COMPACT_V2",
+  "status": "IMPLEMENTED_LOCAL_TARGETED_VERIFICATION",
+  "source": {
+    "branch": "codex/github-upload-20261014",
+    "head": "a09b0e69f1b1fc8aeb797f8dab59f2002aa66cac",
+    "uncommittedTaskEdits": true
+  },
+  "compact": {
+    "previousPayloadBytes": 322214696,
+    "payloadBytes": 319619087,
+    "savedBytes": 2595609,
+    "payloadFiles": 1092,
+    "removedUnreferencedRecords": 82,
+    "remainingR2Objects": 1073,
+    "historyRows": 100,
+    "sourceRevision": 495,
+    "manifestRawSHA256": "4388b76f88bb36cbeab0c00ec005b1430d2964a45a2217696773fb14d231f8cb",
+    "actualPhysicalRestore": "PASS_PHYSICAL_RESTORE_AND_SDK_READBACK",
+    "allRetainedBodiesAndMetadata": "PASS",
+    "currentDecodedValuesAndAllFourTables": "PASS",
+    "fullBackup": "retained, not primary, not used for V2",
+    "temporaryCopiesRemoved": true
+  },
+  "photoProfiles": {
+    "standard": {
+      "maxEdge": 1600,
+      "mime": "image/webp",
+      "quality": 0.82
+    },
+    "hd": {
+      "maxEdge": 2400,
+      "mime": "image/webp",
+      "quality": 0.9
+    },
+    "fidelity": "original bytes/size/metadata preserved; existing endpoint limits apply"
+  },
+  "tests": {
+    "helperAndClientUnit": "PASS",
+    "photoApi": {
+      "status": "PASS",
+      "modules": 6,
+      "checks": 42
+    },
+    "feedbackApi": {
+      "status": "PASS",
+      "checks": 45
+    },
+    "stateMedia": "PASS",
+    "qualityFieldCasGuards": "PASS",
+    "equipmentDeleteFence": {
+      "status": "PASS",
+      "cases": 18
+    },
+    "realBrowserDesktop": {
+      "status": "PASS",
+      "cases": 15,
+      "results": [
+        {
+          "id": "T01",
+          "profile": "standard",
+          "bytes": 22386,
+          "width": 1600,
+          "height": 1100,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T01",
+          "profile": "hd",
+          "bytes": 42314,
+          "width": 2400,
+          "height": 1650,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T01",
+          "profile": "fidelity",
+          "bytes": 118802,
+          "width": 3200,
+          "height": 2200,
+          "format": "png",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T02",
+          "profile": "standard",
+          "bytes": 11414,
+          "width": 800,
+          "height": 600,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T02",
+          "profile": "hd",
+          "bytes": 13320,
+          "width": 800,
+          "height": 600,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T02",
+          "profile": "fidelity",
+          "bytes": 18257,
+          "width": 800,
+          "height": 600,
+          "format": "png",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T03",
+          "profile": "standard",
+          "bytes": 2534,
+          "width": 320,
+          "height": 240,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T03",
+          "profile": "hd",
+          "bytes": 2868,
+          "width": 320,
+          "height": 240,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T03",
+          "profile": "fidelity",
+          "bytes": 4687,
+          "width": 320,
+          "height": 240,
+          "format": "png",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T04",
+          "profile": "standard",
+          "bytes": 8130,
+          "width": 800,
+          "height": 1200,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T04",
+          "profile": "hd",
+          "bytes": 9524,
+          "width": 800,
+          "height": 1200,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T04",
+          "profile": "fidelity",
+          "bytes": 26308,
+          "width": 1200,
+          "height": 800,
+          "format": "jpeg",
+          "orientation": 6,
+          "exif": true,
+          "status": "PASS"
+        },
+        {
+          "case": "wrong MIME rejected",
+          "status": "PASS"
+        },
+        {
+          "case": "bad signature rejected",
+          "status": "PASS"
+        },
+        {
+          "case": "compliant static metadata-free WebP bytes reused",
+          "status": "PASS"
+        }
+      ],
+      "viewport": {
+        "width": 870,
+        "height": 999
+      },
+      "originalBusinessDataWritten": false
+    },
+    "realBrowserNarrow": {
+      "status": "PASS",
+      "cases": 15,
+      "results": [
+        {
+          "id": "T01",
+          "profile": "standard",
+          "bytes": 22386,
+          "width": 1600,
+          "height": 1100,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T01",
+          "profile": "hd",
+          "bytes": 42314,
+          "width": 2400,
+          "height": 1650,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T01",
+          "profile": "fidelity",
+          "bytes": 118802,
+          "width": 3200,
+          "height": 2200,
+          "format": "png",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T02",
+          "profile": "standard",
+          "bytes": 11414,
+          "width": 800,
+          "height": 600,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T02",
+          "profile": "hd",
+          "bytes": 13320,
+          "width": 800,
+          "height": 600,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T02",
+          "profile": "fidelity",
+          "bytes": 18257,
+          "width": 800,
+          "height": 600,
+          "format": "png",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T03",
+          "profile": "standard",
+          "bytes": 2534,
+          "width": 320,
+          "height": 240,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T03",
+          "profile": "hd",
+          "bytes": 2868,
+          "width": 320,
+          "height": 240,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T03",
+          "profile": "fidelity",
+          "bytes": 4687,
+          "width": 320,
+          "height": 240,
+          "format": "png",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T04",
+          "profile": "standard",
+          "bytes": 8130,
+          "width": 800,
+          "height": 1200,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T04",
+          "profile": "hd",
+          "bytes": 9524,
+          "width": 800,
+          "height": 1200,
+          "format": "webp",
+          "orientation": 1,
+          "exif": false,
+          "status": "PASS"
+        },
+        {
+          "id": "T04",
+          "profile": "fidelity",
+          "bytes": 26308,
+          "width": 1200,
+          "height": 800,
+          "format": "jpeg",
+          "orientation": 6,
+          "exif": true,
+          "status": "PASS"
+        },
+        {
+          "case": "wrong MIME rejected",
+          "status": "PASS"
+        },
+        {
+          "case": "bad signature rejected",
+          "status": "PASS"
+        },
+        {
+          "case": "compliant static metadata-free WebP bytes reused",
+          "status": "PASS"
+        }
+      ],
+      "viewport": {
+        "width": 388,
+        "height": 842
+      },
+      "originalBusinessDataWritten": false
+    },
+    "alphaBytes": "PASS_STANDARD_AND_HD",
+    "targetedJsLint": "PASS_EXCEPT_UNCHANGED_ROUTINE_FQC_DEPRECATED_RETURNVALUE",
+    "existingWorkflowPermissionsFixture": {
+      "status": "FAIL",
+      "actual": 422,
+      "expected": 403,
+      "error": "DEPENDENCY_GUARD_REQUIRED",
+      "changedFrontendLoadedByTest": false
+    },
+    "beforeunloadDeprecationUnchanged": true
+  },
+  "sourceDataProof": {
+    "status": "PASS_ORIGINAL_3000_UNCHANGED",
+    "revision": 495,
+    "historyRows": 100,
+    "allFourTables": "unchanged",
+    "retainedOriginalBodiesHashed": 1155
+  },
+  "sourceFiles": [
+    {
+      "path": "public/process/photo-upload.js",
+      "sha256": "871991ae4cf7acbbb1f12518b6dca28c441fbec69fb3224f8ca39bb6bddc6cea"
+    },
+    {
+      "path": "public/process/photo-upload.css",
+      "sha256": "f53b30bd87c055c200ca5ba0538994cdf6ec99bb87c86676dea642a3013f1e0b"
+    },
+    {
+      "path": "public/process/app.js",
+      "sha256": "f4fd96d05cc6c988501660a0587da1059b6d2e6352554fca2847a82e4c998e23"
+    },
+    {
+      "path": "public/process/index.html",
+      "sha256": "d8a8af472082554764eea3dcc6cbb59729a5819172fb37393c3f0335bdebfba3"
+    },
+    {
+      "path": "public/process/version-workflow.js",
+      "sha256": "973c9c4e9818dc6c413c1b3679274445d52cc661c8c022b4b78b25d445013113"
+    },
+    {
+      "path": "public/process/fqc-master.js",
+      "sha256": "3815c4e57fd1a28350ce6e3adcb4f0bb9bdfdf7ecf88131c684340004c07768b"
+    },
+    {
+      "path": "public/process/iqc-master.js",
+      "sha256": "9cdb2e9392996c61f5caa20d49d5b3e45bcb958e3d60f8f22122f1a06dce38bf"
+    },
+    {
+      "path": "public/process/ipqc-ab.js",
+      "sha256": "067f920839421ce9fa119e6f35b9ea5b78c5c4f0ce036661c015b10226004201"
+    },
+    {
+      "path": "public/process/ipqc-c.js",
+      "sha256": "a7bd536fe49169a14ecc6683d1b24bb0d12147a5a9ee94f65ec1cbd2e3e54ea9"
+    },
+    {
+      "path": "public/process/routine-equipment.js",
+      "sha256": "409dcbe5869ad5bfbe223da575a3b876e1ae1181afbeca5b7d9e62880628deb9"
+    },
+    {
+      "path": "public/process/tooling.js",
+      "sha256": "cfd5fb2d5c0ee334a271bb74df5d65a17e0f439502e2a24f269bfc3cbb2669a7"
+    },
+    {
+      "path": "public/process/routine-fqc.js",
+      "sha256": "7cd4d18736931a11e3155e0c01b7c6de3624252d346e473e474f93696c1048b2"
+    },
+    {
+      "path": "public/process/web-feedback.js",
+      "sha256": "59903122f0dda79e695bdf9c15aa041b874d2116befb17bc9806ae23098ccade"
+    },
+    {
+      "path": "public/process/web-feedback-loader.js",
+      "sha256": "e4e3d1699e808204f45a9a97564c40116611dcf16465d2500e31b25924647f35"
+    },
+    {
+      "path": "scripts/test-photo-upload.mjs",
+      "sha256": "21e9fcad585dcb5830847b54fd106ba39ebcc31acb107a798d275af2fb8b3595"
+    },
+    {
+      "path": "scripts/test-photo-upload-clients.cjs",
+      "sha256": "e2473925e56d10788eaad38389e60bc206650473344e6d133be8c49f35931e7d"
+    }
+  ],
+  "dataModelImpact": "None; no schema/migration/persistent field changes",
+  "notVerified": [
+    "full upload/apply/save/reopen/submit/approve/history GUI in every module",
+    "physical iPhone",
+    "HEIC",
+    "50MP device memory stress",
+    "all animated variants",
+    "new-machine install",
+    "hosted deployment"
+  ],
+  "gitAndRelease": {
+    "stage": false,
+    "commit": false,
+    "push": false,
+    "pr": false,
+    "merge": false,
+    "deployment": false
+  }
+}

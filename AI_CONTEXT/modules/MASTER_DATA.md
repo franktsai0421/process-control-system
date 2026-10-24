@@ -1,3 +1,15 @@
+## 2026-10-16 既有欄位原值防護與名稱輸入鏈
+
+master AB／C／PROCESS、process authoring 及 equipment 的既有 set 欄位必須附對應 path 原值 guard，沿原 kernel 判斷 stale；不同欄位仍可合併。原 immutable codes、引用、角色、pending、CAS 與審核規則保留。master／authoring 對已有成功 receipt 的精確命令保留 replay 相容；仍核對 actor 與 fingerprint，沒有新無 guard 命令通道。authoring 原 whole-operation 相依 guard 仍有效，不能把同方塊不同欄位強行當成可合併。
+
+PROCESS 即時名稱輸入在 bind 時固定原值、actor 物件及 generation，依序寫入且只在成功 ACK 後推進自己的基線；失敗／unknown 阻擋後續自動寫入。Save 等待連續輸入及同身分尚未解決的 detached binding；Submit 等待輸入但只送最後成功 saved snapshot，不自動 Save。語言／設備 repaint 重建頁面時，僅同 owner 物件、generation、template key 且可編輯的未解決 binding 移交可見字串與原 baseline／pending／failure／lastQueued／IME 狀態，並使舊 node 事件失效。clean ACK、換身分／世代或唯讀頁不挪用。這不把未 ACK 值寫進 working、不建立新基線或重試；中越文提示只格式化顯示，raw error、queue、receipt 契約維持。H9 修後原生及記憶體／獨審範圍見[整合進度](../../docs/local-integration/20261014-github-upload.md)。
+
+產品表單保留既有 routeMode 屬性；只有新增、明確 mode／default 選擇，或實際 line／category／stages 變更才寫入模式。原 group default 原子 guard、invalid-null 拒絕、角色、pending 及 CAS 不變。15 組記憶體案例與獨審，以及另一產品 105B100081 的正常 name-only Apply／名稱恢復／true reload 和 raw 路線不變佐證，不能當原 105B100051 QA working exception 已精確還原。該例未 Save／Submit／Approve，整份主資料 AB 維持 HOLD；不等同獨立 IPQC-AB 品質庫的四案流程。C 工段及 authoring operation 名稱的同 frank stale 拒絕／保全／正常恢復證據另依差異沿用；authoring whole-operation guard 不放寬。沒有持久 schema 或資料模型變更。 主資料簡短操作歷史僅在renderer相容既有label／note／actor字串（含空字串優先），否則讀V3 action／comment／actorName／actorId並escaping，四個已知動作依當頁中越文顯示；不改raw history／投影／API。此後續修正經現有component與隔離signedhandler測試／獨審，H12已限域真GUI接受核准／送審的中越文、actor及原理由保全；其他動作別名依既有實作測試，不擴稱逐一原生接受。 BOMExcel.refreshProjection 重用既有 active metadata 投影邏輯；正常登入在 shared refresh 成功後、進入平台前更新本機投影，保留 replaceAll 空清單、未儲存 working、identity／queue／cache 契約，不寫持久資料。H13 正常 frank 登入後354主件／6105列與真重載一致；不擴稱所有登入角色已接受。 製程 authoring 查看／審核入口固定點擊時 owner stamp、pending ID 與 generation，等候既有 loading 後以同 client 讀取無 since token 的最新 control／permissions；同身分／頁面／世代／案件仍相符且權限為嚴格 boolean 才開啟。失敗、unknown、同步失敗或案件改變維持 HOLD，不自動切另一案或重送；adopt(result,false) 不重置未套用本機內容。原 history 入口、reviewDecision、後端角色、pending 與 CAS 不變，修後原生結果另依[整合進度](../../docs/local-integration/20261014-github-upload.md)。
+
+## 2026-10-15 模板照片與主資料操作
+
+流程模板照片準備前捕獲actor／draft／working與input連接狀態，await後重核再依現行shared.diff套用；回覆不重畫失效actor／節點。模板照片目前是inline img，沒有獨立preview click入口。設備與模板媒體均沿master:PROCESS原nested field guard／Save／R2記錄，不新增照片資料表。AB/C分類、群組及路線變更維持原scope和CAS；使用者矩陣VM不替代14原帳號GUI接受。[唯一按鈕與資料證據](../../docs/local-integration/20261015-button-coverage.json)。
+
 ## 2026-10-14 shared-state未知結果與改回舊值
 
 queue只有在未posting、未paused、未blocked且desired等於confirmed baseline時，才可清除該dirty鍵。網路結果不明或衝突後的舊baseline不足以證明伺服器仍相同；改回舊值必須保留desired/recovery，經明確儲存與原CAS確認，禁止無dirty而誤報成功。正常未送取消維持不POST。唯讀PROCESS鏡像不清pending或推進confirmed revision；V3 operationId未知收據仍屬獨立client，不能和shared-state ACK混稱。[直接情境及限制](../../docs/local-integration/20261010-permissions-admin.md)。無持久模型變更。
